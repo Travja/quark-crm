@@ -1,0 +1,56 @@
+{
+  "name": "quark-crm",
+  "version": "1.0.0",
+  "description": "Quark CRM",
+  "main": "dist/main.js",
+  "scripts": {
+    "nodemon": "nodemon",
+    "start": "npm run compile && electron .",
+    "svelte:dev": "cd svelte && npm run dev",
+    "svelte:build": "cd svelte && npm run build",
+    "compile": "tsc",
+    "out:win": "npm run svelte:build && npm run compile && electron-builder build --win --publish never",
+    "publish:win": "npm run svelte:build && npm run compile && electron-builder build --win --publish always"
+  },
+  "author": "Travja",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^7.0.0",
+    "electron": "^17.1.0",
+    "electron-builder": "^22.14.13",
+    "nodemon": "^2.0.15",
+    "typescript": "^4.6.2"
+  },
+  "dependencies": {
+    "electron-reload": "^2.0.0-alpha.1",
+    "electron-serve": "^1.1.0",
+    "electron-updater": "^4.6.5",
+    "prettier": "^2.5.1"
+  },
+  "build": {
+    "appId": "memento-ket",
+    "directories": {
+      "output": "out"
+    },
+    "disabled-publish": [
+      {
+        "provider": "github",
+        "owner": "el3um4s",
+        "repo": "memento-sveltekit-electron-typescript"
+      }
+    ],
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "icon.ico"
+    },
+    "nsis": {
+      "installerIcon": "icon.ico",
+      "uninstallerIcon": "icon.ico",
+      "uninstallDisplayName": "Quark",
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
+}
