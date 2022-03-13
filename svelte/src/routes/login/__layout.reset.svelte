@@ -11,13 +11,13 @@
 </main>
 
 <style>
-    header {
-        background-color: var(--bg-color);
-    }
+  header {
+    background-color: var(--bg-color);
+  }
 
-    main {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
+  main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 </style>

@@ -1,11 +1,7 @@
 <script>
-
 </script>
 
-<section>
-  LoginForm
-</section>
+<section>LoginForm</section>
 
 <style>
-
 </style>

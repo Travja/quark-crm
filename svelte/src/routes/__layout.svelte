@@ -19,24 +19,23 @@
 </main>
 
 <style>
-    header {
-        background-color: var(--bg-color);
-    }
+  header {
+    background-color: var(--bg-color);
+  }
 
-    nav {
-        background-color: red;
-    }
+  nav {
+    background-color: red;
+  }
 
-    ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        display: flex;
-        flex-direction: row;
-    }
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: row;
+  }
 
-    li {
-        padding: 0.5em;
-    }
-
+  li {
+    padding: 0.5em;
+  }
 </style>

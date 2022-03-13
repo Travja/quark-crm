@@ -18,17 +18,17 @@
   }
 </script>
 
-<div id='left-menu'>
-  <div class='toggle' on:click={() => theme = !theme}>Toggle</div>
+<div id="left-menu">
+  <div class="toggle" on:click={() => (theme = !theme)}>Toggle</div>
 </div>
 
 <style>
-    #left-menu {
-        position: absolute;
-        display: none;
-    }
+  #left-menu {
+    position: absolute;
+    display: none;
+  }
 
-    .toggle {
-        cursor: pointer;
-    }
+  .toggle {
+    cursor: pointer;
+  }
 </style>

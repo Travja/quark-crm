@@ -5,6 +5,7 @@ import path from 'path';
 import { EventEmitter } from 'events';
 import { ApiOptions } from './types';
 import BrowserWindowConstructorOptions = Electron.BrowserWindowConstructorOptions;
+import IpcMainEvent = Electron.IpcMainEvent;
 
 const appName = 'QuarkCRM';
 
@@ -29,6 +30,7 @@ class BaseWindow {
   settingsDev: DeveloperOptions;
   configDev: ConfigureDev;
   pathUrl: string;
+  ipcApi: ApiOptions | null;
 
   constructor(pathUrl: string = '/',
               settings: { [key: string]: any } | null = null,
@@ -39,45 +41,43 @@ class BaseWindow {
 
     this.configDev = new ConfigureDev(this.settingsDev);
     this.pathUrl = pathUrl;
+    this.ipcApi = ipcApi;
 
-    app.on('ready', async () => {
-      if (this.settings.enableLoadingScreen) {
-        let loading = new BrowserWindow({ show: false, frame: false, width: 300, height: 300, transparent: true });
+    if (!app.isReady()) {
+      app.on('ready', async () => {
+        if (this.settings.enableLoadingScreen) {
+          let loading = new BrowserWindow({ show: false, frame: false, width: 300, height: 300, transparent: true });
 
-        loading.once('show', async () => {
+          loading.once('show', async () => {
+            this.window = await this.createWindow();
+            this.onEvent.emit('window-created');
+            loading.hide();
+            loading.close();
+          });
+
+          const loc = path.join(__dirname, 'www', 'loading.html');
+          await loading.loadURL(loc);
+          loading.show();
+        } else {
           this.window = await this.createWindow();
           this.onEvent.emit('window-created');
-          loading.hide();
-          loading.close();
-        });
-
-        const loc = path.join(__dirname, 'www', 'loading.html');
-        await loading.loadURL(loc);
-        loading.show();
-      } else {
-        this.window = await this.createWindow();
+        }
+      });
+    } else {
+      this.createWindow().then((window: BrowserWindow) => {
+        this.window = window;
         this.onEvent.emit('window-created');
-      }
-    });
+      });
+    }
 
     app.on('window-all-closed', this.onWindowAllClosed);
     app.on('activate', this.onActivate);
 
-    app.whenReady().then(() => {
-      ipcMain.on('window', (event, args) => {
-        if (this.window.webContents != event.sender) return;
-
-        event.preventDefault();
-        const arg: string = typeof args == 'string' ? args : args.action;
-        console.log('Event fired: ' + arg + ' -- ' + this.settings.title);
-        if (ipcApi && ipcApi.hasOwnProperty(arg)) {
-          console.log('ipcApi has ' + arg);
-          ipcApi[arg](this, event, args);
-        } else {
-          console.error('ipcApi does not include ' + arg);
-        }
+    if (ipcApi) {
+      app.whenReady().then(() => {
+        ipcMain.on('window', this.listener);
       });
-    });
+    }
   }
 
   async createWindow() {
@@ -131,9 +131,25 @@ class BaseWindow {
     }
   };
 
+  listener = (event: IpcMainEvent, args: any) => {
+    if (!this.window || this.window.webContents != event.sender) return;
+
+    event.preventDefault();
+    const arg: string = typeof args == 'string' ? args : args.action;
+    console.log(arg);
+    if (this.ipcApi && this.ipcApi.hasOwnProperty(arg)) {
+      this.ipcApi[arg](this, event, args);
+    } else {
+      console.error('ipcApi does not include ' + arg);
+    }
+  };
+
   show = () => this.window?.show();
   hide = () => this.window?.hide();
-  close = () => this.window?.close();
+  close = () => {
+    ipcMain.off('window', this.listener);
+    this.window?.close();
+  };
 
 }
 

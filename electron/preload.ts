@@ -17,7 +17,16 @@ contextBridge.exposeInMainWorld('electron', {
   close: () => ipcRenderer.send('window', 'close'),
   minimize: () => ipcRenderer.send('window', 'minimize'),
   maximize: () => ipcRenderer.send('window', 'maximize'),
-  showDevTools: () => ipcRenderer.send('window', 'showDevTools')
+  showDevTools: () => ipcRenderer.send('window', 'showDevTools'),
+  login: async () => {
+    ipcRenderer.send('window', { action: 'login' });
+    let result = await new Promise(resolve =>
+      ipcRenderer.on('login-state',
+        (event, args) => resolve(args))
+    );
+
+    return result;
+  }
 });
 
 generateContextBridge([fileSystem]);

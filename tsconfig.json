@@ -18,5 +18,5 @@
     "dist",
     "svelte"
   ],
-  "include": ["electron/**/*"]
+  "include": ["./electron/**/*"]
 }
