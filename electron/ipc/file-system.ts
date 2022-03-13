@@ -4,7 +4,6 @@ import { app, BrowserWindow } from "electron";
 import { access, writeFile, mkdir, readFile } from 'fs/promises';
 import path from "path";
 
-
 const nameAPI = "fileSystem";
 
 // to Main
