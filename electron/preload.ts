@@ -26,7 +26,18 @@ contextBridge.exposeInMainWorld('electron', {
     );
 
     return result;
-  }
+  },
+  isFocused: async () => {
+    ipcRenderer.send('window', 'isFocused');
+    let result = await new Promise(resolve =>
+      ipcRenderer.on('focus-state',
+        (event, args) => resolve(args))
+    );
+
+    return result;
+  },
+  onFocus: (callback: (event: any, value: any) => void) => ipcRenderer.on('focus', callback),
+  onBlur: (callback: (event: any, value: any) => void) => ipcRenderer.on('blur', callback)
 });
 
 generateContextBridge([fileSystem]);

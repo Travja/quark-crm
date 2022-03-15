@@ -28,13 +28,22 @@ const windowSettings = {
 
 const navApi: ApiOptions = {
   close: (window: BaseWindow) => window.close(),
-  maximize: (window: BaseWindow) => window.window.maximize(),
+  maximize: (window: BaseWindow) => {
+    if (window.window.isMaximized())
+      window.window.unmaximize();
+    else
+      window.window.maximize();
+  },
   minimize: (window: BaseWindow) => window.window.minimize(),
   showDevTools: (window: BaseWindow, event) => {
     if (event.sender.isDevToolsOpened())
       event.sender.closeDevTools();
     else
       event.sender.openDevTools();
+  },
+  isFocused: (window: BaseWindow, event) => {
+    console.log('Window is focused? ' + window.window.isFocused());
+    event.reply('focus-state', window.window.isFocused());
   }
 };
 
@@ -67,7 +76,10 @@ let loginWindow = new BaseWindow(
   }
 );
 
-loginWindow.onEvent.on('window-created', () => loginWindow.show());
+loginWindow.onEvent.on('window-created', () => {
+  loginWindow.show();
+  loginWindow.window.focus();
+});
 
 try {
   require('electron-reloader')(module);

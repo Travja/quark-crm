@@ -14,13 +14,12 @@ interface IElectronWindowSystem {
   maximize: () => void;
   showDevTools: () => void;
   login: () => any;
+  onFocus: (callback: (event: any, value: any) => void) => void;
+  onBlur: (callback: (event: any, value: any) => void) => void;
+  isFocused: () => Promise<boolean>;
 }
 
-declare global {
-  interface MyWindow {
-    api: IElectronAPI;
-    electron: IElectronWindowSystem;
-  }
+export declare interface ApiWindow extends Window {
+  api: IElectronAPI;
+  electron: IElectronWindowSystem;
 }
-
-export {};

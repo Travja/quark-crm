@@ -115,6 +115,9 @@ class BaseWindow {
       }
     }
 
+    window.addListener('focus', () => window.webContents.send('focus'));
+    window.addListener('blur', () => window.webContents.send('blur'));
+
     return window;
   }
 
@@ -136,7 +139,7 @@ class BaseWindow {
 
     event.preventDefault();
     const arg: string = typeof args == 'string' ? args : args.action;
-    console.log(arg);
+    console.log('Event fired: ' + arg);
     if (this.ipcApi && this.ipcApi.hasOwnProperty(arg)) {
       this.ipcApi[arg](this, event, args);
     } else {

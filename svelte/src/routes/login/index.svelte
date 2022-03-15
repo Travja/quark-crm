@@ -1,10 +1,18 @@
 <script lang='ts'>
   import TextInput from '$lib/ui/TextInput.svelte';
+  import type { ApiWindow } from '@types/global';
+  import { onMount } from 'svelte';
+
+  let win: ApiWindow;
+
+  onMount(() => {
+    win = window as unknown as ApiWindow;
+  });
 
   let username: string, password: string;
 
   const login = async () => {
-    window.electron.login().then((res) => console.log(res));
+    win.electron.login().then((res) => console.log(res));
   };
 </script>
 

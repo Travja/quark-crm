@@ -4,11 +4,12 @@
   export let placeholder = '';
   export let type = 'text';
   export let underlineColor = 'var(--accent-color)';
+  export let fontSize = '1.5em';
 
   let focused = false;
 </script>
 
-<div class="wrapper" style="margin: {margin}">
+<div class="wrapper" style="margin: {margin}; --font-size: {fontSize}">
   {#if type == 'text'}
     <input
       type="text"
@@ -45,7 +46,7 @@
   input {
     display: block;
     padding: 0.25em;
-    font-size: 1.5em;
+    font-size: var(--font-size);
     text-align: center;
     background-color: var(--ui-button-bg);
     color: var(--fg-color);
