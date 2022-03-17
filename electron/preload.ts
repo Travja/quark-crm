@@ -18,8 +18,8 @@ contextBridge.exposeInMainWorld('electron', {
   minimize: () => ipcRenderer.send('window', 'minimize'),
   maximize: () => ipcRenderer.send('window', 'maximize'),
   showDevTools: () => ipcRenderer.send('window', 'showDevTools'),
-  login: async () => {
-    ipcRenderer.send('window', { action: 'login' });
+  login: async (data: any) => {
+    ipcRenderer.send('window', { ...data, action: 'login' });
     let result = await new Promise(resolve =>
       ipcRenderer.on('login-state',
         (event, args) => resolve(args))

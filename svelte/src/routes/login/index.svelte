@@ -10,9 +10,10 @@
   });
 
   let username: string, password: string;
+  let error = false;
 
   const login = async () => {
-    win.electron.login().then((res) => console.log(res));
+    win.electron.login({ username, password }).then((res) => error = res.error);
   };
 </script>
 
@@ -20,6 +21,9 @@
   <h1>Login</h1>
   <TextInput bind:value={username} placeholder='Username' />
   <TextInput bind:value={password} type='password' placeholder='Password' />
+  {#if error}
+    <div class='error'>Failed to login: {error}</div>
+  {/if}
   <div class='button' on:click={login}>Submit</div>
 </section>
 
@@ -33,5 +37,10 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
+    }
+
+    .error {
+        color: red;
+        margin: 0.75em;
     }
 </style>

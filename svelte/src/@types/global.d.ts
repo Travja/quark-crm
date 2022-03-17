@@ -13,7 +13,7 @@ interface IElectronWindowSystem {
   minimize: () => void;
   maximize: () => void;
   showDevTools: () => void;
-  login: () => any;
+  login: (data: any) => any;
   onFocus: (callback: (event: any, value: any) => void) => void;
   onBlur: (callback: (event: any, value: any) => void) => void;
   isFocused: () => Promise<boolean>;

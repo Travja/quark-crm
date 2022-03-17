@@ -1,8 +1,9 @@
 import BaseWindow from './base-window';
 import { app, ipcMain } from 'electron';
-import fileSystem from './ipc/file-system';
 import MainWindow from './main-window';
 import { ApiOptions } from './types';
+import fetch from 'node-fetch';
+import fileSystem from './ipc/file-system';
 import IpcMainEvent = Electron.IpcMainEvent;
 
 const developerOptions = {
@@ -55,23 +56,53 @@ let loginWindow = new BaseWindow(
   {
     ...navApi,
     login: (window: BaseWindow, event: IpcMainEvent, args: any) => {
-
       //TODO Write login state to disk somewhere?
 
-      main = new MainWindow(
-        '/',
-        { ...windowSettings, title: 'QuarkCRM' },
-        developerOptions,
-        navApi
-      );
-      main.onEvent.on('window-created', async () => {
-        fileSystem.initIpcMain(ipcMain, main.window);
-        loginWindow.hide();
-        loginWindow.close();
-        main.show();
+      console.log(args);
+      console.log(args.username);
+
+      fetch('http://localhost:5000/login', {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          username: args.username,
+          password: args.password
+        })
+      })
+        .then((res: any) => {
+          console.log(res);
+          return res.json();
+        })
+        .then((data: any) => {
+          console.log(data);
+          if (data.authorized) {
+
+            main = new MainWindow(
+              '/',
+              { ...windowSettings, title: 'QuarkCRM' },
+              developerOptions,
+              navApi
+            );
+            main.onEvent.on('window-created', async () => {
+              fileSystem.initIpcMain(ipcMain, main.window);
+              loginWindow.hide();
+              loginWindow.close();
+              main.show();
 //     updaterInfo.initAutoUpdater(autoUpdater, main.window);
-        event.reply('login-state', { value: true });
-      });
+            });
+
+          }
+
+          event.reply('login-state', {
+            authorized: data.authorized,
+            error: (data.error && data.error.message ? data.error.message : data.error)
+          });
+        })
+        .catch(err => {
+          event.reply('login-state', { authorized: false, error: err.message });
+        });
     }
   }
 );
