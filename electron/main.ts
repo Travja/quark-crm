@@ -1,5 +1,5 @@
 import BaseWindow from './base-window';
-import { app, ipcMain } from 'electron';
+import { app, ipcMain, nativeTheme } from 'electron';
 import MainWindow from './main-window';
 import { ApiOptions } from './types';
 import fetch from 'node-fetch';
@@ -45,6 +45,10 @@ const navApi: ApiOptions = {
   isFocused: (window: BaseWindow, event) => {
     console.log('Window is focused? ' + window.window.isFocused());
     event.reply('focus-state', window.window.isFocused());
+  },
+  isDarkTheme: (window: BaseWindow, event) => {
+    console.log("Is dark theme? " + nativeTheme.shouldUseDarkColors);
+    event.reply('theme', nativeTheme.shouldUseDarkColors);
   }
 };
 

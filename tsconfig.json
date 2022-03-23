@@ -16,7 +16,8 @@
   "exclude": [
     "node_modules",
     "dist",
-    "svelte"
+    "svelte",
+    "quark-backend"
   ],
   "include": ["./electron/**/*"]
 }

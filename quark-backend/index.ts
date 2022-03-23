@@ -2,7 +2,7 @@ import express from 'express';
 import path from 'path';
 import bodyParser from 'body-parser';
 import cors from 'cors';
-import { Routes } from './routes/routes';
+import { routes } from './routes/routes';
 
 const app = express();
 
@@ -14,9 +14,11 @@ app.use(cors());
 app.use(bodyParser.json());
 
 //Routing
-const routes = new Routes();
+// const routes = new Routes();
 // app.get('/', routes.create);
-app.post("/login", routes.login);
+app.post('/login', routes.login);
+app.get('/data', routes.data);
+app.post('/order', routes.newOrder);
 
 /**   Registration   **/
 // app.get('/register', routes.register);

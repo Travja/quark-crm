@@ -1,5 +1,5 @@
 <script lang='ts'>
-  import TextInput from '$lib/ui/TextInput.svelte';
+  import StyledInput from '$lib/ui/StyledInput.svelte';
   import type { ApiWindow } from '@types/global';
   import { onMount } from 'svelte';
 
@@ -19,8 +19,8 @@
 
 <section>
   <h1>Login</h1>
-  <TextInput bind:value={username} placeholder='Username' />
-  <TextInput bind:value={password} type='password' placeholder='Password' />
+  <StyledInput bind:value={username} placeholder='Username' />
+  <StyledInput bind:value={password} type='password' placeholder='Password' />
   {#if error}
     <div class='error'>Failed to login: {error}</div>
   {/if}

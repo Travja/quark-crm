@@ -2,7 +2,7 @@
   import { data } from '$lib/data';
   import { onMount } from 'svelte';
   import { OrderStatus } from '$lib/models/order';
-  import TextInput from '../lib/ui/TextInput.svelte';
+  import StyledInput from '../lib/ui/StyledInput.svelte';
 
   onMount(() => {
     $data.push({
@@ -25,7 +25,7 @@
 <div class='heading-bar'>
   <div class='material-icons'>filter_alt</div>
   <div class='spacer' />
-  <TextInput placeholder='Search...' fontSize='1.2em' margin='0' on:keypress={checkEnter} />
+  <StyledInput placeholder='Search...' fontSize='1.2em' margin='0' on:keypress={checkEnter} />
 </div>
 <div class='center'>
   <table>

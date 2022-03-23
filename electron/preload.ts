@@ -37,7 +37,17 @@ contextBridge.exposeInMainWorld('electron', {
     return result;
   },
   onFocus: (callback: (event: any, value: any) => void) => ipcRenderer.on('focus', callback),
-  onBlur: (callback: (event: any, value: any) => void) => ipcRenderer.on('blur', callback)
+  onBlur: (callback: (event: any, value: any) => void) => ipcRenderer.on('blur', callback),
+  isDarkTheme: async (callback: (event: any, value: any) => void) => {
+    ipcRenderer.send('window', 'isDarkTheme');
+    let result = await new Promise(resolve =>
+      ipcRenderer.on('theme',
+        (event, args) => resolve(args)
+      )
+    );
+
+    return result;
+  }
 });
 
 generateContextBridge([fileSystem]);

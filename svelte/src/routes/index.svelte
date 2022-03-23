@@ -1,12 +1,14 @@
 <script>
+  import DataContainer from '$lib/DataContainer.svelte';
 </script>
 
 <container class='center'>
-  <h1>Welcome to Quark</h1>
+  <h1>At a Glance</h1>
   <div class='actions-container'>
     <div>Quick Actions</div>
     <div class='card' on:click={() => console.log('test')}>Test</div>
   </div>
+  <DataContainer />
 </container>
 
 <style>

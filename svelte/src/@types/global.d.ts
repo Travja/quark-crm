@@ -17,6 +17,7 @@ interface IElectronWindowSystem {
   onFocus: (callback: (event: any, value: any) => void) => void;
   onBlur: (callback: (event: any, value: any) => void) => void;
   isFocused: () => Promise<boolean>;
+  isDarkTheme: () => boolean;
 }
 
 export declare interface ApiWindow extends Window {
