@@ -1,9 +1,8 @@
 import BaseWindow from './base-window';
-import { app, ipcMain, nativeTheme } from 'electron';
+import { app, ipcMain } from 'electron';
 import MainWindow from './main-window';
-import { ApiOptions } from './types';
-import fetch from 'node-fetch';
-import fileSystem from './ipc/file-system';
+import fetch from 'electron-fetch';
+import { fileApi, navApi } from './api/api';
 import IpcMainEvent = Electron.IpcMainEvent;
 
 const developerOptions = {
@@ -27,31 +26,6 @@ const windowSettings = {
   enableLoadingScreen: true
 };
 
-const navApi: ApiOptions = {
-  close: (window: BaseWindow) => window.close(),
-  maximize: (window: BaseWindow) => {
-    if (window.window.isMaximized())
-      window.window.unmaximize();
-    else
-      window.window.maximize();
-  },
-  minimize: (window: BaseWindow) => window.window.minimize(),
-  showDevTools: (window: BaseWindow, event) => {
-    if (event.sender.isDevToolsOpened())
-      event.sender.closeDevTools();
-    else
-      event.sender.openDevTools();
-  },
-  isFocused: (window: BaseWindow, event) => {
-    console.log('Window is focused? ' + window.window.isFocused());
-    event.reply('focus-state', window.window.isFocused());
-  },
-  isDarkTheme: (window: BaseWindow, event) => {
-    console.log("Is dark theme? " + nativeTheme.shouldUseDarkColors);
-    event.reply('theme', nativeTheme.shouldUseDarkColors);
-  }
-};
-
 let main: MainWindow;
 let loginWindow = new BaseWindow(
   '/login',
@@ -59,21 +33,19 @@ let loginWindow = new BaseWindow(
   developerOptions,
   {
     ...navApi,
+    ...fileApi,
     login: (window: BaseWindow, event: IpcMainEvent, args: any) => {
       //TODO Write login state to disk somewhere?
 
       console.log(args);
-      console.log(args.username);
+      console.log(args.username)
 
-      fetch('http://localhost:5000/login', {
+      fetch('http://localhost:8080/auth/login', {
         method: 'post',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          username: args.username,
-          password: args.password
-        })
+        body: JSON.stringify(args)
       })
         .then((res: any) => {
           console.log(res);
@@ -87,10 +59,13 @@ let loginWindow = new BaseWindow(
               '/',
               { ...windowSettings, title: 'QuarkCRM' },
               developerOptions,
-              navApi
+              {
+                ...navApi,
+                ...fileApi
+              }
             );
             main.onEvent.on('window-created', async () => {
-              fileSystem.initIpcMain(ipcMain, main.window);
+              // fileSystem.initIpcMain(ipcMain, main.window);
               loginWindow.hide();
               loginWindow.close();
               main.show();
@@ -104,7 +79,7 @@ let loginWindow = new BaseWindow(
             error: (data.error && data.error.message ? data.error.message : data.error)
           });
         })
-        .catch(err => {
+        .catch((err: any) => {
           event.reply('login-state', { authorized: false, error: err.message });
         });
     }
@@ -114,9 +89,7 @@ let loginWindow = new BaseWindow(
 loginWindow.onEvent.on('window-created', () => {
   loginWindow.show();
   loginWindow.window.focus();
+  setTimeout(() => {
+    loginWindow.window.webContents.openDevTools({ mode: 'detach' });
+  }, 500);
 });
-
-try {
-  require('electron-reloader')(module);
-} catch {
-}

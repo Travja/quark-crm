@@ -13,7 +13,6 @@
 
     focused = await win.electron.isFocused();
   });
-
 </script>
 
 <div id='title-bar' class:focused={focused}>
@@ -31,38 +30,38 @@
 </div>
 
 <style>
-    #title-bar {
-        -webkit-app-region: drag;
-        display: flex;
-        justify-content: flex-end;
-        background-color: var(--title-bg-color);
-        overflow: hidden;
-        transition: background-color 1s ease;
-    }
+  #title-bar {
+    -webkit-app-region: drag;
+    display: flex;
+    justify-content: flex-end;
+    background-color: var(--title-bg-color);
+    overflow: hidden;
+    transition: background-color 1s ease;
+  }
 
-    #title-bar.focused {
-        background-color: var(--title-accent-color);
-    }
+  #title-bar.focused {
+    background-color: var(--title-accent-color);
+  }
 
-    .nav-container {
-        -webkit-app-region: no-drag;
-        display: flex;
-        position: relative;
-        box-shadow: 0 0 0.5em #000;
-    }
+  .nav-container {
+    -webkit-app-region: no-drag;
+    display: flex;
+    position: relative;
+    box-shadow: 0 0 0.5em #000;
+  }
 
-    span {
-        margin: 0;
-    }
+  span {
+    margin: 0;
+  }
 
-    .close-button {
-    }
+  .close-button {
+  }
 
-    .close-button:hover {
-        background-color: red;
-    }
+  .close-button:hover {
+    background-color: red;
+  }
 
-    .ui-button.material-icons {
-        font-size: 1.3em;
-    }
+  .ui-button.material-icons {
+    font-size: 1.3em;
+  }
 </style>

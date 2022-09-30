@@ -118,6 +118,10 @@ const data = (req: express.Request, res: express.Response) => {
 };
 
 const newOrder = (req: express.Request, res: express.Response) => {
+  let body = req.body;
+
+  console.log(body);
+
   res.send({ error: 'Not yet implemented' });
 };
 

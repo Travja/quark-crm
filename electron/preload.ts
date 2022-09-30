@@ -1,5 +1,3 @@
-import fileSystem from './ipc/file-system';
-import { generateContextBridge } from './ipc/General/contextBridge';
 import { contextBridge, ipcRenderer } from 'electron';
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -14,12 +12,16 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 contextBridge.exposeInMainWorld('electron', {
-  close: () => ipcRenderer.send('window', 'close'),
+  close: () => {
+    alert('clicked');
+    ipcRenderer.send('window', 'close');
+  },
   minimize: () => ipcRenderer.send('window', 'minimize'),
   maximize: () => ipcRenderer.send('window', 'maximize'),
   showDevTools: () => ipcRenderer.send('window', 'showDevTools'),
+  move: (x: number, y: number) => ipcRenderer.send('window', 'move', x, y),
   login: async (data: any) => {
-    ipcRenderer.send('window', { ...data, action: 'login' });
+    ipcRenderer.send('window', 'login', data);
     let result = await new Promise(resolve =>
       ipcRenderer.on('login-state',
         (event, args) => resolve(args))
@@ -50,4 +52,7 @@ contextBridge.exposeInMainWorld('electron', {
   }
 });
 
-generateContextBridge([fileSystem]);
+contextBridge.exposeInMainWorld('api', {
+  saveFile: () => ipcRenderer.send('api', 'saveFile'),
+  readFile: () => ipcRenderer.send('api', 'readFile')
+});

@@ -40,7 +40,6 @@ class ConfigureDev {
 
   _dev_Svelte() {
     exec('npm run svelte:dev');
-    require('electron-reload')(path.join(__dirname, '..', 'svelte'));
   }
 
   _build_Dist() {
@@ -48,7 +47,6 @@ class ConfigureDev {
   }
 
   _watch_Dist() {
-    require('electron-reload')(path.join(__dirname, 'www'));
   }
 
   _serve_Dist() {

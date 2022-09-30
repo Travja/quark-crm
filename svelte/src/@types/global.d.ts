@@ -5,7 +5,8 @@ interface IFileSystemAPI {
 }
 
 interface IElectronAPI {
-  fileSystem: IFileSystemAPI;
+  saveFile: () => void;
+  readFile: () => void;
 }
 
 interface IElectronWindowSystem {
@@ -18,6 +19,7 @@ interface IElectronWindowSystem {
   onBlur: (callback: (event: any, value: any) => void) => void;
   isFocused: () => Promise<boolean>;
   isDarkTheme: () => boolean;
+  move: (x: number, y: number) => void;
 }
 
 export declare interface ApiWindow extends Window {

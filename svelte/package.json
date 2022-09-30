@@ -2,35 +2,33 @@
   "name": "svelte",
   "version": "0.0.1",
   "scripts": {
-    "dev": "svelte-kit dev",
-    "build": "svelte-kit build",
-    "package": "svelte-kit package",
-    "preview": "svelte-kit preview",
-    "prepare": "svelte-kit sync",
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
     "lint": "eslint --ignore-path .gitignore ."
   },
   "devDependencies": {
-    "@sveltejs/adapter-static": "^1.0.0-next.28",
-    "@sveltejs/kit": "^1.0.0-next.291",
-    "@types/cookie": "^0.4.1",
-    "@typescript-eslint/eslint-plugin": "^5.10.1",
-    "@typescript-eslint/parser": "^5.10.1",
-    "eslint": "^8.11.0",
-    "eslint-plugin-svelte3": "^3.2.1",
-    "svelte": "^3.46.0",
-    "svelte-check": "^2.2.6",
-    "svelte-preprocess": "^4.10.1",
-    "tslib": "^2.3.1",
+    "@sveltejs/adapter-static": "^1.0.0-next.43",
+    "@sveltejs/kit": "^1.0.0-next.505",
+    "@types/cookie": "^0.5.1",
+    "@typescript-eslint/eslint-plugin": "^5.38.1",
+    "@typescript-eslint/parser": "^5.38.1",
+    "eslint": "^8.24.0",
+    "eslint-plugin-svelte3": "^4.0.0",
+    "svelte": "^3.50.1",
+    "svelte-check": "^2.9.1",
+    "svelte-preprocess": "^4.10.7",
+    "tslib": "^2.4.0",
     "tslint": "^6.1.3",
-    "typescript": "~4.6.2"
+    "typescript": "~4.8.4",
+    "vite": "^3.1.4"
   },
   "type": "module",
   "dependencies": {
-    "@fontsource/fira-mono": "^4.5.0",
+    "@fontsource/fira-mono": "^4.5.9",
     "@lukeed/uuid": "^2.0.0",
-    "cookie": "^0.4.1",
-    "prettier-plugin-svelte": "^2.6.0"
+    "prettier-plugin-svelte": "^2.7.1"
   }
 }

@@ -56,7 +56,8 @@ class BaseWindow {
           });
 
           const loc = path.join(__dirname, 'www', 'loading.html');
-          await loading.loadURL(loc);
+          console.log(loc);
+          await loading.loadFile(loc);
           loading.show();
         } else {
           this.window = await this.createWindow();
@@ -75,7 +76,9 @@ class BaseWindow {
 
     if (ipcApi) {
       app.whenReady().then(() => {
+        console.log('Registering ipcMain');
         ipcMain.on('window', this.listener);
+        ipcMain.on('api', this.apiListener);
       });
     }
   }
@@ -83,6 +86,7 @@ class BaseWindow {
   async createWindow() {
     let settings = { ...this.settings };
     app.name = appName;
+    console.log(path.join(__dirname, 'preload.js'));
     let window = new BrowserWindow(<BrowserWindowConstructorOptions>{
       ...settings,
       show: false, // false
@@ -134,23 +138,41 @@ class BaseWindow {
     }
   };
 
-  listener = (event: IpcMainEvent, args: any) => {
+  listener = (event: IpcMainEvent, ...args: any[]) => {
     if (!this.window || this.window.webContents != event.sender) return;
 
     event.preventDefault();
-    const arg: string = typeof args == 'string' ? args : args.action;
-    console.log('Event fired: ' + arg);
-    if (this.ipcApi && this.ipcApi.hasOwnProperty(arg)) {
-      this.ipcApi[arg](this, event, args);
+    const action: string = typeof args == 'string' ? args : args[0];
+    console.log('Event fired: ' + action);
+    if (this.ipcApi && this.ipcApi.hasOwnProperty(action)) {
+      args = args.slice(1);
+      this.ipcApi[action](this, event, ...args);
     } else {
-      console.error('ipcApi does not include ' + arg);
+      console.error('ipcApi does not include ' + action);
+    }
+  };
+
+  apiListener = (event: IpcMainEvent, ...args: any[]) => {
+    console.log(event.type);
+    if (!this.window || this.window.webContents != event.sender) return;
+
+    event.preventDefault();
+    const action: string = typeof args == 'string' ? args : args[0];
+    console.log('API Event fired: ' + action);
+    if (this.ipcApi && this.ipcApi.hasOwnProperty(action)) {
+      args = args.slice(1);
+      console.log(args);
+      this.ipcApi[action](this, event, ...args);
+    } else {
+      console.error('ipcApi does not include ' + action);
     }
   };
 
   show = () => this.window?.show();
   hide = () => this.window?.hide();
   close = () => {
-    ipcMain.off('window', this.listener);
+    ipcMain.removeListener('window', this.listener);
+    ipcMain.removeListener('api', this.apiListener);
     this.window?.close();
   };
 
