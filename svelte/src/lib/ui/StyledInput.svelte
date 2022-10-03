@@ -1,31 +1,138 @@
-<script>
-  export let value;
-  export let margin = '0.5em';
+<!--suppress XmlDuplicatedId, XmlInvalidId -->
+<script lang='ts'>
+  import * as moment from 'moment';
+
+  export let id: string;
+  export let name: string;
+  export let value: string | Date | boolean | number;
+  export let margin = '0';
   export let placeholder = '';
   export let type = 'text';
   export let underlineColor = 'var(--accent-color)';
-  export let fontSize = '1.5em';
+  export let fontSize = '1rem';
+  export let disabled = false;
+
+  export let min: number | undefined = undefined;
+  export let max: number | undefined = undefined;
+  export let step: number | undefined = undefined;
 
   let focused = false;
+
+  let internal: string;
+  let offset = 0;
+
+  let element: HTMLInputElement;
+
+  const input = (x) => {
+    if (!x || (type != 'date' && type != 'datetime')) return;
+
+    try {
+      if (type == 'date')
+        internal = x.toISOString().split('T')[0];
+      else if (type == 'datetime') {
+        let mom = moment(x, moment.HTML5_FMT.DATETIME_LOCAL);
+        if (offset == 0) offset = mom.utcOffset() / 60;
+        internal = mom.toISOString().split('Z')[0];
+      }
+    } catch (e) {
+      // Do nothing :D
+    }
+  };
+  const output = (x) => {
+    if (type != 'date' && type != 'datetime') return;
+    try {
+      value = moment(internal, moment.HTML5_FMT.DATETIME_LOCAL).add({ hour: offset }).toDate();
+    } catch (e) {
+      value = undefined;
+    }
+  };
+
+  $: input(value);
+  $: output(internal);
+
+  $: if (type == 'checkbox' && typeof value == 'boolean') {
+    focused = value;
+  }
+
+  const stepUp = () => {
+    if (disabled) return;
+    element.stepUp();
+    element.focus();
+  };
+
+  const stepDown = () => {
+    if (disabled) return;
+    element.stepDown();
+    element.focus();
+  };
 </script>
 
-<div class='wrapper' style='margin: {margin}; --font-size: {fontSize}'>
+<div class='styled-input wrapper'
+     class:check={type=='checkbox'}
+     style='margin: {margin}; --font-size: {fontSize}; --background-color: {underlineColor}'>
   {#if type == 'text'}
     <input
+      {disabled}
+      {id}
+      {name}
       type='text'
       {placeholder}
       bind:value
+      bind:this={element}
       on:focus={() => focused = true}
       on:blur={() => focused = false}
       on:keydown
       on:keypress
       on:keyup
     />
+  {:else if type == 'number'}
+    <div class='input-wrap'>
+      <input
+        {disabled}
+        {id}
+        {name}
+        type='number'
+        {placeholder}
+        {min}
+        {max}
+        {step}
+        bind:value
+        bind:this={element}
+        on:focus={() => focused = true}
+        on:blur={() => focused = false}
+        on:keydown
+        on:keypress
+        on:keyup
+      />
+      <div class='buttons'>
+        <span class='material-icons' on:click={stepUp}>keyboard_arrow_up</span>
+        <span class='material-icons' on:click={stepDown}>keyboard_arrow_down</span>
+      </div>
+    </div>
   {:else if type == 'date'}
     <input
+      {disabled}
+      {id}
+      {name}
       type='date'
       {placeholder}
-      bind:value
+      bind:value={internal}
+      bind:this={element}
+      on:focus={() => focused = true}
+      on:blur={() => focused = false}
+      on:keydown
+      on:keypress
+      on:keyup
+    />
+  {:else if type == 'datetime'}
+    <input
+      {disabled}
+      {id}
+      {name}
+      type='datetime-local'
+      {placeholder}
+      bind:value={internal}
+      bind:this={element}
       on:focus={() => focused = true}
       on:blur={() => focused = false}
       on:keydown
@@ -34,9 +141,13 @@
     />
   {:else if type == 'password'}
     <input
+      {disabled}
+      {id}
+      {name}
       type='password'
       {placeholder}
       bind:value
+      bind:this={element}
       on:focus={() => focused = true}
       on:blur={() => focused = false}
       on:keydown
@@ -45,64 +156,176 @@
     />
   {:else if type == 'select'}
     <select
+      {disabled}
+      {id}
+      {name}
       {placeholder}
       bind:value
+      bind:this={element}
       on:change
       on:focus={() => focused = true}
       on:blur={() => focused = false}
     >
       <slot />
     </select>
+  {:else if type == 'textarea'}
+    <textarea
+      {disabled}
+      {id}
+      {name}
+      {placeholder}
+      bind:value
+      bind:this={element}
+      on:change
+      on:focus={() => focused = true}
+      on:blur={() => focused = false}
+    />
+  {:else if type == 'checkbox'}
+    <input type='checkbox'
+           {disabled}
+           {id}
+           {name}
+           bind:checked={value}
+           bind:this={element}
+           on:change
+    />
+    <label tabindex='0'
+           for='{id}'
+           class='checkbox material-icons'
+           class:checked={value}>check</label>
   {:else}
     Unknown type
   {/if}
-  <div
-    class='border'
-    class:shown={focused}
-    style='background-color: {underlineColor}'
-  />
+
+  {#if type != 'checkbox'}
+    <label
+      for='{id}'
+      class='border'
+      class:shown={focused}
+      class:check={type=='checkbox'}
+    />
+  {/if}
 </div>
 
 <style>
-    input, select {
-        display: block;
-        padding: 0.25em;
-        font-size: var(--font-size);
-        background-color: var(--ui-button-bg);
-        color: var(--fg-color);
-        border: none;
-        width: 100%;
-    }
+  input:not([type='checkbox']), select, textarea {
+    display: block;
+    flex: 1;
+    padding: 0.5rem 0.5rem calc(0.5rem - 2px);
+    font-size: var(--font-size);
+    background-color: var(--ui-button-bg);
+    color: var(--fg-color);
+    border: none;
+    width: 100%;
+    box-sizing: border-box;
+    font-family: Arial, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
+    Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif;
+  }
 
-    input {
-        text-align: center;
-    }
+  input {
+    text-align: center;
+  }
 
-    input:focus, select:focus {
-        outline: none;
-    }
+  input[type='checkbox'] {
+    position: absolute;
+    display: none;
+  }
 
-    .wrapper {
-        display: inline-flex;
-        flex-direction: column;
-        align-items: center;
-    }
+  .checkbox {
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ui-button-bg);
+    background-color: var(--ui-button-bg);
+    border: 2px solid var(--ui-button-bg);
+    border-radius: 0.5rem;
+    box-sizing: border-box;
+    transition: border-color 0.5s ease, color 0.5s ease;
+    user-select: none;
+  }
 
-    .border {
-        height: 2px;
-        width: 0px;
-        background-color: var(--accent-color);
-        transition: width 0.5s ease;
-    }
+  .checkbox.checked {
+    color: var(--fg-color);
+    border-color: var(--background-color);
+  }
 
-    .border.shown {
-        width: 100%;
-    }
+  input:focus, select:focus {
+    outline: none;
+  }
 
-    @media (prefers-color-scheme: dark) {
-        input[type="date"]::-webkit-calendar-picker-indicator {
-            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNSIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBmaWxsPSIjZmZmZmZmIiBkPSJNMjAgM2gtMVYxaC0ydjJIN1YxSDV2Mkg0Yy0xLjEgMC0yIC45LTIgMnYxNmMwIDEuMS45IDIgMiAyaDE2YzEuMSAwIDItLjkgMi0yVjVjMC0xLjEtLjktMi0yLTJ6bTAgMThINFY4aDE2djEzeiIvPjxwYXRoIGZpbGw9Im5vbmUiIGQ9Ik0wIDBoMjR2MjRIMHoiLz48L3N2Zz4=');
-        }
+  .wrapper {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .wrapper:not(.check) {
+    background-color: var(--ui-button-hover);
+  }
+
+  /*:not(.check)*/
+
+  .border {
+    height: 2px;
+    width: 0px;
+    background-color: var(--background-color);
+    transition: width 0.5s ease;
+  }
+
+  label.border.check {
+    background-color: red;
+  }
+
+  .border.shown:not(.check) {
+    width: 100%;
+  }
+
+  @media (prefers-color-scheme: light) {
+    input[type="date"]::-webkit-calendar-picker-indicator,
+    input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+      background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNSIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBmaWxsPSIjZmZmZmZmIiBkPSJNMjAgM2gtMVYxaC0ydjJIN1YxSDV2Mkg0Yy0xLjEgMC0yIC45LTIgMnYxNmMwIDEuMS45IDIgMiAyaDE2YzEuMSAwIDItLjkgMi0yVjVjMC0xLjEtLjktMi0yLTJ6bTAgMThINFY4aDE2djEzeiIvPjxwYXRoIGZpbGw9Im5vbmUiIGQ9Ik0wIDBoMjR2MjRIMHoiLz48L3N2Zz4=');
     }
+  }
+
+  textarea {
+    resize: none;
+  }
+
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    display: none;
+  }
+
+  .input-wrap {
+    display: flex;
+    width: 100%;
+  }
+
+
+  .buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: var(--ui-button-bg);
+    color: var(--ui-button-bg);
+    transition: color 0.5s ease;
+  }
+
+  .buttons .material-icons {
+    text-align: center;
+    font-size: 1rem;
+    padding: 0 0.5rem;
+  }
+
+  .input-wrap:hover .buttons .material-icons {
+    color: var(--fg-color);
+  }
+
+  .buttons .material-icons:hover {
+    cursor: pointer;
+    background-color: var(--ui-button-hover);
+  }
 
 </style>

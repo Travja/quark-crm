@@ -98,6 +98,26 @@ main {
   justify-content: center;
 }
 
+.center-text {
+  text-align: center !important;
+}
+
 .spacer {
   flex-grow: 1;
+}
+
+.icon-button {
+  padding: 0.25em;
+  margin: 0.05em;
+  border-radius: 0.5em;
+  transition: background-color 0.25s ease-in-out;
+}
+
+.icon-button:hover {
+  cursor: pointer;
+  background-color: var(--ui-button-hover);
+}
+
+.material-icons {
+  user-select: none;
 }

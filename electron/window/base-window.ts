@@ -31,6 +31,8 @@ class BaseWindow {
   configDev: ConfigureDev;
   pathUrl: string;
   ipcApi: ApiOptions | null;
+  private loadCallback?: (window: BaseWindow) => void;
+  private isLoaded = false;
 
   constructor(pathUrl: string = '/',
               settings: { [key: string]: any } | null = null,
@@ -48,11 +50,13 @@ class BaseWindow {
         if (this.settings.enableLoadingScreen) {
           let loading = new BrowserWindow({ show: false, frame: false, width: 300, height: 300, transparent: true });
 
+
           loading.once('show', async () => {
-            this.window = await this.createWindow();
-            this.onEvent.emit('window-created');
-            loading.hide();
-            loading.close();
+            this.createWindow().then((window: BrowserWindow) => {
+              loading.hide();
+              loading.close();
+              this.loaded(window);
+            });
           });
 
           const loc = path.join(__dirname, 'www', 'loading.html');
@@ -60,15 +64,11 @@ class BaseWindow {
           await loading.loadFile(loc);
           loading.show();
         } else {
-          this.window = await this.createWindow();
-          this.onEvent.emit('window-created');
+          this.createWindow().then(this.loaded);
         }
       });
     } else {
-      this.createWindow().then((window: BrowserWindow) => {
-        this.window = window;
-        this.onEvent.emit('window-created');
-      });
+      this.createWindow().then(this.loaded);
     }
 
     app.on('window-all-closed', this.onWindowAllClosed);
@@ -83,25 +83,36 @@ class BaseWindow {
     }
   }
 
-  async createWindow() {
-    let settings = { ...this.settings };
-    app.name = appName;
-    console.log(path.join(__dirname, 'preload.js'));
-    let window = new BrowserWindow(<BrowserWindowConstructorOptions>{
-      ...settings,
+  private loaded = (window: BrowserWindow) => {
+    this.window = window;
+    console.log('Window created. Callback');
+    this.isLoaded = true;
+    this.loadCallback?.(this);
+  };
+
+  onLoad = (callback: (window: BaseWindow) => void): BaseWindow => {
+    this.loadCallback = callback;
+    if (this.isLoaded) {
+      callback(this);
+    }
+    return this;
+  };
+
+  createWindow = async (): Promise<BrowserWindow> => {
+    let settings: BrowserWindowConstructorOptions = {
+      ...this.settings,
       show: false, // false
       titleBarStyle: 'hidden',
       webPreferences: {
-        nodeIntegration: false,
-        contextIsolation: true,
-        enableRemoteModule: true,
+        devTools: true,
         preload: path.join(__dirname, 'preload.js')
       }
-      // transparent: true,
-      // frame: false,
-    });
+    };
+    // transparent: true,
+    // frame: false,};
+    app.name = appName;
+    let window = new BrowserWindow(settings);
     window.setMenu(null);
-    console.log('Window: ' + JSON.stringify(window));
 
     if (this.configDev.isLocalHost()) {
       try {
@@ -119,11 +130,13 @@ class BaseWindow {
       }
     }
 
-    window.addListener('focus', () => window.webContents.send('focus'));
-    window.addListener('blur', () => window.webContents.send('blur'));
+    window.addListener('focus',
+      () => window.webContents.send('focus'));
+    window.addListener('blur',
+      () => window.webContents.send('blur'));
 
     return window;
-  }
+  };
 
   onWindowAllClosed = () => {
     if (process.platform !== 'darwin')
@@ -133,8 +146,7 @@ class BaseWindow {
   onActivate = () => {
     if (!this.window) {
       console.log('Active');
-      this.createWindow().then(() => {
-      });
+      this.createWindow().then(this.loaded);
     }
   };
 
@@ -168,6 +180,7 @@ class BaseWindow {
     }
   };
 
+  focus = () => this.window?.focus();
   show = () => this.window?.show();
   hide = () => this.window?.hide();
   close = () => {
@@ -175,6 +188,7 @@ class BaseWindow {
     ipcMain.removeListener('api', this.apiListener);
     this.window?.close();
   };
+  showDevConsole = (options?: Electron.OpenDevToolsOptions) => this.window?.webContents.openDevTools(options);
 
 }
 
