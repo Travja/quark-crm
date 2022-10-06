@@ -7,8 +7,6 @@
     --ui-button-bg: #ccc;
     --ui-button-hover: #aaa;
     --title-bg-color: #eee;
-    --accent-color: #2aff4d;
-    --title-accent-color: #188f2d;
   }
 }
 
@@ -21,6 +19,8 @@
   --ui-button-bg: #303030;
   --ui-button-hover: #404040;
   --title-bg-color: #1c1c1c;
+  --title-accent-color: #188f2d;
+  --accent-color: #2aff4d;
 }
 
 html {

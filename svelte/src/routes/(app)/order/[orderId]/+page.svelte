@@ -3,6 +3,7 @@
   import { onMount } from 'svelte';
   import type { Order } from '$lib/models/order';
   import StyledInput from '$lib/ui/StyledInput.svelte';
+  import { BranchStyle, TextLocation } from '$lib/models/order.js';
 
   export let data: Order;
 
@@ -51,15 +52,15 @@
     <div>
       <div class='section'>
         <div class='head'>Style</div>
-        <label for='style-1'>1</label>
-        <input type='radio' id='style-1'
-               bind:group={data.branchStyle}
-               name='style-1' value='STYLE_1' />
+        <StyledInput type='radio' id='style-1' name='style-1' bind:group={data.branchStyle}
+                     value='{BranchStyle.STYLE_1}'>
+          1
+        </StyledInput>
 
-        <label for='style-2'>2</label>
-        <input type='radio' id='style-2'
-               bind:group={data.branchStyle}
-               name='style-2' value='STYLE_2' />
+        <StyledInput type='radio' id='style-2' name='style-2' bind:group={data.branchStyle}
+                     value='{BranchStyle.STYLE_2}'>
+          2
+        </StyledInput>
       </div>
     </div>
     <div class='section'>
@@ -102,12 +103,14 @@
     <div class='section'>
       <div class='vertical'>
         <!-- TODO Figure this out. Is this name location? Where does quote go? -->
-        <label for='left'>L</label>
-        <input id='left' type='checkbox' />
+        <StyledInput type='radio' id='left' name='left' bind:group={data.nameLocation} value='{TextLocation.LEFT}'>
+          Left
+        </StyledInput>
       </div>
       <div class='vertical'>
-        <label>R</label>
-        <input type='checkbox' />
+        <StyledInput type='radio' id='right' name='right' bind:group={data.nameLocation} value='{TextLocation.RIGHT}'>
+          Right
+        </StyledInput>
       </div>
     </div>
   </div>
@@ -133,7 +136,7 @@
                  name='printSizeValue'
                  type='number'
                  min='0'
-                 bind:value={data.printSizeValue} />
+                 bind:value={data.printSizeCost} />
 
     <label for='hasDateBranches'>Date Branches</label>
     <StyledInput type='checkbox'
@@ -144,7 +147,7 @@
                  name='dateBranchValue'
                  type='number'
                  min='0'
-                 bind:value={data.dateBranchValue} />
+                 bind:value={data.dateBranchCost} />
 
     <label for='hasLeaves'>Leaves</label>
     <StyledInput type='checkbox'
@@ -155,7 +158,7 @@
                  name='leavesValue'
                  type='number'
                  min='0'
-                 bind:value={data.leavesValue} />
+                 bind:value={data.leafCost} />
 
     <label for='roots'>Roots</label>
     <StyledInput id='roots'
@@ -165,7 +168,7 @@
                  name='rootsValue'
                  type='number'
                  min='0'
-                 bind:value={data.rootsValue} />
+                 bind:value={data.rootCost} />
 
     <label for='updates'>Updates</label>
     <StyledInput id='updates'
@@ -175,6 +178,7 @@
     <StyledInput id='updatesCharge'
                  name='updatesCharge'
                  type='number'
+                 bind:value={data.updateCost}
     />
 
     <label for='coupon'>Discount</label>
@@ -197,7 +201,7 @@
                    name='couponValue'
                    type='number'
                    disabled
-                   value='No Coupon' />
+                   value='0' />
     {/if}
 
     <label for='customDescription'>Custom</label>
@@ -210,6 +214,15 @@
                  min='0'
                  placeholder='Custom Charge'
                  bind:value={data.customCharge} />
+    <label>Shipping</label>
+    <StyledInput id='shippingType'
+                 name='shippingType'
+                 bind:value={data.shippingType} />
+    <StyledInput id='shipping'
+                 name='shipping'
+                 type='number'
+                 min='0'
+                 bind:value={data.shippingCost} />
   </div>
 
   <div class='column'>
@@ -229,11 +242,11 @@
                  bind:value={data.printValue} />
 
     <label>Shipping</label>
-    <StyledInput id='shipping'
-                 name='shipping'
+    <StyledInput id='shippingExpense'
+                 name='shippingExpense'
                  type='number'
                  min='0'
-                 bind:value={data.shipping} />
+                 bind:value={data.shippingExpense} />
 
     <label>Tax</label>
     <StyledInput id='tax'
@@ -277,6 +290,7 @@
     background-color: rgba(125, 125, 125, 0.5);
     border-radius: 0.5rem;
     border: 2px solid rgba(200, 200, 200, 0.5);
+    overflow: auto;
   }
 
   .column {
@@ -288,7 +302,6 @@
   }
 
   .column:first-child {
-    flex: 0.5;
     grid-template-rows: min-content
     min-content
     min-content
@@ -317,9 +330,10 @@
   .column-vertical {
     display: flex;
     flex-direction: column;
+    flex: 1;
   }
 
-  .column-vertical, .triple-column {
+  .column:not(:first-child), .column-vertical {
     margin-left: 0.5rem;
   }
 
@@ -337,10 +351,14 @@
   .vertical {
     display: inline-flex;
     flex-direction: column;
+    flex: 1;
   }
 
   .section {
     text-align: center;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
   }
 
   .section > label, .section .head {
@@ -351,6 +369,7 @@
   .section .head {
     display: block;
     text-align: center;
+    flex-basis: 100%;
   }
 
   h3 {

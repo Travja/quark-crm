@@ -17,7 +17,5 @@ export async function load({ params, fetch }) {
   if (order.requestDate)
     order.requestDate = new Date(order.requestDate);
 
-  order.coupon = undefined;
-
   return order;
 }

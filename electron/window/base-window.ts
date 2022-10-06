@@ -1,9 +1,9 @@
-import ConfigureDev, { DeveloperOptions } from './configureDev';
+import ConfigureDev, { DeveloperOptions } from '../configureDev';
 
 import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'path';
 import { EventEmitter } from 'events';
-import { ApiOptions } from './types';
+import { ApiOptions } from '../types';
 import BrowserWindowConstructorOptions = Electron.BrowserWindowConstructorOptions;
 import IpcMainEvent = Electron.IpcMainEvent;
 
@@ -59,8 +59,7 @@ class BaseWindow {
             });
           });
 
-          const loc = path.join(__dirname, 'www', 'loading.html');
-          console.log(loc);
+          const loc = path.join(app.getAppPath(), 'dist', 'www', 'loading.html');
           await loading.loadFile(loc);
           loading.show();
         } else {
@@ -105,7 +104,7 @@ class BaseWindow {
       titleBarStyle: 'hidden',
       webPreferences: {
         devTools: true,
-        preload: path.join(__dirname, 'preload.js')
+        preload: path.join(app.getAppPath(), 'dist', 'preload.js')
       }
     };
     // transparent: true,

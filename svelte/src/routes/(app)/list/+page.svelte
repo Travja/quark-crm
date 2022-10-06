@@ -48,7 +48,7 @@
       <tr>
         <!-- Customer Name -->
         <a href='/order/{order.id}'>
-          {order.customerName}
+          {order.customer.customerName}
         </a>
         <!-- Last Contact -->
         <td>{order.lastContact || ''}</td>

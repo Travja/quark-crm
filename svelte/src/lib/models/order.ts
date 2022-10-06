@@ -1,62 +1,72 @@
 export enum TreeType {
-  ANCESTRY = 'ANCESTRY',
-  DESCENDANT = 'DESCENDANT',
-  ANCESTRY_ROOTS = 'ANCESTRY_ROOTS',
-  DESCENDANT_ROOTS = 'DESCENDANT_ROOTS'
+  ANCESTRY = 'Ancestry',
+  DESCENDANT = 'Descendant',
+  ANCESTRY_ROOTS = 'Ancestry Roots',
+  DESCENDANT_ROOTS = 'Descendant Roots'
 }
 
 export enum AncestryType {
-  COUPLE = 'COUPLE',
-  INDIVIDUAL = 'INDIVIDUAL'
+  COUPLE = 'Couple',
+  INDIVIDUAL = 'Individual'
 }
 
 export enum RootType {
-  TWO_GEN_ANCESTOR = 'TWO_GEN_ANCESTOR',
-  THREE_GEN_ANCESTOR = 'THREE_GEN_ANCESTOR',
-  TWO_GEN_DESCENDANT = 'TWO_GEN_DESCENDANT',
-  THREE_GEN_DESCENDANT = 'THREE_GEN_DESCENDANT'
+  TWO_GEN_ANCESTOR = '2 Generation A',
+  THREE_GEN_ANCESTOR = '3 Generation A',
+  TWO_GEN_DESCENDANT = '2 Generation D',
+  THREE_GEN_DESCENDANT = '3 Generation D'
 }
 
 export enum BranchStyle {
-  STYLE_1 = 'STYLE_1',
-  STYLE_2 = 'STYLE_2'
+  STYLE_1 = 'Style 1',
+  STYLE_2 = 'Style 2'
 }
 
 export enum TreeStyle {
-  CLASSIC = 'CLASSIC',
-  CHALK = 'CHALK'
+  CLASSIC = 'Classic',
+  CHALK = 'Chalk'
 }
 
 export enum TextLocation {
-  CENTER = 'CENTER',
-  LEFT = 'LEFT',
-  RIGHT = 'RIGHT'
+  CENTER = 'Center',
+  LEFT = 'Left',
+  RIGHT = 'Right'
 }
 
 export enum PrintType {
-  STANDARD = 'STANDARD',
-  MOUNTED_AND_TEXTURED = 'MOUNTED_AND_TEXTURED',
-  CANVAS = 'CANVAS',
-  DIGITAL = 'DIGITAL'
+  STANDARD = 'Standard',
+  MOUNTED_AND_TEXTURED = 'Mounted & Textured',
+  CANVAS = 'Canvas',
+  DIGITAL = 'Digital'
 }
 
 export enum Texture {
-  LINEN = 'LINEN',
-  CANVAS = 'CANVAS'
+  LINEN = 'Linen',
+  CANVAS = 'Canvas'
 }
 
 export enum PrintSize {
-  EIGHT_BY_TEN = 'EIGHT_BY_TEN',
-  ELEVEN_BY_FOURTEEN = 'ELEVEN_BY_FOURTEEN',
-  SIXTEEN_BY_TWENTY = 'SIXTEEN_BY_TWENTY',
-  TWENTY_BY_TWENTY_FOUR = 'TWENTY_BY_TWENTY_FOUR',
-  TWENTY_FOUR_BY_THIRTY = 'TWENTY_FOUR_BY_THIRTY'
+  EIGHT_BY_TEN = '8x10',
+  ELEVEN_BY_FOURTEEN = '11x14',
+  SIXTEEN_BY_TWENTY = '16x20',
+  TWENTY_BY_TWENTY_FOUR = '20x24',
+  TWENTY_FOUR_BY_THIRTY = '24x30'
 }
 
-export enum Shipping {
-  STANDARD = 'STANDARD',
-  TWO_DAY = 'TWO_DAY',
-  ONE_DAY = 'ONE_DAY'
+export enum ShippingType {
+  STANDARD = 'Standard',
+  TWO_DAY = '2-Day',
+  ONE_DAY = '1-Day',
+  NONE = 'None'
+}
+
+export enum OrderStatus {
+  ORDER_PLACED = 'Order Placed',
+  FORMS_SUBMITTED = 'Forms Submitted',
+  TREE_IN_PROGRESS = 'Tree in Progress',
+  TREE_COMPLETE = 'Tree Complete',
+  SHIPPED = 'Shipped',
+  COMPLETE = 'Complete'
 }
 
 export interface AdditionalPrint {
@@ -75,11 +85,15 @@ export interface Coupon {
   manual: boolean;
 }
 
-export interface Order {
-  id: string;
+export interface Customer {
   customerName: string,
   customerEmail: string,
   customerAddress: string;
+}
+
+export interface Order {
+  id: string;
+  customer: Customer;
   artist: string;
   status: OrderStatus;
   created: Date;
@@ -110,24 +124,23 @@ export interface Order {
   printType: PrintType;
   texture?: Texture;
   printSize?: PrintSize;
-  shipping?: Shipping;
+  shippingType: ShippingType;
+  shippingCost: number;
   additionalPrints?: AdditionalPrint[];
   cost: number;
+  dateBranchCost: number;
+  leafCost: number;
+  rootCost: number;
+
+  updates: number;
+  updateCost: number;
   expenses: number;
   customDescription?: string;
   customCharge?: number;
   customExpenseDescription?: string;
   customExpense?: number;
+  shippingExpense?: number;
   fees?: number;
   tax?: number;
   coupon?: Coupon;
-}
-
-export enum OrderStatus {
-  ORDER_PLACED = 'Order Placed',
-  FORMS_SUBMITTED = 'Forms Submitted',
-  TREE_IN_PROGRESS = 'Tree in Progress',
-  TREE_COMPLETE = 'Tree Complete',
-  SHIPPED = 'Shipped',
-  COMPLETE = 'Complete'
 }

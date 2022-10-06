@@ -19,8 +19,8 @@
 
 <section>
   <h1>Login</h1>
-  <StyledInput bind:value={username} placeholder='Username' />
-  <StyledInput bind:value={password} type='password' placeholder='Password' />
+  <StyledInput bind:value={username} placeholder='Username' margin='0.5rem'/>
+  <StyledInput bind:value={password} type='password' placeholder='Password' margin='0.5rem 0.5rem 1rem'/>
   {#if error}
     <div class='error'>Failed to login: {error}</div>
   {/if}

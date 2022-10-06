@@ -11,6 +11,7 @@
   export let underlineColor = 'var(--accent-color)';
   export let fontSize = '1rem';
   export let disabled = false;
+  export let group;
 
   export let min: number | undefined = undefined;
   export let max: number | undefined = undefined;
@@ -20,6 +21,7 @@
 
   let internal: string;
   let offset = 0;
+
 
   let element: HTMLInputElement;
 
@@ -87,6 +89,9 @@
     />
   {:else if type == 'number'}
     <div class='input-wrap'>
+      <div class='buttons hidden' class:disabled={disabled} on:click={() => element.focus()}>
+        <span class='material-icons'>keyboard_arrow_up</span>
+      </div>
       <input
         {disabled}
         {id}
@@ -104,7 +109,7 @@
         on:keypress
         on:keyup
       />
-      <div class='buttons'>
+      <div class='buttons' class:disabled={disabled}>
         <span class='material-icons' on:click={stepUp}>keyboard_arrow_up</span>
         <span class='material-icons' on:click={stepDown}>keyboard_arrow_down</span>
       </div>
@@ -193,11 +198,24 @@
            for='{id}'
            class='checkbox material-icons'
            class:checked={value}>check</label>
+  {:else if type == 'radio'}
+    <label for='{id}' class='radio-wrap' class:checked={group == value}>
+      <slot />
+      <input type='radio'
+             {disabled}
+             {id}
+             {name}
+             value='{value}'
+             bind:group='{group}'
+             bind:this={element}
+             on:change
+      />
+    </label>
   {:else}
     Unknown type
   {/if}
 
-  {#if type != 'checkbox'}
+  {#if type != 'checkbox' && type != 'radio'}
     <label
       for='{id}'
       class='border'
@@ -222,11 +240,15 @@
     Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif;
   }
 
+  input:not([type='checkbox']):not([type='number']), select, textarea {
+    min-width: 150px;
+  }
+
   input {
     text-align: center;
   }
 
-  input[type='checkbox'] {
+  input[type='checkbox'], input[type='radio'] {
     position: absolute;
     display: none;
   }
@@ -259,6 +281,7 @@
     display: inline-flex;
     flex-direction: column;
     align-items: center;
+    flex: 1;
   }
 
   .wrapper:not(.check) {
@@ -280,6 +303,7 @@
 
   .border.shown:not(.check) {
     width: 100%;
+    background-color: var(--accent-color);
   }
 
   @media (prefers-color-scheme: light) {
@@ -301,8 +325,8 @@
   .input-wrap {
     display: flex;
     width: 100%;
+    min-width: 150px;
   }
-
 
   .buttons {
     display: flex;
@@ -323,9 +347,40 @@
     color: var(--fg-color);
   }
 
-  .buttons .material-icons:hover {
+  .buttons:hover {
     cursor: pointer;
+  }
+
+  .buttons .material-icons:hover {
     background-color: var(--ui-button-hover);
   }
 
+  .buttons.hidden .material-icons {
+    opacity: 0;
+  }
+
+  input[disabled] {
+    color: rgba(125, 125, 125, 0.5);
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  .buttons.disabled {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  .radio-wrap {
+    display: flex;
+    width: 100%;
+    border: 2px solid var(--ui-button-bg);
+    background-color: var(--ui-button-bg);
+    box-sizing: border-box;
+    justify-content: center;
+    align-items: center;
+    transition: border 0.5s ease;
+    padding: 0.5rem;
+  }
+
+  .radio-wrap.checked {
+    border: 2px solid var(--accent-color);
+  }
 </style>

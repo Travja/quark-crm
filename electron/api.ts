@@ -1,5 +1,5 @@
-import { ApiOptions } from '../types';
-import BaseWindow from '../base-window';
+import { ApiOptions } from './types';
+import BaseWindow from './window/base-window';
 import { nativeTheme } from 'electron';
 
 export const navApi: ApiOptions = {
@@ -32,11 +32,9 @@ export const navApi: ApiOptions = {
 
 export const fileApi: ApiOptions = {
   saveFile: (window: BaseWindow) => {
+    // TODO Implement these
   },
   readFile: (window: BaseWindow) => {
-    if (window.window.isMaximized())
-      window.window.unmaximize();
-    else
-      window.window.maximize();
+    // TODO Implement these
   }
 };
