@@ -317,6 +317,10 @@
     resize: none;
   }
 
+  textarea:focus {
+    outline: none;
+  }
+
   input[type="number"]::-webkit-inner-spin-button,
   input[type="number"]::-webkit-outer-spin-button {
     display: none;

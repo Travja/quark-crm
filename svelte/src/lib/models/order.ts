@@ -124,6 +124,7 @@ export interface Order {
   printType: PrintType;
   texture?: Texture;
   printSize?: PrintSize;
+  printCost?: number;
   shippingType: ShippingType;
   shippingCost: number;
   additionalPrints?: AdditionalPrint[];
@@ -132,15 +133,18 @@ export interface Order {
   leafCost: number;
   rootCost: number;
 
+  vendor?: string;
+  notes?: string;
   updates: number;
   updateCost: number;
   expenses: number;
   customDescription?: string;
-  customCharge?: number;
+  customCharge: number;
   customExpenseDescription?: string;
-  customExpense?: number;
-  shippingExpense?: number;
-  fees?: number;
-  tax?: number;
+  customExpense: number;
+  shippingExpense: number;
+  fees: number;
+  tax: number;
+  printExpense: number;
   coupon?: Coupon;
 }

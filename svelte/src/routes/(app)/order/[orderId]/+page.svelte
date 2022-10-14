@@ -136,7 +136,7 @@
                  name='printSizeValue'
                  type='number'
                  min='0'
-                 bind:value={data.printSizeCost} />
+                 bind:value={data.printCost} />
 
     <label for='hasDateBranches'>Date Branches</label>
     <StyledInput type='checkbox'
@@ -239,7 +239,7 @@
                  name='printValue'
                  type='number'
                  min='0'
-                 bind:value={data.printValue} />
+                 bind:value={data.printExpense} />
 
     <label>Shipping</label>
     <StyledInput id='shippingExpense'

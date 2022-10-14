@@ -5,7 +5,7 @@ import type { Order } from './models/order';
 export const orders: Writable<Order[]> = writable<Order[]>([]);
 
 export const loadData = (): void => {
-  fetch('http://localhost:8080/order')
+  fetch('https://api.cfta.travja.dev/order')
     .then(res => res.json())
     .then((data: Order[]) => {
       if (!data) {
