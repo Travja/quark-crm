@@ -48,7 +48,7 @@ export const createLoginWindow = (): BaseWindow => {
         console.log(args);
         console.log(args.username);
 
-        fetch('https://api.cfta.travja.dev/auth/login', {
+        fetch('https://quark.travja.dev/auth/login', {
           method: 'post',
           headers: {
             'Content-Type': 'application/json'

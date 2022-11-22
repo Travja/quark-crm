@@ -10,26 +10,26 @@
     "lint": "eslint --ignore-path .gitignore ."
   },
   "devDependencies": {
-    "@sveltejs/adapter-static": "^1.0.0-next.43",
-    "@sveltejs/kit": "^1.0.0-next.505",
+    "@sveltejs/adapter-static": "^1.0.0-next.48",
+    "@sveltejs/kit": "^1.0.0-next.551",
     "@types/cookie": "^0.5.1",
-    "@typescript-eslint/eslint-plugin": "^5.38.1",
-    "@typescript-eslint/parser": "^5.38.1",
-    "eslint": "^8.24.0",
+    "@typescript-eslint/eslint-plugin": "^5.43.0",
+    "@typescript-eslint/parser": "^5.43.0",
+    "eslint": "^8.27.0",
     "eslint-plugin-svelte3": "^4.0.0",
-    "svelte": "^3.50.1",
-    "svelte-check": "^2.9.1",
+    "svelte": "^3.53.1",
+    "svelte-check": "^2.9.2",
     "svelte-preprocess": "^4.10.7",
-    "tslib": "^2.4.0",
+    "tslib": "^2.4.1",
     "tslint": "^6.1.3",
-    "typescript": "~4.8.4",
-    "vite": "^3.1.4"
+    "typescript": "~4.9.3",
+    "vite": "^3.2.4"
   },
   "type": "module",
   "dependencies": {
-    "@fontsource/fira-mono": "^4.5.9",
+    "@fontsource/fira-mono": "^4.5.10",
     "@lukeed/uuid": "^2.0.0",
     "moment": "^2.29.4",
-    "prettier-plugin-svelte": "^2.7.1"
+    "prettier-plugin-svelte": "^2.8.0"
   }
 }

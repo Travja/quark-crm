@@ -4,7 +4,7 @@ import type { Order } from '$lib/models/order';
 /** @type {import('./$types').PageLoad} */
 export async function load({ params, fetch }) {
   const order: Order = await new Promise((resolve) => {
-    fetch(`https://api.cfta.travja.dev/order/${params.orderId}`)
+    fetch(`https://quark.travja.dev/order/${params.orderId}`)
       .then(res => res.json())
       .then(data => resolve(data))
       .catch(e => resolve(null));
@@ -17,5 +17,7 @@ export async function load({ params, fetch }) {
   if (order.requestDate)
     order.requestDate = new Date(order.requestDate);
 
-  return order;
+  const orders: Order[] = [];
+  orders.push(order);
+  return {orders};
 }
