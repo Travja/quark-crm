@@ -41,9 +41,7 @@
   </LabeledInput>
 
   {#if order.type == TreeType.ANCESTRY || order.type == TreeType.ANCESTRY_ROOTS}
-    <LabeledInput id='ancestryType' bind:value={order.ancestryType}>
-      Ancestry Type
-    </LabeledInput>
+    <LabeledInput id='ancestryType' bind:value={order.ancestryType} />
   {/if}
 
   <LabeledInput id='generations' bind:value={order.generations} type='number'>
@@ -51,7 +49,7 @@
   </LabeledInput>
 
   <div class='section'>
-    <div class='head'>Branch Style</div>
+    <label class='head'>Branch Style</label>
     <LabeledInput type='radio' id='style-1' bind:group={order.branchStyle}
                   value='{BranchStyle.STYLE_1}'>
       <svelte:fragment slot='value'>1</svelte:fragment>

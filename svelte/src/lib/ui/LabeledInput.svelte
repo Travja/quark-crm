@@ -1,6 +1,7 @@
 <!--suppress XmlInvalidId -->
 <script lang='ts'>
   import StyledInput from '$lib/ui/StyledInput.svelte';
+  import { slide } from 'svelte/transition';
 
   export let id: string;
   export let value: any;
@@ -9,7 +10,7 @@
   export let group: any;
 </script>
 
-<div>
+<div transition:slide|local>
   <label for={id}>
     <slot />
   </label>

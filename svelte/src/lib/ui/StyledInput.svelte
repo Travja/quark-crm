@@ -285,7 +285,7 @@
   }
 
   .wrapper:not(.check) {
-    background-color: var(--ui-button-hover);
+    background-color: var(--ui-button-bg);
   }
 
   /*:not(.check)*/
