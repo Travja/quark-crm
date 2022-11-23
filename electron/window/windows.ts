@@ -48,7 +48,7 @@ export const createLoginWindow = (): BaseWindow => {
         console.log(args);
         console.log(args.username);
 
-        fetch('https://quark.travja.dev/auth/login', {
+        fetch('http://localhost:8080/auth/login', {
           method: 'post',
           headers: {
             'Content-Type': 'application/json'

@@ -4,7 +4,7 @@ import type { Order } from '$lib/models/order';
 /** @type {import('./$types').PageLoad} */
 export async function load({ params, fetch }) {
   const order: Order = await new Promise((resolve) => {
-    fetch(`https://quark.travja.dev/order/${params.orderId}`)
+    fetch(`http://localhost:8080/order/${params.orderId}`)
       .then(res => res.json())
       .then(data => resolve(data))
       .catch(e => resolve(null));

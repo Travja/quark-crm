@@ -47,6 +47,7 @@
 <style>
   .data-container {
     display: flex;
+    flex-direction: column;
     padding: 0.5rem;
     margin-top: 0.5rem;
     background-color: rgba(125, 125, 125, 0.5);

@@ -2,56 +2,55 @@
 <script lang='ts'>
   import * as moment from 'moment';
 
-  export let id: string;
-  export let name: string;
-  export let value: string | Date | boolean | number;
+  export let id: string = undefined;
+  export let name: string = undefined;
+  export let value: any = undefined;
   export let margin = '0';
   export let placeholder = '';
   export let type = 'text';
   export let underlineColor = 'var(--accent-color)';
   export let fontSize = '1rem';
   export let disabled = false;
-  export let group;
+  export let group: any = undefined;
 
-  export let min: number | undefined = undefined;
-  export let max: number | undefined = undefined;
-  export let step: number | undefined = undefined;
+  export let min: number = undefined;
+  export let max: number = undefined;
+  export let step: number = undefined;
 
   let focused = false;
-
-  let internal: string;
   let offset = 0;
-
-
   let element: HTMLInputElement;
+  let internalDate: string;
 
-  const input = (x) => {
-    if (!x || (type != 'date' && type != 'datetime')) return;
-
-    try {
-      if (type == 'date')
-        internal = x.toISOString().split('T')[0];
-      else if (type == 'datetime') {
-        let mom = moment(x, moment.HTML5_FMT.DATETIME_LOCAL);
-        if (offset == 0) offset = mom.utcOffset() / 60;
-        internal = mom.toISOString().split('Z')[0];
+  const processVal = (val): void => {
+    if (!val || (type != 'date' && type != 'datetime')) return;
+    if (typeof (val) == 'string') {
+      if (type == 'date') {
+        console.log("Yay")
+        let mom = moment(val, moment.HTML5_FMT.DATETIME_LOCAL).startOf('day');
+        value = mom.toISOString().split('Z')[0];//.replace(/\.0{3}/, '');
+        internalDate = value.split('T')[0];
       }
-    } catch (e) {
-      // Do nothing :D
+      return;
     }
-  };
-  const output = (x) => {
-    if (type != 'date' && type != 'datetime') return;
-    try {
-      value = moment(internal, moment.HTML5_FMT.DATETIME_LOCAL).add({ hour: offset }).toDate();
-    } catch (e) {
-      value = undefined;
+
+    let mom = moment(val, moment.HTML5_FMT.DATETIME_LOCAL).startOf('minute');
+    if (offset == 0) {
+      offset = mom.utcOffset() / 60;
     }
+
+    let convert;
+    if (type == 'date') {
+      convert = mom.toISOString().split('T')[0];
+      internalDate = convert;
+    }
+    mom = mom.add({ hour: offset });
+    convert = mom.toISOString().split('Z')[0];
+
+    value = convert;
   };
 
-  $: input(value);
-  $: output(internal);
-
+  $: processVal(internalDate ? internalDate : value);
   $: if (type == 'checkbox' && typeof value == 'boolean') {
     focused = value;
   }
@@ -121,7 +120,7 @@
       {name}
       type='date'
       {placeholder}
-      bind:value={internal}
+      bind:value={internalDate}
       bind:this={element}
       on:focus={() => focused = true}
       on:blur={() => focused = false}
@@ -136,7 +135,7 @@
       {name}
       type='datetime-local'
       {placeholder}
-      bind:value={internal}
+      bind:value={value}
       bind:this={element}
       on:focus={() => focused = true}
       on:blur={() => focused = false}

@@ -50,7 +50,8 @@ export enum PrintSize {
   ELEVEN_BY_FOURTEEN = '11x14',
   SIXTEEN_BY_TWENTY = '16x20',
   TWENTY_BY_TWENTY_FOUR = '20x24',
-  TWENTY_FOUR_BY_THIRTY = '24x30'
+  TWENTY_FOUR_BY_THIRTY = '24x30',
+  CUSTOM = 'Custom'
 }
 
 export enum ShippingType {
@@ -67,6 +68,18 @@ export enum OrderStatus {
   TREE_COMPLETE = 'Tree Complete',
   SHIPPED = 'Shipped',
   COMPLETE = 'Complete'
+}
+
+export enum TreeStatus {
+  ASSIGNED = 'Assigned',
+  WAITING_FOR_NAMES = 'Waiting for Names',
+  CREATING = 'Creating',
+  WAITING_FOR_QUESTION = 'Waiting for answer to Question',
+  PROOF_SUBMITTED = 'Proof Submitted',
+  PROOF_FOLLOW_UP = 'Proof Follow Up',
+  ADJUSTING = 'Adjusting',
+  RESUBMITTED = 'Resubmitted',
+  APPROVED = 'Approved',
 }
 
 export interface AdditionalPrint {
@@ -91,23 +104,39 @@ export interface Customer {
   customerAddress: string;
 }
 
+export enum FontColor {
+  BLACK = 'Black',
+  WHITE = 'White',
+  BROWN = 'Brown',
+}
+
 export interface Order {
   id: string;
   customer: Customer;
   artist: string;
   status: OrderStatus;
+  treeStatus: TreeStatus;
+
   created: Date;
-  requestDate?: Date;
+  requestDate?: Date | string;
+
   branchesAmount?: string,
+
   background: string,
-  fontColor: string,
+  fontColor: FontColor,
+
   familyName?: string,
   established?: string,
   familyFont?: string,
+  nameLocation?: TextLocation,
+
   quote?: string,
   quoteFont?: string,
+  quoteLocation?: TextLocation;
+
   groundText?: string,
   groundFont?: string,
+
   frame?: string,
   comments?: string,
   type: TreeType;
@@ -119,8 +148,6 @@ export interface Order {
   hasDoubleTrunk: boolean;
   branchStyle: BranchStyle;
   treeStyle: TreeStyle;
-  nameLocation?: TextLocation,
-  quoteLocation?: TextLocation;
   printType: PrintType;
   texture?: Texture;
   printSize?: PrintSize;

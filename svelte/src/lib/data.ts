@@ -5,7 +5,7 @@ import type { Order } from './models/order';
 export const orders: Writable<Order[]> = writable<Order[]>([]);
 
 export const loadData = (): void => {
-  fetch('https://quark.travja.dev/order')
+  fetch('http://localhost:8080/order')
     .then(res => res.json())
     .then((data: Order[]) => {
       if (!data) {

@@ -2,16 +2,24 @@
 <script lang='ts'>
   import StyledInput from '$lib/ui/StyledInput.svelte';
   import { slide } from 'svelte/transition';
+  import { onMount } from 'svelte';
 
-  export let id: string;
-  export let value: any;
+  export let id: string = undefined;
+  export let value: any = undefined;
   export let type = 'text';
   export let placeholder = '';
-  export let group: any;
+  export let group: any = undefined;
+  export let options: any[] = undefined;
+  export let disabled = false;
+  export let fillSpace = false;
+
+  onMount(() => {
+    if (options) type = 'select';
+  });
 </script>
 
-<div transition:slide|local>
-  <label for={id}>
+<div transition:slide|local class:fill={fillSpace}>
+  <label for={id} class:centered={type == 'checkbox'}>
     <slot />
   </label>
   <StyledInput {id}
@@ -20,8 +28,15 @@
                {placeholder}
                bind:value={value}
                bind:group={group}
+               {disabled}
   >
-    <slot name='value' />
+    {#if options}
+      {#each options as option}
+        <option value='{option}'>{option}</option>
+      {/each}
+    {:else}
+      <slot name='value' />
+    {/if}
   </StyledInput>
 </div>
 
@@ -29,10 +44,6 @@
   div {
     display: flex;
     flex-direction: column;
-    flex: 1;
-    /*display: grid;*/
-    /*align-items: center;*/
-    /*grid-template-columns: minmax(100px, 1fr) 8fr;*/
   }
 
   label:empty {
@@ -41,7 +52,14 @@
 
   label:not(:empty) {
     font-size: 0.9rem;
-    /*margin: 0 0.5rem;*/
     margin: 0.5rem 0 0.25rem;
+  }
+
+  .centered {
+    text-align: center;
+  }
+
+  .fill {
+    flex: 1;
   }
 </style>
