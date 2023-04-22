@@ -7,16 +7,16 @@
     "isolatedModules": false,
     "paths": {
       "@types": [
-        "src/@types"
+        "./src/@types"
       ],
       "@types/*": [
-        "src/@types/*"
+        "./src/@types/*"
       ],
       "$lib": [
-        "src/lib"
+        "./src/lib"
       ],
       "$lib/*": [
-        "src/lib/*"
+        "./src/lib/*"
       ]
     }
   }

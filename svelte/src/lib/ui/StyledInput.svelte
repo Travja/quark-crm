@@ -1,6 +1,6 @@
 <!--suppress XmlDuplicatedId, XmlInvalidId -->
 <script lang='ts'>
-  import * as moment from 'moment';
+  import moment from 'moment';
 
   export let id: string = undefined;
   export let name: string = undefined;

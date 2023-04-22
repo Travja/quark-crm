@@ -16,7 +16,7 @@ const config = {
       precompress: false
     }),
     prerender: {
-      enabled: true
+      entries: ['*']
     }
   }
 };
