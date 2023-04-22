@@ -44,7 +44,7 @@
       .then((res: any) => <Order>res.json())
       .then((ord: Order) => {
         order = ord;
-        order.requestDate = order.requestDate + ".000";
+        order.requestDate = order.requestDate + '.000';
         originalOrder = { ...order };
         dirty = false;
       })
@@ -157,7 +157,7 @@
     </LabeledInput>
 
     {#if order.familyName}
-      <div class='section'>
+      <div class='section' transition:slide|local>
         <LabeledInput type='radio' id='name-left' bind:group={order.nameLocation}
                       fillSpace={true}
                       value='{TextLocation.LEFT}'>
@@ -167,6 +167,7 @@
         {#if !order.groundText}
           <LabeledInput type='radio' id='quote-center' bind:group={order.nameLocation}
                         fillSpace={true}
+                        noTransition
                         value='{TextLocation.CENTER}'>
             <svelte:fragment slot='value'>Center</svelte:fragment>
           </LabeledInput>
@@ -234,12 +235,14 @@
       <div class='section' transition:slide|local>
         <LabeledInput type='radio' id='quote-left' bind:group={order.quoteLocation}
                       fillSpace={true}
+                      noTransition
                       value='{TextLocation.LEFT}'>
           <svelte:fragment slot='value'>Left</svelte:fragment>
         </LabeledInput>
 
         <LabeledInput type='radio' id='quote-right' bind:group={order.quoteLocation}
                       fillSpace={true}
+                      noTransition
                       value='{TextLocation.RIGHT}'>
           <svelte:fragment slot='value'>Right</svelte:fragment>
         </LabeledInput>
@@ -255,7 +258,7 @@
       Print Type
     </LabeledInput>
 
-    {#if order.printType}
+    {#if order.printType != PrintType.DIGITAL}
       <LabeledInput id='print-size' bind:value={order.printSize}
                     options='{Object.values(PrintSize)}'>
         Print Size
@@ -314,6 +317,7 @@
     flex-basis: 100%;
     font-size: 0.9rem;
     margin: 0.5rem 0 0.25rem;
+    overflow: hidden;
   }
 
   footer {

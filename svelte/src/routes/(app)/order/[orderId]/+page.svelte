@@ -3,6 +3,7 @@
   import type { Customer, Order } from '$lib/models/order';
   import OrderBox from '$lib/ui/OrderBox.svelte';
   import LabeledInput from '$lib/ui/LabeledInput.svelte';
+  import { CustomerType } from '$lib/models/order.js';
 
   export let data: { orders: Order[] };
   let orders: Order[];
@@ -33,6 +34,12 @@
       <div class='column'>
         <LabeledInput bind:value={customer.customerAddress}>
           Address
+        </LabeledInput>
+      </div>
+      <div class='column'>
+        <LabeledInput bind:value={customer.customerType}
+          options={Object.values(CustomerType)}>
+          Customer Type
         </LabeledInput>
       </div>
     </div>

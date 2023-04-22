@@ -12,13 +12,14 @@
   export let options: any[] = undefined;
   export let disabled = false;
   export let fillSpace = false;
+  export let noTransition = false;
 
   onMount(() => {
     if (options) type = 'select';
   });
 </script>
 
-<div transition:slide|local class:fill={fillSpace}>
+<div in:slide|local={{duration: noTransition ? 0 : 500}} out:slide class:fill={fillSpace}>
   <label for={id} class:centered={type == 'checkbox'}>
     <slot />
   </label>

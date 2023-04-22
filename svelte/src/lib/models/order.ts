@@ -101,13 +101,19 @@ export interface Coupon {
 export interface Customer {
   customerName: string,
   customerEmail: string,
-  customerAddress: string;
+  customerAddress: string,
+  customerType: CustomerType;
 }
 
 export enum FontColor {
   BLACK = 'Black',
   WHITE = 'White',
   BROWN = 'Brown',
+}
+
+export enum CustomerType {
+  NEW="NEW",
+  RETURNING="RETURNING"
 }
 
 export interface Order {
