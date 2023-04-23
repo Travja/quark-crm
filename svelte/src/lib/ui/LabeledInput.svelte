@@ -13,6 +13,8 @@
   export let disabled = false;
   export let fillSpace = false;
   export let noTransition = false;
+  export let backgroundColor = undefined;
+  export let color = undefined;
 
   onMount(() => {
     if (options) type = 'select';
@@ -30,6 +32,8 @@
                bind:value={value}
                bind:group={group}
                {disabled}
+               {backgroundColor}
+               {color}
   >
     {#if options}
       {#each options as option}
@@ -42,25 +46,26 @@
 </div>
 
 <style>
-  div {
-    display: flex;
-    flex-direction: column;
-  }
+    div {
+        display: flex;
+        flex-direction: column;
+    }
 
-  label:empty {
-    display: none;
-  }
+    label:empty {
+        display: none;
+    }
 
-  label:not(:empty) {
-    font-size: 0.9rem;
-    margin: 0.5rem 0 0.25rem;
-  }
+    label:not(:empty) {
+        font-size: 0.9rem;
+        margin: 0.5rem 0 0.25rem;
+    }
 
-  .centered {
-    text-align: center;
-  }
+    .centered {
+        text-align: center;
+    }
 
-  .fill {
-    flex: 1;
-  }
+    .fill {
+        flex: 1;
+        width: 100%;
+    }
 </style>

@@ -40,6 +40,19 @@ export enum PrintType {
   DIGITAL = 'Digital'
 }
 
+export const getPrintTypeShortCode = (printType: PrintType) => {
+  switch (printType) {
+    case PrintType.STANDARD:
+      return 'Std';
+    case PrintType.MOUNTED_AND_TEXTURED:
+      return 'M&T';
+    case PrintType.CANVAS:
+      return 'GWC';
+    case PrintType.DIGITAL:
+      return 'Dig';
+  }
+};
+
 export enum Texture {
   LINEN = 'Linen',
   CANVAS = 'Canvas'
@@ -63,11 +76,16 @@ export enum ShippingType {
 
 export enum OrderStatus {
   ORDER_PLACED = 'Order Placed',
-  FORMS_SUBMITTED = 'Forms Submitted',
-  TREE_IN_PROGRESS = 'Tree in Progress',
-  TREE_COMPLETE = 'Tree Complete',
-  SHIPPED = 'Shipped',
-  COMPLETE = 'Complete'
+  UNPAID = 'Unpaid',
+  INVOICED = 'Invoiced',
+  PAID = 'Paid',
+  PRINT_ORDERED = 'Print Ordered',
+  QUESTION_ASKED = 'Question Asked',
+  QUESTION_ANSWERED = 'Question Answered',
+  TRACKING_SENT = 'Tracking # Sent',
+  PROBABLY_NOT_ORDERING = 'Probably Not Ordering',
+  ON_HOLD = 'On Hold',
+  CANCELLED = 'Cancelled'
 }
 
 export enum TreeStatus {
@@ -85,6 +103,7 @@ export enum TreeStatus {
 export interface AdditionalPrint {
   printType: PrintType;
   printSize: PrintSize;
+  frame?: string;
   quantity: number;
 }
 
@@ -112,8 +131,8 @@ export enum FontColor {
 }
 
 export enum CustomerType {
-  NEW="NEW",
-  RETURNING="RETURNING"
+  NEW = 'NEW',
+  RETURNING = 'RETURNING'
 }
 
 export interface Order {

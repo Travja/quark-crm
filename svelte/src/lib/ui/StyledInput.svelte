@@ -1,4 +1,5 @@
-<!--suppress XmlDuplicatedId, XmlInvalidId -->
+<!--suppress ALL -->
+
 <script lang='ts'>
   import moment from 'moment';
 
@@ -9,6 +10,8 @@
   export let placeholder = '';
   export let type = 'text';
   export let underlineColor = 'var(--accent-color)';
+  export let backgroundColor = undefined;
+  export let color = undefined;
   export let fontSize = '1rem';
   export let disabled = false;
   export let group: any = undefined;
@@ -26,7 +29,11 @@
     if (!val || (type != 'date' && type != 'datetime')) return;
     if (typeof (val) == 'string') {
       if (type == 'date') {
-        console.log("Yay")
+        console.log(internalDate, val);
+        if (!internalDate) {
+          value = undefined;
+          return;
+        }
         let mom = moment(val, moment.HTML5_FMT.DATETIME_LOCAL).startOf('day');
         value = mom.toISOString().split('Z')[0];//.replace(/\.0{3}/, '');
         internalDate = value.split('T')[0];
@@ -70,6 +77,8 @@
 
 <div class='styled-input wrapper'
      class:check={type=='checkbox'}
+     style:--input-bg={backgroundColor || 'var(--ui-button-bg)'}
+     style:--color={color || 'var(--fg-color)'}
      style='margin: {margin}; --font-size: {fontSize}; --background-color: {underlineColor}'>
   {#if type == 'text'}
     <input
@@ -124,7 +133,7 @@
       bind:this={element}
       on:focus={() => focused = true}
       on:blur={() => focused = false}
-      on:keydown
+      on:keydown={() => console.log(element.value)}
       on:keypress
       on:keyup
     />
@@ -225,165 +234,165 @@
 </div>
 
 <style>
-  input:not([type='checkbox']), select, textarea {
-    display: block;
-    flex: 1;
-    padding: 0.5rem 0.5rem calc(0.5rem - 2px);
-    font-size: var(--font-size);
-    background-color: var(--ui-button-bg);
-    color: var(--fg-color);
-    border: none;
-    width: 100%;
-    box-sizing: border-box;
-    font-family: Arial, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
-    Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif;
-  }
-
-  input:not([type='checkbox']):not([type='number']), select, textarea {
-    min-width: 150px;
-  }
-
-  input {
-    text-align: center;
-  }
-
-  input[type='checkbox'], input[type='radio'] {
-    position: absolute;
-    display: none;
-  }
-
-  .checkbox {
-    width: 2rem;
-    height: 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--ui-button-bg);
-    background-color: var(--ui-button-bg);
-    border: 2px solid var(--ui-button-bg);
-    border-radius: 0.5rem;
-    box-sizing: border-box;
-    transition: border-color 0.5s ease, color 0.5s ease;
-    user-select: none;
-  }
-
-  .checkbox.checked {
-    color: var(--fg-color);
-    border-color: var(--background-color);
-  }
-
-  input:focus, select:focus {
-    outline: none;
-  }
-
-  .wrapper {
-    display: inline-flex;
-    flex-direction: column;
-    align-items: center;
-    flex: 1;
-  }
-
-  .wrapper:not(.check) {
-    background-color: var(--ui-button-bg);
-  }
-
-  /*:not(.check)*/
-
-  .border {
-    height: 2px;
-    width: 0px;
-    background-color: var(--background-color);
-    transition: width 0.5s ease;
-  }
-
-  label.border.check {
-    background-color: red;
-  }
-
-  .border.shown:not(.check) {
-    width: 100%;
-    background-color: var(--accent-color);
-  }
-
-  @media (prefers-color-scheme: light) {
-    input[type="date"]::-webkit-calendar-picker-indicator,
-    input[type="datetime-local"]::-webkit-calendar-picker-indicator {
-      background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNSIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBmaWxsPSIjZmZmZmZmIiBkPSJNMjAgM2gtMVYxaC0ydjJIN1YxSDV2Mkg0Yy0xLjEgMC0yIC45LTIgMnYxNmMwIDEuMS45IDIgMiAyaDE2YzEuMSAwIDItLjkgMi0yVjVjMC0xLjEtLjktMi0yLTJ6bTAgMThINFY4aDE2djEzeiIvPjxwYXRoIGZpbGw9Im5vbmUiIGQ9Ik0wIDBoMjR2MjRIMHoiLz48L3N2Zz4=');
+    input:not([type='checkbox']), select, textarea {
+        display: block;
+        flex: 1;
+        padding: 0.5rem 0.5rem calc(0.5rem - 2px);
+        font-size: var(--font-size);
+        background-color: var(--input-bg);
+        color: var(--color);
+        border: none;
+        width: 100%;
+        box-sizing: border-box;
+        font-family: Arial, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
+        Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif;
     }
-  }
 
-  textarea {
-    resize: none;
-  }
+    input:not([type='checkbox']):not([type='number']), select, textarea {
+        min-width: 150px;
+    }
 
-  textarea:focus {
-    outline: none;
-  }
+    input {
+        text-align: center;
+    }
 
-  input[type="number"]::-webkit-inner-spin-button,
-  input[type="number"]::-webkit-outer-spin-button {
-    display: none;
-  }
+    input[type='checkbox'], input[type='radio'] {
+        position: absolute;
+        display: none;
+    }
 
-  .input-wrap {
-    display: flex;
-    width: 100%;
-    min-width: 150px;
-  }
+    .checkbox {
+        width: 2rem;
+        height: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--input-bg);
+        background-color: var(--input-bg);
+        border: 2px solid var(--input-bg);
+        border-radius: 0.5rem;
+        box-sizing: border-box;
+        transition: border-color 0.5s ease, color 0.5s ease;
+        user-select: none;
+    }
 
-  .buttons {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: var(--ui-button-bg);
-    color: var(--ui-button-bg);
-    transition: color 0.5s ease;
-  }
+    .checkbox.checked {
+        color: var(--color);
+        border-color: var(--background-color);
+    }
 
-  .buttons .material-icons {
-    text-align: center;
-    font-size: 1rem;
-    padding: 0 0.5rem;
-  }
+    input:focus, select:focus {
+        outline: none;
+    }
 
-  .input-wrap:hover .buttons .material-icons {
-    color: var(--fg-color);
-  }
+    .wrapper {
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        flex: 1;
+    }
 
-  .buttons:hover {
-    cursor: pointer;
-  }
+    .wrapper:not(.check) {
+        background-color: var(--input-bg);
+    }
 
-  .buttons .material-icons:hover {
-    background-color: var(--ui-button-hover);
-  }
+    /*:not(.check)*/
 
-  .buttons.hidden .material-icons {
-    opacity: 0;
-  }
+    .border {
+        height: 2px;
+        width: 0px;
+        background-color: var(--background-color);
+        transition: width 0.5s ease;
+    }
 
-  input[disabled] {
-    color: rgba(125, 125, 125, 0.5);
-    background-color: rgba(0, 0, 0, 0.5);
-  }
+    label.border.check {
+        background-color: red;
+    }
 
-  .buttons.disabled {
-    background-color: rgba(0, 0, 0, 0.5);
-  }
+    .border.shown:not(.check) {
+        width: 100%;
+        background-color: var(--accent-color);
+    }
 
-  .radio-wrap {
-    display: flex;
-    width: 100%;
-    border: 2px solid var(--ui-button-bg);
-    background-color: var(--ui-button-bg);
-    box-sizing: border-box;
-    justify-content: center;
-    align-items: center;
-    transition: border 0.5s ease;
-    padding: 0.5rem;
-  }
+    @media (prefers-color-scheme: light) {
+        input[type="date"]::-webkit-calendar-picker-indicator,
+        input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNSIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBmaWxsPSIjZmZmZmZmIiBkPSJNMjAgM2gtMVYxaC0ydjJIN1YxSDV2Mkg0Yy0xLjEgMC0yIC45LTIgMnYxNmMwIDEuMS45IDIgMiAyaDE2YzEuMSAwIDItLjkgMi0yVjVjMC0xLjEtLjktMi0yLTJ6bTAgMThINFY4aDE2djEzeiIvPjxwYXRoIGZpbGw9Im5vbmUiIGQ9Ik0wIDBoMjR2MjRIMHoiLz48L3N2Zz4=');
+        }
+    }
 
-  .radio-wrap.checked {
-    border: 2px solid var(--accent-color);
-  }
+    textarea {
+        resize: none;
+    }
+
+    textarea:focus {
+        outline: none;
+    }
+
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+        display: none;
+    }
+
+    .input-wrap {
+        display: flex;
+        width: 100%;
+        min-width: 150px;
+    }
+
+    .buttons {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: var(--input-bg);
+        color: var(--input-bg);
+        transition: color 0.5s ease;
+    }
+
+    .buttons .material-icons {
+        text-align: center;
+        font-size: 1rem;
+        padding: 0 0.5rem;
+    }
+
+    .input-wrap:hover .buttons .material-icons {
+        color: var(--color);
+    }
+
+    .buttons:hover {
+        cursor: pointer;
+    }
+
+    .buttons .material-icons:hover {
+        background-color: var(--ui-button-hover);
+    }
+
+    .buttons.hidden .material-icons {
+        opacity: 0;
+    }
+
+    input[disabled] {
+        color: rgba(125, 125, 125, 0.5);
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .buttons.disabled {
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .radio-wrap {
+        display: flex;
+        width: 100%;
+        border: 2px solid var(--input-bg);
+        background-color: var(--input-bg);
+        box-sizing: border-box;
+        justify-content: center;
+        align-items: center;
+        transition: border 0.5s ease;
+        padding: 0.5rem;
+    }
+
+    .radio-wrap.checked {
+        border: 2px solid var(--accent-color);
+    }
 </style>

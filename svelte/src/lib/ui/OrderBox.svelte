@@ -17,6 +17,7 @@
   } from '$lib/models/order.js';
   import { onMount } from 'svelte';
   import { slide } from 'svelte/transition';
+  import { getOrderStatusColor, getOrderStatusForegroundColor, getTreeStatusColor } from '$lib/api/colors';
 
   export let order: Order;
 
@@ -28,10 +29,10 @@
   });
 
   $: if (originalOrder && order) dirty = JSON.stringify(order) != JSON.stringify(originalOrder);
-  $: if (dirty) {
-    console.log('og', JSON.stringify(originalOrder));
-    console.log('dirty', JSON.stringify(order));
-  }
+  // $: if (dirty) {
+  // console.log('og', JSON.stringify(originalOrder));
+  // console.log('dirty', JSON.stringify(order));
+  // }
 
   const saveOrder = (): void => {
     fetch('http://localhost:8080/order', {
@@ -57,11 +58,14 @@
     Order ID: {order.id}
     <LabeledInput id='order-status'
                   bind:value={order.status}
+                  backgroundColor={getOrderStatusColor(order.status)}
+                  color={getOrderStatusForegroundColor(order.status)}
                   options='{Object.values(OrderStatus)}'>
       Order Status
     </LabeledInput>
     <LabeledInput id='tree-status'
                   bind:value={order.treeStatus}
+                  backgroundColor={getTreeStatusColor(order.treeStatus)}
                   options='{Object.values(TreeStatus)}'>
       Tree Status
     </LabeledInput>
@@ -73,6 +77,7 @@
 
     <LabeledInput id='request-date'
                   type='date'
+                  backgroundColor={order.requestDate ? '#fdfba1' : undefined}
                   bind:value={order.requestDate}>
       Due Date
     </LabeledInput>
@@ -265,6 +270,12 @@
       </LabeledInput>
     {/if}
   </div>
+  <div class='column'>
+    <div>Data</div>
+  </div>
+  <div class='column'>
+    <div>Data</div>
+  </div>
 </div>
 <hr />
 <div class='wrapper'>
@@ -289,57 +300,57 @@
 {/if}
 
 <style>
-  .wrapper {
-    width: 100%;
-    display: flex;
-    justify-content: space-around;
-  }
+    .wrapper {
+        width: 100%;
+        display: flex;
+        justify-content: space-around;
+    }
 
-  hr {
-    width: 100%;
-    box-sizing: border-box;
-  }
+    hr {
+        width: 100%;
+        box-sizing: border-box;
+    }
 
-  .column {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    margin: 0.25rem;
-  }
+    .column {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        margin: 0.25rem;
+    }
 
-  .section {
-    display: flex;
-    flex-wrap: wrap;
-  }
+    .section {
+        display: flex;
+        flex-wrap: wrap;
+    }
 
-  .section .head {
-    display: block;
-    flex-basis: 100%;
-    font-size: 0.9rem;
-    margin: 0.5rem 0 0.25rem;
-    overflow: hidden;
-  }
+    .section .head {
+        display: block;
+        flex-basis: 100%;
+        font-size: 0.9rem;
+        margin: 0.5rem 0 0.25rem;
+        overflow: hidden;
+    }
 
-  footer {
-    text-align: right;
-  }
+    footer {
+        text-align: right;
+    }
 
-  .save-button {
-    background-color: var(--warning-color);
-    color: white;
-    padding: 0.5rem;
-    border-radius: 0.5rem;
-    border: 2px solid var(--fg-color);
-    margin: 0.5rem 0.5rem 0;
-  }
+    .save-button {
+        background-color: var(--warning-color);
+        color: white;
+        padding: 0.5rem;
+        border-radius: 0.5rem;
+        border: 2px solid var(--fg-color);
+        margin: 0.5rem 0.5rem 0;
+    }
 
-  .save-button:hover {
-    cursor: pointer;
-    box-shadow: 0.2rem 0.2rem 0.3rem #333;
-  }
+    .save-button:hover {
+        cursor: pointer;
+        box-shadow: 0.2rem 0.2rem 0.3rem #333;
+    }
 
-  .save-button:active {
-    cursor: pointer;
-    box-shadow: inset -0.2rem -0.2rem 0.3rem #333;
-  }
+    .save-button:active {
+        cursor: pointer;
+        box-shadow: inset -0.2rem -0.2rem 0.3rem #333;
+    }
 </style>
