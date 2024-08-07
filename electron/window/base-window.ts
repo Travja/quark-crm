@@ -164,7 +164,7 @@ class BaseWindow {
   };
 
   apiListener = (event: IpcMainEvent, ...args: any[]) => {
-    console.log(event.type);
+    console.log(event);
     if (!this.window || this.window.webContents != event.sender) return;
 
     event.preventDefault();

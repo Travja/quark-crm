@@ -38,14 +38,14 @@ let Order: mongoose.Model<any, {}, {}, {}>;
 
 mongoose.connect(`mongodb+srv://Travja:${process.env.QUARK_PASSWORD}@quark.ibnpd.mongodb.net/Quark?retryWrites=true&w=majority`, {
   autoCreate: true
+}).then(() => {
+  Order = mongoose.model('Orders', orderSchema);
+  User = mongoose.model('Users', userSchema);
+  console.log('Connected to MongoDB');
 }, (error: mongoose.CallbackError) => {
   if (error) {
     console.error.bind(console, 'connection error');
     console.error(error);
-  } else {
-    Order = mongoose.model('Orders', orderSchema);
-    User = mongoose.model('Users', userSchema);
-    console.log('Connected to MongoDB');
   }
 });
 
@@ -84,11 +84,8 @@ const login = (req: express.Request, res: express.Response) => {
   let username = body.username;
   let pass = body.password;
 
-  User.findOne({ username }, (err: any, user: any) => {
-    if (err) {
-      res.status(400).json({ error: err, authorized: false });
-      return;
-    } else if (!user) {
+  User.findOne({ username }).then((user: any) => {
+    if (!user) {
       res.status(400).json({ error: 'Unauthorized', authorized: false });
       return;
     }
@@ -103,6 +100,8 @@ const login = (req: express.Request, res: express.Response) => {
     } else {
       res.status(401).json({ error: 'Unauthorized', authorized: false });
     }
+  }, err => {
+    res.status(400).json({ error: err, authorized: false });
   });
 };
 

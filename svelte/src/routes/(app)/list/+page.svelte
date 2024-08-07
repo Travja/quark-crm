@@ -8,7 +8,12 @@
   import { getPrintTypeShortCode } from '$lib/models/order.js';
   import Modal from '$lib/Modal.svelte';
   import LabeledInput from '$lib/ui/LabeledInput.svelte';
-  import { getOrderStatusColor, getOrderStatusForegroundColor, getTreeStatusColor } from '$lib/api/colors';
+  import {
+    getOrderStatusColor,
+    getOrderStatusForegroundColor,
+    getTreeStatusColor,
+    getTreeStatusForegroundColor
+  } from '$lib/api/colors';
 
   let allOrders = true;
   let notesOpen = false;
@@ -34,7 +39,7 @@
 <div class='heading-bar'>
   <div class='material-icons icon-button'>filter_alt</div>
   <div class='material-icons icon-button' on:click={loadData}>sync</div>
-  <Toggle right='Active' left='All' color='var(--ui-button-bg' bind:value={allOrders} />
+  <Toggle right='Active' left='All' color='var(--ui-button-hover)' bind:value={allOrders} />
   <div class='spacer' />
   <StyledInput placeholder='Search...' fontSize='1.2em' margin='0' on:keypress={checkEnter} />
 </div>
@@ -86,14 +91,18 @@
             }
           </td>
           <!-- Due Date -->
-          <td>
+          <td
+            style:color={order.requestDate ? 'black' : undefined}
+            style:background-color={order.requestDate ? '#fdfba1' : undefined}
+          >
             {
-              new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' })
-                .format(order.requestDate)
+              order.requestDate ? new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' })
+                .format(order.requestDate) : ''
             }
           </td>
           <!-- Tree Status -->
           <td
+            style:color={getTreeStatusForegroundColor(order.treeStatus)}
             style:background-color={getTreeStatusColor(order.treeStatus)}
           >{order.treeStatus}</td>
           <!-- Artist -->

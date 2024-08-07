@@ -62,3 +62,7 @@ export const getTreeStatusColor = (treeStatus: TreeStatus) => {
       return undefined;
   }
 };
+
+export const getTreeStatusForegroundColor = (treeStatus: TreeStatus) => {
+  return 'black';
+};

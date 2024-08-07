@@ -17,7 +17,12 @@
   } from '$lib/models/order.js';
   import { onMount } from 'svelte';
   import { slide } from 'svelte/transition';
-  import { getOrderStatusColor, getOrderStatusForegroundColor, getTreeStatusColor } from '$lib/api/colors';
+  import {
+    getOrderStatusColor,
+    getOrderStatusForegroundColor,
+    getTreeStatusColor,
+    getTreeStatusForegroundColor
+  } from '$lib/api/colors';
 
   export let order: Order;
 
@@ -65,6 +70,7 @@
     </LabeledInput>
     <LabeledInput id='tree-status'
                   bind:value={order.treeStatus}
+                  color={getTreeStatusForegroundColor(order.treeStatus)}
                   backgroundColor={getTreeStatusColor(order.treeStatus)}
                   options='{Object.values(TreeStatus)}'>
       Tree Status
@@ -77,6 +83,7 @@
 
     <LabeledInput id='request-date'
                   type='date'
+                  color={order.requestDate ? 'black' : undefined}
                   backgroundColor={order.requestDate ? '#fdfba1' : undefined}
                   bind:value={order.requestDate}>
       Due Date
@@ -269,25 +276,6 @@
         Print Size
       </LabeledInput>
     {/if}
-  </div>
-  <div class='column'>
-    <div>Data</div>
-  </div>
-  <div class='column'>
-    <div>Data</div>
-  </div>
-</div>
-<hr />
-<div class='wrapper'>
-  <div class='column'>
-    <LabeledInput value='{order.cost}'>
-      Profit
-    </LabeledInput>
-  </div>
-  <div class='column'>
-    <LabeledInput value='{order.cost}'>
-      Profit
-    </LabeledInput>
   </div>
 </div>
 {#if dirty}

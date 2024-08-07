@@ -56,7 +56,7 @@ export const createLoginWindow = (): BaseWindow => {
           body: JSON.stringify(args)
         })
           .then((res: any) => {
-            console.log(res);
+            console.log('response:', res);
             return res.json();
           })
           .then((data: any) => {

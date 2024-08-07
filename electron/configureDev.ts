@@ -1,6 +1,4 @@
-import path from 'path';
 import { exec } from 'child_process';
-import serve from 'electron-serve';
 
 export interface DeveloperOptions {
   isInProduction: boolean,
@@ -35,7 +33,6 @@ class ConfigureDev {
     if (!this.isInProduction) {
       this.isInProduction = process.env.NODE_ENV === 'production' || !/[\\/]electron/.exec(process.execPath); // !process.execPath.match(/[\\/]electron/);
     }
-    ;
   }
 
   _dev_Svelte() {
@@ -50,7 +47,7 @@ class ConfigureDev {
   }
 
   _serve_Dist() {
-    this.loadURL = serve({ directory: 'dist/www' });
+    this.loadURL = import("electron-serve").then(serve => serve.default({ directory: 'dist/www' }));
   }
 
   isLocalHost() {

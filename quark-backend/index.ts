@@ -16,7 +16,7 @@ app.use(bodyParser.json());
 //Routing
 // const routes = new Routes();
 // app.get('/', routes.create);
-app.post('/login', routes.login);
+app.post('/auth/login', routes.login);
 app.get('/data', routes.data);
 app.post('/order', routes.newOrder);
 
@@ -50,6 +50,6 @@ app.post('/order', routes.newOrder);
 
 // app.get('/api', routes.api);
 
-app.listen(5000, () => {
-  console.log('Listening on port 5000');
+app.listen(8080, () => {
+  console.log('Listening on port 8080');
 });

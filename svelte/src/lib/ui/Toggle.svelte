@@ -10,8 +10,12 @@
 
 <input type='checkbox' class='hidden' id='permission' bind:checked={value} />
 <div class='toggle' class:selected={value} style:--color={color} style:--toggleColor={toggleColor} class:inline>
-  <div on:click={() => value = true}>{left}</div>
-  <div on:click={() => value = false}>{right}</div>
+  <div
+    class:active={value}
+    on:click={() => value = true}>{left}</div>
+  <div
+    class:active={!value}
+    on:click={() => value = false}>{right}</div>
 </div>
 
 <style>
@@ -25,6 +29,7 @@
         display: flex;
         text-align: center;
         background-color: var(--color);
+        border: 1px solid var(--fg-color);
         border-radius: 0.4rem;
         user-select: none;
         -webkit-user-select: none;
@@ -58,9 +63,16 @@
 
         display: flex;
         justify-content: center;
+
+        color: var(--fg-color);
+        transition: color 350ms ease-in-out;
     }
 
     .toggle > div:hover {
         cursor: pointer;
+    }
+
+    .toggle > .active {
+        color: black;
     }
 </style>
