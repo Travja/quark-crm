@@ -2,6 +2,10 @@
   import ReusableLayout from '$lib/ReusableLayout.svelte';
   import LeftMenu from '$lib/LeftMenu.svelte';
   import { goto } from '$app/navigation';
+  import { onMount } from 'svelte';
+  import { loadData } from '$lib/data';
+
+  onMount(() => loadData());
 </script>
 
 <ReusableLayout>

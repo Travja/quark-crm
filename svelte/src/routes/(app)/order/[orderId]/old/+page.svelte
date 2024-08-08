@@ -2,8 +2,8 @@
 <script lang='ts'>
   import { onMount } from 'svelte';
   import type { Order } from '$lib/models/order';
+  import { BranchStyle, TextLocation } from '$lib/models/order';
   import StyledInput from '$lib/ui/StyledInput.svelte';
-  import { BranchStyle, TextLocation } from '$lib/models/order.js';
 
   export let data: { orders: Order[] };
 
@@ -109,7 +109,8 @@
           </StyledInput>
         </div>
         <div class='vertical'>
-          <StyledInput type='radio' id='right' name='right' bind:group={order.nameLocation} value='{TextLocation.RIGHT}'>
+          <StyledInput type='radio' id='right' name='right' bind:group={order.nameLocation}
+                       value='{TextLocation.RIGHT}'>
             Right
           </StyledInput>
         </div>

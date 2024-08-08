@@ -22,9 +22,9 @@ const developerOptions = {
   testing both side: isInProduction: true, serveSvelteDev: false, buildSvelteDev:true, watchSvelteBuild: true
 */
 
-export const createMainWindow = (): BaseWindow => {
+export const createMainWindow = (token: string): BaseWindow => {
   return new BaseWindow(
-    '/',
+    `/?token=${token}`,
     { ...mainWindowSettings, title: 'QuarkCRM' },
     developerOptions,
     {
@@ -34,7 +34,6 @@ export const createMainWindow = (): BaseWindow => {
   );
 };
 
-let main: BaseWindow = createMainWindow();
 export const createLoginWindow = (): BaseWindow => {
   const loginWindow = new BaseWindow('/login',
     { width: 400, height: 600, title: 'Quark - Login', enableLoadingScreen: true },
@@ -42,7 +41,7 @@ export const createLoginWindow = (): BaseWindow => {
     {
       ...navApi,
       ...fileApi,
-      login: (window: BaseWindow, event: IpcMainEvent, args: any) => {
+      login: (myWindow: BaseWindow, event: IpcMainEvent, args: any) => {
         //TODO Write login state to disk somewhere?
 
         console.log(args);
@@ -51,35 +50,33 @@ export const createLoginWindow = (): BaseWindow => {
         fetch('http://localhost:8080/auth/login', {
           method: 'post',
           headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(args)
+            'Content-Type': 'application/json',
+            'Authorization': 'Basic ' + Buffer.from(args.username + ':' + args.password).toString('base64')
+          }
         })
-          .then((res: any) => {
-            console.log('response:', res);
-            return res.json();
-          })
+          .then((res: any) => res.json())
           .then((data: any) => {
             console.log(data);
             if (data.authorized) {
-              main.onLoad((window: BaseWindow) => {
+              let main: BaseWindow = createMainWindow(data.token);
+              main.onLoad((base: BaseWindow) => {
                 // fileSystem.initIpcMain(ipcMain, main.window);
                 loginWindow.hide();
                 loginWindow.close();
-                window.show();
-                //updaterInfo.initAutoUpdater(autoUpdater, main.window);
+                base.show();
+
+                // updaterInfo.initAutoUpdater(autoUpdater, main.window);
               });
 
             }
 
             event.reply('login-state', {
               authorized: data.authorized,
+              token: data.token,
               error: (data.error && data.error.message ? data.error.message : data.error)
             });
           })
-          .catch((err: any) => {
-            event.reply('login-state', { authorized: false, error: err.message });
-          });
+          .catch((err: any) => event.reply('login-state', { authorized: false, error: err.message }));
       }
     }
   ).onLoad((window: BaseWindow) => {

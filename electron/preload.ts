@@ -12,10 +12,7 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 contextBridge.exposeInMainWorld('electron', {
-  close: () => {
-    alert('clicked');
-    ipcRenderer.send('window', 'close');
-  },
+  close: () => ipcRenderer.send('window', 'close'),
   minimize: () => ipcRenderer.send('window', 'minimize'),
   maximize: () => ipcRenderer.send('window', 'maximize'),
   showDevTools: () => ipcRenderer.send('window', 'showDevTools'),
