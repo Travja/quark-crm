@@ -105,7 +105,8 @@ class BaseWindow {
       webPreferences: {
         devTools: true,
         preload: path.join(app.getAppPath(), 'dist', 'preload.js')
-      }
+      },
+      icon: path.join(app.getAppPath(), 'dist', 'quark-logo.png')
     };
     // transparent: true,
     // frame: false,};

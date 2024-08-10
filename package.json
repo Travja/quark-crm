@@ -9,7 +9,7 @@
     "start": "npm run compile && electron --trace-warnings .",
     "svelte:dev": "cd svelte && npm run dev",
     "svelte:build": "cd svelte && npm run build",
-    "compile": "tsc",
+    "compile": "tsc && copyfiles -u 1 electron/*.png dist",
     "out:win": "npm run svelte:build && npm run compile && electron-builder build --win --publish never",
     "publish:win": "npm run svelte:build && npm run compile && electron-builder build --win --publish always"
   },
@@ -17,6 +17,7 @@
   "license": "ISC",
   "devDependencies": {
     "concurrently": "^8.2.2",
+    "copyfiles": "^2.4.1",
     "electron": "^31.3.1",
     "electron-builder": "^24.13.3",
     "electron-fetch": "^1.9.1",
