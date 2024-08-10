@@ -1,17 +1,11 @@
 import { error } from '@sveltejs/kit';
 import type { Order } from '$lib/models/order';
-import { _token } from '$lib/data';
-import { get } from 'svelte/store';
+import { afetch } from '$lib/http';
 
 /** @type {import('./$types').PageLoad} */
 export async function load({ params, fetch }) {
   const order: Order = await new Promise((resolve) => {
-    fetch(`http://localhost:8080/order/${params.orderId}`,
-      {
-        headers: {
-          'Authorization': 'Bearer ' + get(_token)
-        }
-      })
+    afetch(`http://localhost:8080/order/${params.orderId}`)
       .then(res => res.json())
       .then(data => resolve(data))
       .catch(e => resolve(null));

@@ -22,29 +22,29 @@
 </ReusableLayout>
 
 <style>
-  nav {
-    background-color: var(--bg-secondary);
-  }
+    nav {
+        background-color: var(--bg-secondary);
+    }
 
-  ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: row;
-  }
+    ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: row;
+    }
 
-  li {
-    padding: 0.5em;
-  }
+    li {
+        padding: 0.5em;
+    }
 
-  .nav-button {
-    padding: 0.75em;
-    margin: 0 0.2em;
-  }
+    .nav-button {
+        padding: 0.75em;
+        margin: 0 0.2em;
+    }
 
-  .nav-button:hover {
-    background-color: rgba(0, 0, 0, 0.5);
-    cursor: pointer;
-  }
+    .nav-button:hover {
+        background-color: rgba(0, 0, 0, 0.5);
+        cursor: pointer;
+    }
 </style>

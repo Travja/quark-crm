@@ -22,9 +22,9 @@ const developerOptions = {
   testing both side: isInProduction: true, serveSvelteDev: false, buildSvelteDev:true, watchSvelteBuild: true
 */
 
-export const createMainWindow = (token: string): BaseWindow => {
+export const createMainWindow = (token: string, refreshToken: string): BaseWindow => {
   return new BaseWindow(
-    `/?token=${token}`,
+    `/?token=${token}&refreshToken=${refreshToken}`,
     { ...mainWindowSettings, title: 'QuarkCRM' },
     developerOptions,
     {
@@ -42,7 +42,7 @@ export const createLoginWindow = (): BaseWindow => {
       ...navApi,
       ...fileApi,
       login: (myWindow: BaseWindow, event: IpcMainEvent, args: any) => {
-        //TODO Write login state to disk somewhere?
+        // TODO Write login state to disk somewhere?
 
         console.log(args);
         console.log(args.username);
@@ -58,7 +58,7 @@ export const createLoginWindow = (): BaseWindow => {
           .then((data: any) => {
             console.log(data);
             if (data.authorized) {
-              let main: BaseWindow = createMainWindow(data.token);
+              let main: BaseWindow = createMainWindow(data.token, data.refreshToken);
               main.onLoad((base: BaseWindow) => {
                 // fileSystem.initIpcMain(ipcMain, main.window);
                 loginWindow.hide();

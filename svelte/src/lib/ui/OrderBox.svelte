@@ -23,8 +23,7 @@
     getTreeStatusColor,
     getTreeStatusForegroundColor
   } from '$lib/api/colors';
-  import { get } from 'svelte/store';
-  import { _token } from '$lib/data';
+  import { afetch } from '$lib/http';
 
   export let order: Order;
 
@@ -42,11 +41,10 @@
   // }
 
   const saveOrder = (): void => {
-    fetch('http://localhost:8080/order', {
+    afetch('http://localhost:8080/order', {
       method: 'put',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + get(_token)
       },
       body: JSON.stringify(order)
     })
