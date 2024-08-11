@@ -11,6 +11,7 @@
   export let group: any = undefined;
   export let options: any[] = undefined;
   export let disabled = false;
+  export let readonly = false;
   export let fillSpace = false;
   export let noTransition = false;
   export let backgroundColor = undefined;
@@ -32,6 +33,7 @@
                bind:value={value}
                bind:group={group}
                {disabled}
+               {readonly}
                {backgroundColor}
                {color}
   >

@@ -14,6 +14,7 @@
   export let color = undefined;
   export let fontSize = '1rem';
   export let disabled = false;
+  export let readonly = false;
   export let group: any = undefined;
 
   export let min: number = undefined;
@@ -83,6 +84,7 @@
   {#if type == 'text'}
     <input
       {disabled}
+      {readonly}
       {id}
       {name}
       type='text'
@@ -97,11 +99,14 @@
     />
   {:else if type == 'number'}
     <div class='input-wrap'>
-      <div class='buttons hidden' class:disabled={disabled} on:click={() => element.focus()}>
-        <span class='material-icons'>keyboard_arrow_up</span>
-      </div>
+      {#if !readonly}
+        <div class='buttons hidden' class:disabled={disabled} on:click={() => element.focus()}>
+          <span class='material-icons'>keyboard_arrow_up</span>
+        </div>
+      {/if}
       <input
         {disabled}
+        {readonly}
         {id}
         {name}
         type='number'
@@ -117,14 +122,17 @@
         on:keypress
         on:keyup
       />
-      <div class='buttons' class:disabled={disabled}>
-        <span class='material-icons' on:click={stepUp}>keyboard_arrow_up</span>
-        <span class='material-icons' on:click={stepDown}>keyboard_arrow_down</span>
-      </div>
+      {#if !readonly}
+        <div class='buttons' class:disabled={disabled}>
+          <span class='material-icons' on:click={stepUp}>keyboard_arrow_up</span>
+          <span class='material-icons' on:click={stepDown}>keyboard_arrow_down</span>
+        </div>
+      {/if}
     </div>
   {:else if type == 'date'}
     <input
       {disabled}
+      {readonly}
       {id}
       {name}
       type='date'
@@ -140,6 +148,7 @@
   {:else if type == 'datetime'}
     <input
       {disabled}
+      {readonly}
       {id}
       {name}
       type='datetime-local'
@@ -155,6 +164,7 @@
   {:else if type == 'password'}
     <input
       {disabled}
+      {readonly}
       {id}
       {name}
       type='password'
@@ -170,6 +180,7 @@
   {:else if type == 'select'}
     <select
       {disabled}
+      {readonly}
       {id}
       {name}
       {placeholder}
@@ -184,6 +195,7 @@
   {:else if type == 'textarea'}
     <textarea
       {disabled}
+      {readonly}
       {id}
       {name}
       {placeholder}
@@ -196,6 +208,7 @@
   {:else if type == 'checkbox'}
     <input type='checkbox'
            {disabled}
+           {readonly}
            {id}
            {name}
            bind:checked={value}
@@ -211,6 +224,7 @@
       <slot />
       <input type='radio'
              {disabled}
+             {readonly}
              {id}
              {name}
              value='{value}'

@@ -138,7 +138,7 @@ export enum CustomerType {
 export interface Order {
   id: string;
   customer: Customer;
-  artist: string;
+  artist: 'Karen' | 'MaKaela';
   status: OrderStatus;
   treeStatus: TreeStatus;
 
@@ -199,4 +199,6 @@ export interface Order {
   tax: number;
   printExpense: number;
   coupon?: Coupon;
+
+  lastContact?: string,
 }

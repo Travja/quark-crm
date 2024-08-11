@@ -4,7 +4,7 @@
   import { loadData } from '$lib/data.js';
   import { onMount } from 'svelte';
   import Toggle from '$lib/ui/Toggle.svelte';
-  import { OrderStatus } from '$lib/models/order';
+  import { type Order, OrderStatus } from '$lib/models/order';
   import { getPrintTypeShortCode } from '$lib/models/order.js';
   import Modal from '$lib/Modal.svelte';
   import LabeledInput from '$lib/ui/LabeledInput.svelte';
@@ -14,8 +14,9 @@
     getTreeStatusColor,
     getTreeStatusForegroundColor
   } from '$lib/api/colors';
+  import { afetch } from '$lib/http';
 
-  let allOrders = true;
+  let allOrders = false;
   let notesOpen = false;
   let notesModal = undefined;
 
@@ -34,6 +35,16 @@
     return orderIndex < trackingSentIndex;
   };
 
+  const updateOrder = (order: Order) => {
+    afetch('http://localhost:8080/order', {
+      method: 'put',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(order)
+    })
+      .catch(err => console.error('Error updating order', err));
+  };
 </script>
 
 <div class='heading-bar'>
@@ -71,9 +82,11 @@
       {#if allOrders || orderIsActive(order.status)}
         <tr>
           <!-- Customer Name -->
-          <a href='/order/{order.id}'>
-            {order.customer.customerName}
-          </a>
+          <td>
+            <a href='/order/{order.id}' title="{order.customer.customerName}'s order">
+              {order.customer.customerName}
+            </a>
+          </td>
           <!-- Last Contact -->
           <td>{order.lastContact || ''}</td>
           <!-- History -->
@@ -106,8 +119,11 @@
             style:background-color={getTreeStatusColor(order.treeStatus)}
           >{order.treeStatus}</td>
           <!-- Artist -->
-          <td>
-            Karen
+          <td class='no-padding'>
+            <StyledInput type='select' bind:value={order.artist} on:change={() => updateOrder(order)}>
+              <option value='Karen' selected='{order.artist === "Karen"}'>Karen</option>
+              <option value='MaKaela' selected='{order.artist === "MaKaela"}'>MaKaela</option>
+            </StyledInput>
           </td>
           <!-- Notes -->
           <td class='notes' on:click={() => {
@@ -172,14 +188,14 @@
 
     .center {
         align-items: stretch;
-        width: 100%;
+        /*width: 100%;*/
     }
 
     table {
         border-collapse: collapse;
     }
 
-    table * {
+    table td, table th {
         border: 1px solid var(--fg-color);
         padding: 0.5em;
     }
@@ -196,7 +212,6 @@
     }
 
     a {
-        display: table-cell;
         color: var(--link-color);
     }
 
@@ -204,5 +219,9 @@
         max-width: 10rem;
         overflow: hidden;
         text-overflow: ellipsis;
+    }
+
+    .no-padding {
+        padding: 0;
     }
 </style>

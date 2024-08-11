@@ -44,7 +44,7 @@
     afetch('http://localhost:8080/order', {
       method: 'put',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify(order)
     })
@@ -91,7 +91,9 @@
     </LabeledInput>
 
     <LabeledInput id='artist'
-                  bind:value={order.artist}>
+                  type='select'
+                  bind:value={order.artist}
+                  options="{['Karen','MaKaela']}">
       Artist
     </LabeledInput>
 

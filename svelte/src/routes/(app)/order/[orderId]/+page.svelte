@@ -21,6 +21,16 @@
     orders = data.orders;
     initData();
   });
+
+  const sumOperatingCosts = (order: Order): string => {
+    const value = order.printCost + order.shippingCost - order.printExpense - order.shippingExpense - order.tax;
+    const format = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    });
+    console.log(value, format.format(value));
+    return format.format(value);
+  };
 </script>
 
 {#if !customer}
@@ -51,26 +61,26 @@
         <div class='wrapper'>
           <div class='column'>
             <h2>In</h2>
-            <LabeledInput type='number'>
+            <LabeledInput readonly type='number' bind:value={order.printCost}>
               Print Cost
             </LabeledInput>
-            <LabeledInput type='number'>
+            <LabeledInput readonly type='number' bind:value={order.shippingCost}>
               Shipping Cost
             </LabeledInput>
 
             <h2>Out</h2>
-            <LabeledInput type='number'>
+            <LabeledInput type='number' bind:value={order.printExpense}>
               Print
             </LabeledInput>
-            <LabeledInput type='number'>
+            <LabeledInput type='number' bind:value={order.shippingExpense}>
               Shipping
             </LabeledInput>
-            <LabeledInput type='number'>
+            <LabeledInput type='number' bind:value={order.tax}>
               Tax
             </LabeledInput>
 
             <hr />
-            <LabeledInput type='number'>
+            <LabeledInput readonly type='text' value='{sumOperatingCosts(order)}'>
               Total
             </LabeledInput>
 
@@ -107,7 +117,7 @@
     }
 
     .sp-in:has(input:not(:placeholder-shown)) label,
-    .sp-in:has(input:focus) label  {
+    .sp-in:has(input:focus) label {
         color: white;
         background-color: #222;
         transform: translate(-0.25rem, -1rem) scale(0.8);
