@@ -36,5 +36,9 @@ export const fileApi: ApiOptions = {
   },
   readFile: (window: BaseWindow) => {
     // TODO Implement these
+  },
+  writeCredentials: (window: BaseWindow, event, data) => {
+    // TODO Implement these
+    console.log('Received write credentials request', data);
   }
 };

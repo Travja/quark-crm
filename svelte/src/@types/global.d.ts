@@ -20,6 +20,7 @@ interface IElectronWindowSystem {
   isFocused: () => Promise<boolean>;
   isDarkTheme: () => boolean;
   move: (x: number, y: number) => void;
+  writeCredentials: (data: { token: string, refreshToken: string }) => void;
 }
 
 export declare interface ApiWindow extends Window {

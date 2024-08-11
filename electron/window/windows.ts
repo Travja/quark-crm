@@ -1,6 +1,7 @@
 import BaseWindow from './base-window';
 import { fileApi, navApi } from '../api';
 import fetch from 'electron-fetch';
+import { readCredentials, writeCredentials } from '../ipc/file-system';
 import IpcMainEvent = Electron.IpcMainEvent;
 
 const mainWindowSettings = {
@@ -42,11 +43,6 @@ export const createLoginWindow = (): BaseWindow => {
       ...navApi,
       ...fileApi,
       login: (myWindow: BaseWindow, event: IpcMainEvent, args: any) => {
-        // TODO Write login state to disk somewhere?
-
-        console.log(args);
-        console.log(args.username);
-
         fetch('http://localhost:8080/auth/login', {
           method: 'post',
           headers: {
@@ -56,8 +52,12 @@ export const createLoginWindow = (): BaseWindow => {
         })
           .then((res: any) => res.json())
           .then((data: any) => {
-            console.log(data);
             if (data.authorized) {
+              writeCredentials({
+                token: data.token,
+                refreshToken: data.refreshToken
+              }).then(() => console.log('Wrote credentials'));
+
               let main: BaseWindow = createMainWindow(data.token, data.refreshToken);
               main.onLoad((base: BaseWindow) => {
                 // fileSystem.initIpcMain(ipcMain, main.window);
@@ -83,9 +83,6 @@ export const createLoginWindow = (): BaseWindow => {
     console.log('Window loaded');
     window.show();
     window.focus();
-    // setTimeout(
-    // () => window.showDevConsole{ mode: 'detach' }),
-    // 500);
   });
 
   return loginWindow;

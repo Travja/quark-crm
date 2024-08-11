@@ -1,5 +1,6 @@
 import { get, writable, type Writable } from 'svelte/store';
 import { browser } from '$app/environment';
+import type { ApiWindow } from 'global';
 
 const setupLocalStore = (key: string,
                          def: string,
@@ -63,6 +64,10 @@ const validateAndRefreshToken = async (): Promise<void> => {
   }).then(res => res.json())
     .then(data => {
       if (data.token) {
+        (<ApiWindow><unknown>window).electron.writeCredentials({
+          token: data.token,
+          refreshToken: data.refreshToken
+        });
         _token.set(data.token);
         _refreshToken.set(data.refreshToken);
       }

@@ -46,26 +46,7 @@ class BaseWindow {
     this.ipcApi = ipcApi;
 
     if (!app.isReady()) {
-      app.on('ready', async () => {
-        if (this.settings.enableLoadingScreen) {
-          let loading = new BrowserWindow({ show: false, frame: false, width: 300, height: 300, transparent: true });
-
-
-          loading.once('show', async () => {
-            this.createWindow().then((window: BrowserWindow) => {
-              loading.hide();
-              loading.close();
-              this.loaded(window);
-            });
-          });
-
-          const loc = path.join(app.getAppPath(), 'dist', 'www', 'loading.html');
-          await loading.loadFile(loc);
-          loading.show();
-        } else {
-          this.createWindow().then(this.loaded);
-        }
-      });
+      app.on('ready', async () => this.createWindow().then(this.loaded));
     } else {
       this.createWindow().then(this.loaded);
     }
