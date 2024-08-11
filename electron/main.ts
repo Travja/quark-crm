@@ -61,27 +61,30 @@ app.on('ready', async () => {
           if (data.token) {
             writeCredentials({ token: data.token, refreshToken: data.refreshToken })
               .then(() => {
-                createMainWindow(data.token, data.refreshToken);
-                loadingWindow.hide();
-                loadingWindow.close();
+                createMainWindow(data.token, data.refreshToken).onLoad(base => {
+                  loadingWindow.hide();
+                  loadingWindow.close();
+                  base.show();
+                });
               });
           } else {
             createLoginWindow();
             loadingWindow.hide();
             loadingWindow.close();
           }
-        }).catch((_) => {
-        createLoginWindow();
+        })
+        .catch((_) => {
+          createLoginWindow();
+          loadingWindow.hide();
+          loadingWindow.close();
+        });
+    } else {
+      createMainWindow(token, refreshToken).onLoad(base => {
         loadingWindow.hide();
         loadingWindow.close();
+        base.show();
       });
     }
-
-    createMainWindow(token, refreshToken).onLoad(base => {
-      loadingWindow.hide();
-      loadingWindow.close();
-      base.show();
-    });
   }).catch((_) => {
     createLoginWindow();
     loadingWindow.hide();

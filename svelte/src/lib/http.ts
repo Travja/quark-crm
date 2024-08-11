@@ -64,6 +64,7 @@ const validateAndRefreshToken = async (): Promise<void> => {
   }).then(res => res.json())
     .then(data => {
       if (data.token) {
+        console.log('saving credentials');
         (<ApiWindow><unknown>window).electron.writeCredentials({
           token: data.token,
           refreshToken: data.refreshToken

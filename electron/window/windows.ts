@@ -80,7 +80,6 @@ export const createLoginWindow = (): BaseWindow => {
       }
     }
   ).onLoad((window: BaseWindow) => {
-    console.log('Window loaded');
     window.show();
     window.focus();
   });

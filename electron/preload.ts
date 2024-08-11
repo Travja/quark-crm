@@ -46,7 +46,8 @@ contextBridge.exposeInMainWorld('electron', {
     );
 
     return result;
-  }
+  },
+  writeCredentials: (data: { token: string, refreshToken: string }) => ipcRenderer.send('api', 'writeCredentials', data)
 });
 
 contextBridge.exposeInMainWorld('api', {

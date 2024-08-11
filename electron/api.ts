@@ -1,6 +1,7 @@
 import { ApiOptions } from './types';
 import BaseWindow from './window/base-window';
 import { nativeTheme } from 'electron';
+import { writeCredentials } from './ipc/file-system';
 
 export const navApi: ApiOptions = {
   close: (window: BaseWindow) => window.close(),
@@ -37,8 +38,5 @@ export const fileApi: ApiOptions = {
   readFile: (window: BaseWindow) => {
     // TODO Implement these
   },
-  writeCredentials: (window: BaseWindow, event, data) => {
-    // TODO Implement these
-    console.log('Received write credentials request', data);
-  }
+  writeCredentials: (window: BaseWindow, event, data) => writeCredentials(data)
 };
