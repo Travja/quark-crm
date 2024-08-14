@@ -136,3 +136,8 @@ export interface Order {
 
   lastContact?: string;
 }
+
+export interface SearchFilter {
+  statusFilter?: OrderStatus[];
+  treeFilter?: TreeStatus[];
+}

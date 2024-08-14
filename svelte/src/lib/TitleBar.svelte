@@ -52,7 +52,7 @@
 
 <style>
   #title-bar {
-    --webkit-app-region: drag;
+    -webkit-app-region: drag;
     display: flex;
     justify-content: flex-end;
     background-color: var(--title-bg-color);
@@ -65,7 +65,7 @@
   }
 
   .nav-container {
-    --webkit-app-region: no-drag;
+    -webkit-app-region: no-drag;
     display: flex;
     position: relative;
     box-shadow: 0 0 0.5em #000;

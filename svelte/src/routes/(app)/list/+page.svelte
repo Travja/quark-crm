@@ -1,7 +1,11 @@
 <script lang="ts">
-  import { loadData, orders } from '$lib/data';
+  import {
+    filteredOrders,
+    loadData,
+    orderStatusFilter,
+    treeFilters
+  } from '$lib/data';
   import StyledInput from '$lib/ui/StyledInput.svelte';
-  import { onMount } from 'svelte';
   import {
     getPrintTypeShortCode,
     OrderStatus,
@@ -16,45 +20,11 @@
     getTreeStatusForegroundColor
   } from '$lib/api/colors';
   import { afetch } from '$lib/http';
-  import type { Writable } from 'svelte/store';
-  import { writable } from 'svelte/store';
   import type { Order } from '@types/global';
 
   let filterBoxShown = false;
   let notesOpen = false;
   let notesModal = undefined;
-
-  const statusFilters: Writable<OrderStatus[]> = writable<OrderStatus[]>([
-    OrderStatus.ORDER_PLACED,
-    OrderStatus.UNPAID,
-    OrderStatus.INVOICED,
-    OrderStatus.PAID,
-    OrderStatus.PRINT_ORDERED,
-    OrderStatus.QUESTION_ASKED,
-    OrderStatus.QUESTION_ANSWERED
-  ]);
-  const treeFilters: Writable<TreeStatus[]> = writable<TreeStatus[]>(
-    <TreeStatus[]>Object.values(TreeStatus)
-  );
-
-  const filteredOrders: Writable<Order[]> = writable<Order[]>([]);
-
-  const updateFilteredOrders = () => {
-    const newOrders: Order[] = [...$orders].filter((order) => {
-      return (
-        $statusFilters.includes(order.status) &&
-        $treeFilters.includes(order.treeStatus)
-      );
-    });
-
-    filteredOrders.set(newOrders);
-  };
-
-  onMount(() => {
-    loadData();
-    statusFilters.subscribe(updateFilteredOrders);
-    treeFilters.subscribe(updateFilteredOrders);
-  });
 
   const checkEnter = (event: KeyboardEvent) => {
     if (event.key == 'Enter') {
@@ -97,12 +67,15 @@
                 <input
                   type="checkbox"
                   id="order-status-{status.toLowerCase().replace(' ', '_')}"
-                  checked={$statusFilters.includes(status)}
+                  checked={$orderStatusFilter.includes(status)}
                   on:change={(e) => {
-                    if (e.target.checked && !$statusFilters.includes(status)) {
-                      statusFilters.update((s) => [...s, status]);
+                    if (
+                      e.target.checked &&
+                      !$orderStatusFilter.includes(status)
+                    ) {
+                      orderStatusFilter.update((s) => [...s, status]);
                     } else {
-                      statusFilters.update((s) =>
+                      orderStatusFilter.update((s) =>
                         s.filter((f) => f !== status)
                       );
                     }

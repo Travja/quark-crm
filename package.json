@@ -6,7 +6,7 @@
   "scripts": {
     "nodemon": "nodemon",
     "app": "electron .",
-    "start": "npm run compile && electron --trace-warnings .",
+    "start": "npm run compile && electron --trace-warnings . --no-sandbox",
     "svelte:dev": "cd svelte && npm run dev",
     "svelte:build": "cd svelte && npm run build",
     "compile": "tsc && copyfiles -u 1 electron/*.png dist",
