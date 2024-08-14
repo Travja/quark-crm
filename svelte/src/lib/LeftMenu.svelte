@@ -19,7 +19,17 @@
 </script>
 
 <div id="left-menu">
-  <div class="toggle" on:click={() => (theme = !theme)}>Toggle</div>
+  <div
+    class="toggle"
+    role="button"
+    tabindex="0"
+    on:click={() => (theme = !theme)}
+    on:keypress={(e) => {
+      if (e.key === 'Enter') theme = !theme;
+    }}
+  >
+    Toggle
+  </div>
 </div>
 
 <style>

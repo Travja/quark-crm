@@ -1,11 +1,12 @@
-<script lang='ts'>
-  import { orders } from '$lib/data';
+<script lang="ts">
+  import { loadData, orders } from '$lib/data';
   import StyledInput from '$lib/ui/StyledInput.svelte';
-  import { loadData } from '$lib/data.js';
   import { onMount } from 'svelte';
-  import Toggle from '$lib/ui/Toggle.svelte';
-  import { type Order, OrderStatus } from '$lib/models/order';
-  import { getPrintTypeShortCode } from '$lib/models/order.js';
+  import {
+    getPrintTypeShortCode,
+    OrderStatus,
+    TreeStatus
+  } from '$lib/models/order';
   import Modal from '$lib/Modal.svelte';
   import LabeledInput from '$lib/ui/LabeledInput.svelte';
   import {
@@ -15,75 +16,181 @@
     getTreeStatusForegroundColor
   } from '$lib/api/colors';
   import { afetch } from '$lib/http';
+  import type { Writable } from 'svelte/store';
+  import { writable } from 'svelte/store';
+  import type { Order } from '@types/global';
 
-  let allOrders = false;
+  let filterBoxShown = false;
   let notesOpen = false;
   let notesModal = undefined;
 
-  onMount(loadData);
+  const statusFilters: Writable<OrderStatus[]> = writable<OrderStatus[]>([
+    OrderStatus.ORDER_PLACED,
+    OrderStatus.UNPAID,
+    OrderStatus.INVOICED,
+    OrderStatus.PAID,
+    OrderStatus.PRINT_ORDERED,
+    OrderStatus.QUESTION_ASKED,
+    OrderStatus.QUESTION_ANSWERED
+  ]);
+  const treeFilters: Writable<TreeStatus[]> = writable<TreeStatus[]>(
+    <TreeStatus[]>Object.values(TreeStatus)
+  );
+
+  const filteredOrders: Writable<Order[]> = writable<Order[]>([]);
+
+  const updateFilteredOrders = () => {
+    const newOrders: Order[] = [...$orders].filter((order) => {
+      return (
+        $statusFilters.includes(order.status) &&
+        $treeFilters.includes(order.treeStatus)
+      );
+    });
+
+    filteredOrders.set(newOrders);
+  };
+
+  onMount(() => {
+    loadData();
+    statusFilters.subscribe(updateFilteredOrders);
+    treeFilters.subscribe(updateFilteredOrders);
+  });
 
   const checkEnter = (event: KeyboardEvent) => {
     if (event.key == 'Enter') {
       // TODO Apply search/filter
-
     }
-  };
-
-  const orderIsActive = (orderStatus: OrderStatus) => {
-    let orderIndex = Object.values(OrderStatus).indexOf(orderStatus);
-    let trackingSentIndex = Object.values(OrderStatus).indexOf(OrderStatus.TRACKING_SENT);
-    return orderIndex < trackingSentIndex;
   };
 
   const updateOrder = (order: Order) => {
     afetch('http://localhost:8080/order', {
       method: 'put',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify(order)
-    })
-      .catch(err => console.error('Error updating order', err));
+    }).catch((err) => console.error('Error updating order', err));
   };
 </script>
 
-<div class='heading-bar'>
-  <div class='material-icons icon-button'>filter_alt</div>
-  <div class='material-icons icon-button' on:click={loadData}>sync</div>
-  <Toggle right='Active' left='All' color='var(--ui-button-hover)' bind:value={allOrders} />
-  <div class='spacer' />
-  <StyledInput placeholder='Search...' fontSize='1.2em' margin='0' on:keypress={checkEnter} />
+<div class="heading-bar">
+  <span id="filter-wrapper">
+    <span
+      role="button"
+      tabindex="0"
+      class="material-icons icon-button"
+      on:click={() => (filterBoxShown = !filterBoxShown)}
+      on:keypress={(e) => {
+        if (e.key === 'Enter') filterBoxShown = !filterBoxShown;
+      }}
+    >
+      filter_alt
+    </span>
+    {#if filterBoxShown}
+      <div id="filter-box">
+        <h2>Filters</h2>
+        <div class="filter">
+          <div class="filter-section">
+            <h3>Order Status</h3>
+            {#each Object.values(OrderStatus) as status}
+              <div class="filter-order-status">
+                <input
+                  type="checkbox"
+                  id="order-status-{status.toLowerCase().replace(' ', '_')}"
+                  checked={$statusFilters.includes(status)}
+                  on:change={(e) => {
+                    if (e.target.checked && !$statusFilters.includes(status)) {
+                      statusFilters.update((s) => [...s, status]);
+                    } else {
+                      statusFilters.update((s) =>
+                        s.filter((f) => f !== status)
+                      );
+                    }
+                  }}
+                />
+                <label
+                  for="order-status-{status.toLowerCase().replace(' ', '_')}"
+                  >{status}</label
+                >
+              </div>
+            {/each}
+          </div>
+          <div class="filter-section">
+            <h3>Tree Status</h3>
+            {#each Object.values(TreeStatus) as status}
+              <div class="filter-tree-status">
+                <input
+                  type="checkbox"
+                  id="tree-status-{status.toLowerCase().replace(' ', '_')}"
+                  checked={$treeFilters.includes(status)}
+                  on:change={(e) => {
+                    if (e.target.checked && !$treeFilters.includes(status)) {
+                      treeFilters.update((s) => [...s, status]);
+                    } else {
+                      treeFilters.update((s) => s.filter((f) => f !== status));
+                    }
+                  }}
+                />
+                <label
+                  for="tree-status-{status.toLowerCase().replace(' ', '_')}"
+                  >{status}</label
+                >
+              </div>
+            {/each}
+          </div>
+        </div>
+      </div>
+    {/if}
+  </span>
+  <span
+    role="button"
+    tabindex="0"
+    class="material-icons icon-button"
+    on:click={loadData}
+    on:keypress={(e) => {
+      if (e.key === 'Enter') loadData();
+    }}>sync</span
+  >
+  <span class="spacer" />
+  <StyledInput
+    placeholder="Search..."
+    fontSize="1.2em"
+    margin="0"
+    on:keypress={checkEnter}
+  />
 </div>
-<div class='center'>
+<div class="center">
   <table>
     <thead>
-    <tr>
-      <th>Customer</th>
-      <th>Last Contact</th>
-      <th>History</th>
-      <th>Order Status</th>
-      <th>Order Date</th>
-      <th>Due Date</th>
-      <th>Tree Status</th>
-      <th>Artist</th>
-      <th>Notes</th>
-      <th>Tree Type</th>
-      <th>Generations</th>
-      <th>Print</th>
-      <th>Size</th>
-      <th>$ In</th>
-      <th>Vendor</th>
-      <th>$ Out</th>
-      <th>Profit</th>
-    </tr>
+      <tr>
+        <th>Customer</th>
+        <th>Last Contact</th>
+        <th>History</th>
+        <th>Order Status</th>
+        <th>Order Date</th>
+        <th>Due Date</th>
+        <th>Tree Status</th>
+        <th>Artist</th>
+        <th>Notes</th>
+        <th>Tree Type</th>
+        <th>Generations</th>
+        <th>Print</th>
+        <th>Size</th>
+        <th>$ In</th>
+        <th>Vendor</th>
+        <th>$ Out</th>
+        <th>Profit</th>
+      </tr>
     </thead>
     <tbody>
-    {#each $orders as order}
-      {#if allOrders || orderIsActive(order.status)}
+      {#each $filteredOrders as order}
         <tr>
           <!-- Customer Name -->
           <td>
-            <a href='/order/{order.id}' title="{order.customer.customerName}'s order">
+            <a
+              href="/order/{order.id}"
+              title="{order.customer.customerName}'s order"
+            >
               {order.customer.customerName}
             </a>
           </td>
@@ -92,44 +199,81 @@
           <!-- History -->
           <td></td>
           <!-- Order Status -->
-          <td
-            style:background-color={getOrderStatusColor(order.status)}
-            style:color={getOrderStatusForegroundColor(order.status)}
-          >{order.status}</td>
+          <td class="no-padding">
+            <StyledInput
+              type="select"
+              class="order-status"
+              bind:value={order.status}
+              backgroundColor={getOrderStatusColor(order.status)}
+              color={getOrderStatusForegroundColor(order.status)}
+              on:change={() => updateOrder(order)}
+            >
+              {#each Object.values(OrderStatus) as status}
+                <option value={status} selected={order.status === status}
+                  >{status}</option
+                >
+              {/each}
+            </StyledInput>
+          </td>
           <!-- Order(created) Date -->
           <td>
-            {
-              new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' })
-                .format(order.created)
-            }
+            {new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' }).format(
+              order.created
+            )}
           </td>
           <!-- Due Date -->
           <td
             style:color={order.requestDate ? 'black' : undefined}
             style:background-color={order.requestDate ? '#fdfba1' : undefined}
           >
-            {
-              order.requestDate ? new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' })
-                .format(order.requestDate) : ''
-            }
+            {order.requestDate
+              ? new Intl.DateTimeFormat('en-US', {
+                  dateStyle: 'medium'
+                }).format(order.requestDate)
+              : ''}
           </td>
           <!-- Tree Status -->
-          <td
-            style:color={getTreeStatusForegroundColor(order.treeStatus)}
-            style:background-color={getTreeStatusColor(order.treeStatus)}
-          >{order.treeStatus}</td>
+          <td class="no-padding">
+            <StyledInput
+              type="select"
+              class="tree-status"
+              bind:value={order.treeStatus}
+              color={getTreeStatusForegroundColor(order.treeStatus)}
+              backgroundColor={getTreeStatusColor(order.treeStatus)}
+              on:change={() => updateOrder(order)}
+            >
+              {#each Object.values(TreeStatus) as status}
+                <option value={status} selected={order.treeStatus === status}
+                  >{status}</option
+                >
+              {/each}
+            </StyledInput>
+            <!--{order.treeStatus}-->
+          </td>
           <!-- Artist -->
-          <td class='no-padding'>
-            <StyledInput type='select' bind:value={order.artist} on:change={() => updateOrder(order)}>
-              <option value='Karen' selected='{order.artist === "Karen"}'>Karen</option>
-              <option value='MaKaela' selected='{order.artist === "MaKaela"}'>MaKaela</option>
+          <td class="no-padding">
+            <StyledInput
+              type="select"
+              bind:value={order.artist}
+              on:change={() => updateOrder(order)}
+            >
+              <option value="Karen" selected={order.artist === 'Karen'}
+                >Karen
+              </option>
+              <option value="MaKaela" selected={order.artist === 'MaKaela'}
+                >MaKaela
+              </option>
             </StyledInput>
           </td>
           <!-- Notes -->
-          <td class='notes' on:click={() => {
-            notesModal = order;
-            notesOpen = true;
-          }}>
+          <td
+            class="notes"
+            on:click={() => {
+              notesModal = order;
+              notesOpen = true;
+            }}
+            title={order.notes || 'No Notes'}
+          >
             {order.notes || ''}
           </td>
           <!-- Tree Type -->
@@ -153,9 +297,7 @@
             ${order.cost}
           </td>
           <!-- Vendor -->
-          <td>
-
-          </td>
+          <td></td>
           <!-- Money Out -->
           <td>
             ${order.expenses}
@@ -165,63 +307,89 @@
             ${order.cost - order.expenses}
           </td>
         </tr>
-      {/if}
-    {/each}
+      {/each}
     </tbody>
   </table>
 </div>
 
-<Modal bind:open={notesOpen} width='50vw'>
+<Modal bind:open={notesOpen} width="50vw">
   <h2>Notes</h2>
-  <LabeledInput type='textarea' fillSpace='true' bind:value={notesModal.notes} />
+  <LabeledInput
+    readonly
+    type="textarea"
+    fillSpace="true"
+    bind:value={notesModal.notes}
+  />
 </Modal>
 
 <style>
-    .heading-bar {
-        display: flex;
-        align-items: center;
-        margin-bottom: 0.5em;
-        position: sticky;
-        top: 0;
-        left: 0;
-    }
+  .heading-bar {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5em;
+    position: sticky;
+    top: 0;
+    left: 0;
+  }
 
-    .center {
-        align-items: stretch;
-        /*width: 100%;*/
-    }
+  .center {
+    align-items: stretch;
+    /*width: 100%;*/
+  }
 
-    table {
-        border-collapse: collapse;
-    }
+  table {
+    border-collapse: collapse;
+  }
 
-    table td, table th {
-        border: 1px solid var(--fg-color);
-        padding: 0.5em;
-    }
+  table td,
+  table th {
+    border: 1px solid var(--ui-button-hover);
+    padding: 0.5em;
+  }
 
-    thead tr {
-        background-color: var(--accent-color);
-        color: black;
-        font-weight: bold;
-    }
+  thead tr {
+    background-color: var(--accent-color);
+    color: black;
+    font-weight: bold;
+  }
 
-    td {
-        min-width: 4em;
-        white-space: nowrap;
-    }
+  td {
+    min-width: 4em;
+    white-space: nowrap;
+  }
 
-    a {
-        color: var(--link-color);
-    }
+  a {
+    color: var(--link-color);
+  }
 
-    .notes {
-        max-width: 10rem;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
+  .notes {
+    max-width: 10rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
-    .no-padding {
-        padding: 0;
-    }
+  .no-padding {
+    padding: 0;
+  }
+
+  #filter-box {
+    position: absolute;
+    z-index: 10;
+    background-color: var(--bg-secondary);
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+  }
+
+  #filter-box h2 {
+    margin: 0;
+  }
+
+  .filter-section {
+    display: flex;
+    flex-direction: column;
+  }
+
+  label {
+    user-select: none;
+  }
 </style>

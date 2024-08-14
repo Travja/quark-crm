@@ -2,10 +2,12 @@ import { get, writable, type Writable } from 'svelte/store';
 import { browser } from '$app/environment';
 import type { ApiWindow } from 'global';
 
-const setupLocalStore = (key: string,
-                         def: string,
-                         setAction?: (data: string) => string,
-                         postLoad?: (saved: string) => void): Writable<string> => {
+const setupLocalStore = (
+  key: string,
+  def: string,
+  setAction?: (data: string) => string,
+  postLoad?: (saved: string) => void
+): Writable<string> => {
   let saved: string = def;
   if (browser) {
     const stored = localStorage.getItem(key);
@@ -15,11 +17,7 @@ const setupLocalStore = (key: string,
     }
   }
 
-  const {
-    subscribe,
-    set,
-    update
-  } = writable<string>(saved);
+  const { subscribe, set, update } = writable<string>(saved);
   return {
     subscribe,
     set: (value: string) => {
@@ -34,7 +32,10 @@ const setupLocalStore = (key: string,
 };
 
 export const _token: Writable<string> = setupLocalStore('token', '');
-export const _refreshToken: Writable<string> = setupLocalStore('refreshToken', '');
+export const _refreshToken: Writable<string> = setupLocalStore(
+  'refreshToken',
+  ''
+);
 
 const validateAndRefreshToken = async (): Promise<void> => {
   // Extract the JWT data and check expiry. If expired, refresh the token
@@ -59,13 +60,14 @@ const validateAndRefreshToken = async (): Promise<void> => {
   return fetch('http://localhost:8080/auth/refresh', {
     method: 'post',
     headers: {
-      'Authorization': 'Bearer ' + get(_refreshToken)
+      Authorization: 'Bearer ' + get(_refreshToken)
     }
-  }).then(res => res.json())
-    .then(data => {
+  })
+    .then((res) => res.json())
+    .then((data) => {
       if (data.token) {
         console.log('saving credentials');
-        (<ApiWindow><unknown>window).electron.writeCredentials({
+        (<ApiWindow>(<unknown>window)).electron.writeCredentials({
           token: data.token,
           refreshToken: data.refreshToken
         });
@@ -75,7 +77,10 @@ const validateAndRefreshToken = async (): Promise<void> => {
     });
 };
 
-export const afetch = async (input: RequestInfo, init?: RequestInit): Promise<Response> => {
+export const afetch = async (
+  input: RequestInfo,
+  init?: RequestInit
+): Promise<Response> => {
   let token = get(_token);
   if (token) {
     if (!init) {

@@ -3,19 +3,19 @@ import { OrderStatus, TreeStatus } from '$lib/models/order';
 export const getOrderStatusColor = (orderStatus: OrderStatus) => {
   switch (orderStatus) {
     case OrderStatus.ORDER_PLACED:
-      return '#55b149';
+      return 'rgba(85,177,73,0.5)';
     case OrderStatus.UNPAID:
-      return '#b20217';
+      return 'rgba(178,2,23,0.5)';
     case OrderStatus.INVOICED:
-      return '#f88';
+      return 'rgba(255,136,136,0.5)';
     case OrderStatus.PAID:
-      return '#55b149';
+      return 'rgba(85,177,73,0.5)';
     case OrderStatus.PRINT_ORDERED:
-      return '#00ffff';
+      return 'rgba(0,255,255,0.5)';
     case OrderStatus.QUESTION_ASKED:
-      return '#9af9e2';
+      return 'rgba(154,249,226,0.5)';
     case OrderStatus.QUESTION_ANSWERED:
-      return '#4dcfac';
+      return 'rgba(77,207,172,0.5)';
     case OrderStatus.PROBABLY_NOT_ORDERING:
       return 'gray';
     case OrderStatus.ON_HOLD:
@@ -41,23 +41,23 @@ export const getOrderStatusForegroundColor = (orderStatus: OrderStatus) => {
 export const getTreeStatusColor = (treeStatus: TreeStatus) => {
   switch (treeStatus) {
     case TreeStatus.ASSIGNED:
-      return '#00ffff';
+      return 'rgba(0,255,255,0.5)';
     case TreeStatus.WAITING_FOR_NAMES:
-      return '#ffff00';
+      return 'rgba(255,255,0,0.5)';
     case TreeStatus.CREATING:
-      return '#4dcfac';
+      return 'rgba(77,207,172,0.5)';
     case TreeStatus.WAITING_FOR_QUESTION:
-      return '#f88';
+      return 'rgba(255,136,136,0.5)';
     case TreeStatus.PROOF_SUBMITTED:
-      return '#ff6600';
+      return 'rgba(255,102,0,0.5)';
     case TreeStatus.PROOF_FOLLOW_UP:
-      return '#ff6600';
+      return 'rgba(255,102,0,0.5)';
     case TreeStatus.ADJUSTING:
-      return '#9056ce';
+      return 'rgba(144,86,206,0.5)';
     case TreeStatus.RESUBMITTED:
-      return '#ff6600';
+      return 'rgba(255,102,0,0.5)';
     case TreeStatus.APPROVED:
-      return '#55b149';
+      return 'rgba(85,177,73,0.5)';
     default:
       return undefined;
   }

@@ -1,5 +1,4 @@
-<script lang='ts'>
-
+<script lang="ts">
   import type { ApiWindow } from '@types/global';
   import { onMount } from 'svelte';
 
@@ -8,30 +7,52 @@
 
   onMount(async () => {
     win = window as unknown as ApiWindow;
-    win.electron.onFocus(() => focused = true);
-    win.electron.onBlur(() => focused = false);
+    win.electron.onFocus(() => (focused = true));
+    win.electron.onBlur(() => (focused = false));
 
     focused = await win.electron.isFocused();
   });
 </script>
 
-<div id='title-bar' class:focused={focused}>
-  <div class='nav-container'>
+<div id="title-bar" class:focused>
+  <div class="nav-container">
     <span
-      class='ui-button material-icons'
-      on:click={win.electron.showDevTools}>info</span>
-    <span class='ui-button material-icons'
-          on:click={win.electron.minimize}>minimize</span>
-    <span class='ui-button material-icons'
-          on:click={win.electron.maximize}>crop_square</span>
-    <span class='ui-button close-button material-icons'
-          on:click={win.electron.close}>close</span>
+      role="menuitem"
+      tabindex="0"
+      class="ui-button material-icons"
+      on:click={win.electron.showDevTools}
+      on:keypress={(e) => e.key === 'Enter' && win.electron.showDevTools()}
+      >info</span
+    >
+    <span
+      role="menuitem"
+      tabindex="0"
+      class="ui-button material-icons"
+      on:click={win.electron.minimize}
+      on:keypress={(e) => e.key === 'Enter' && win.electron.minimize()}
+      >minimize</span
+    >
+    <span
+      role="menuitem"
+      tabindex="0"
+      class="ui-button material-icons"
+      on:click={win.electron.maximize}
+      on:keypress={(e) => e.key === 'Enter' && win.electron.maximize()}
+      >crop_square</span
+    >
+    <span
+      role="menuitem"
+      tabindex="0"
+      class="ui-button close-button material-icons"
+      on:click={win.electron.close}
+      on:keypress={(e) => e.key === 'Enter' && win.electron.close()}>close</span
+    >
   </div>
 </div>
 
 <style>
   #title-bar {
-    -webkit-app-region: drag;
+    --webkit-app-region: drag;
     display: flex;
     justify-content: flex-end;
     background-color: var(--title-bg-color);
@@ -44,7 +65,7 @@
   }
 
   .nav-container {
-    -webkit-app-region: no-drag;
+    --webkit-app-region: no-drag;
     display: flex;
     position: relative;
     box-shadow: 0 0 0.5em #000;

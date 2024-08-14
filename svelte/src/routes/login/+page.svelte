@@ -1,4 +1,4 @@
-<script lang='ts'>
+<script lang="ts">
   import StyledInput from '$lib/ui/StyledInput.svelte';
   import type { ApiWindow } from '@types/global';
   import { onMount } from 'svelte';
@@ -13,34 +13,54 @@
   let error = false;
 
   const login = async () => {
-    win.electron.login({ username, password }).then((res) => error = res.error);
+    win.electron
+      .login({ username, password })
+      .then((res) => (error = res.error));
   };
 </script>
 
 <section>
   <h1>Login</h1>
-  <StyledInput bind:value={username} placeholder='Username' margin='0.5rem'/>
-  <StyledInput bind:value={password} type='password' placeholder='Password' margin='0.5rem 0.5rem 1rem'/>
+  <StyledInput bind:value={username} placeholder="Username" margin="0.5rem" />
+  <StyledInput
+    bind:value={password}
+    on:keypress={(e) => {
+      if (e.key === 'Enter') login();
+    }}
+    type="password"
+    placeholder="Password"
+    margin="0.5rem 0.5rem 1rem"
+  />
   {#if error}
-    <div class='error'>Failed to login: {error}</div>
+    <div class="error">Failed to login: {error}</div>
   {/if}
-  <div class='button' on:click={login}>Submit</div>
+  <div
+    role="button"
+    tabindex="0"
+    class="button"
+    on:click={login}
+    on:keypress={(e) => {
+      if (e.key === 'Enter') login();
+    }}
+  >
+    Submit
+  </div>
 </section>
 
 <style>
-    h1 {
-        margin: 0;
-    }
+  h1 {
+    margin: 0;
+  }
 
-    section {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-    }
+  section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
 
-    .error {
-        color: red;
-        margin: 0.75em;
-    }
+  .error {
+    color: red;
+    margin: 0.75em;
+  }
 </style>

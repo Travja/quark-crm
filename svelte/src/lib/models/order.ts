@@ -97,108 +97,16 @@ export enum TreeStatus {
   PROOF_FOLLOW_UP = 'Proof Follow Up',
   ADJUSTING = 'Adjusting',
   RESUBMITTED = 'Resubmitted',
-  APPROVED = 'Approved',
-}
-
-export interface AdditionalPrint {
-  printType: PrintType;
-  printSize: PrintSize;
-  frame?: string;
-  quantity: number;
-}
-
-export interface Coupon {
-  id: string;
-  code: string;
-  target: string;
-  expiry: Date;
-  value: number;
-  coupon: boolean;
-  manual: boolean;
-}
-
-export interface Customer {
-  customerName: string,
-  customerEmail: string,
-  customerAddress: string,
-  customerType: CustomerType;
+  APPROVED = 'Approved'
 }
 
 export enum FontColor {
   BLACK = 'Black',
   WHITE = 'White',
-  BROWN = 'Brown',
+  BROWN = 'Brown'
 }
 
 export enum CustomerType {
   NEW = 'NEW',
   RETURNING = 'RETURNING'
-}
-
-export interface Order {
-  id: string;
-  customer: Customer;
-  artist: 'Karen' | 'MaKaela';
-  status: OrderStatus;
-  treeStatus: TreeStatus;
-
-  created: Date;
-  requestDate?: Date | string;
-
-  branchesAmount?: string,
-
-  background: string,
-  fontColor: FontColor,
-
-  familyName?: string,
-  established?: string,
-  familyFont?: string,
-  nameLocation?: TextLocation,
-
-  quote?: string,
-  quoteFont?: string,
-  quoteLocation?: TextLocation;
-
-  groundText?: string,
-  groundFont?: string,
-
-  frame?: string,
-  comments?: string,
-  type: TreeType;
-  ancestryType?: AncestryType;
-  generations: number;
-  roots?: RootType;
-  hasDateBranches?: boolean,
-  hasLeaves: boolean,
-  hasDoubleTrunk: boolean;
-  branchStyle: BranchStyle;
-  treeStyle: TreeStyle;
-  printType: PrintType;
-  texture?: Texture;
-  printSize?: PrintSize;
-  printCost?: number;
-  shippingType: ShippingType;
-  shippingCost: number;
-  additionalPrints?: AdditionalPrint[];
-  cost: number;
-  dateBranchCost: number;
-  leafCost: number;
-  rootCost: number;
-
-  vendor?: string;
-  notes?: string;
-  updates: number;
-  updateCost: number;
-  expenses: number;
-  customDescription?: string;
-  customCharge: number;
-  customExpenseDescription?: string;
-  customExpense: number;
-  shippingExpense: number;
-  fees: number;
-  tax: number;
-  printExpense: number;
-  coupon?: Coupon;
-
-  lastContact?: string,
 }

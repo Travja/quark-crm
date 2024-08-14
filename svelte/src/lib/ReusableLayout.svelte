@@ -1,4 +1,4 @@
-<script lang='ts'>
+<script lang="ts">
   import '../app.css';
   import TitleBar from '$lib/TitleBar.svelte';
   import { onDestroy, onMount } from 'svelte';
@@ -27,8 +27,7 @@
   });
 
   onDestroy(() => {
-    if (unsub)
-      unsub();
+    if (unsub) unsub();
   });
 
   const move = (event: MouseEvent) => {
@@ -46,11 +45,15 @@
   };
 </script>
 
-<svelte:window on:mousemove={move} on:mousedown={down} on:mouseup={() => mouseDown = false} />
+<svelte:window
+  on:mousemove={move}
+  on:mousedown={down}
+  on:mouseup={() => (mouseDown = false)}
+/>
 
 <header>
   <TitleBar />
-  <slot name='header' />
+  <slot name="header" />
 </header>
 <main>
   <slot />
@@ -60,36 +63,4 @@
   header {
     background-color: var(--bg-color);
   }
-
-  nav {
-    background-color: var(--bg-secondary);
-  }
-
-  ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: row;
-  }
-
-  li {
-    padding: 0.5em;
-  }
-
-  .nav-button {
-    padding: 0.75em;
-    margin: 0 0.2em;
-  }
-
-  .nav-button:hover {
-    background-color: rgba(0, 0, 0, 0.5);
-    cursor: pointer;
-  }
-
-  /*main {*/
-  /*  display: flex;*/
-  /*  align-items: center;*/
-  /*  justify-content: center;*/
-  /*}*/
 </style>

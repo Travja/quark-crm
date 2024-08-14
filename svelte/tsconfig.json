@@ -1,23 +1,13 @@
 {
   "extends": "./.svelte-kit/tsconfig.json",
   "compilerOptions": {
-    "typeRoots": [
-      "./src/@types"
-    ],
+    "typeRoots": ["./src/@types"],
     "isolatedModules": false,
     "paths": {
-      "@types": [
-        "./src/@types"
-      ],
-      "@types/*": [
-        "./src/@types/*"
-      ],
-      "$lib": [
-        "./src/lib"
-      ],
-      "$lib/*": [
-        "./src/lib/*"
-      ]
+      "@types": ["./src/@types"],
+      "@types/*": ["./src/@types/*"],
+      "$lib": ["./src/lib"],
+      "$lib/*": ["./src/lib/*"]
     }
   }
 }

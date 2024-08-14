@@ -1,10 +1,10 @@
-<script lang='ts'>
+<script lang="ts">
   import { page } from '$app/stores';
 </script>
 
 {#if $page.status == 404}
-  <div id='main'>
-    <div id='emoji'>😨</div>
+  <div id="main">
+    <div id="emoji">😨</div>
     <h1>Page not found!</h1>
   </div>
 {/if}

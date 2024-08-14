@@ -9,33 +9,29 @@
     let value = target.options[target.selectedIndex].value;
     selectedRange = Range[value];
   };
-
 </script>
 
-<container class='data h-center'>
-  <div class='top h-center'>
+<container class="data h-center">
+  <div class="top h-center">
     <h4>Select a Time Period to Display</h4>
-    <StyledInput type='select' on:change={newRange}>
+    <StyledInput type="select" on:change={newRange}>
       {#each Object.keys(Range) as range}
-        <option value='{range}'>{Range[range]}</option>
+        <option value={range}>{Range[range]}</option>
       {/each}
     </StyledInput>
     {#if selectedRange == Range.CUSTOM}
-      <div class='custom'>
+      <div class="custom">
         <hr />
         <div>
-          <StyledInput type='date' />
+          <StyledInput type="date" />
           <span>to</span>
-          <StyledInput type='date' />
+          <StyledInput type="date" />
         </div>
       </div>
     {/if}
   </div>
-  <div class='data-shown'>
-
-  </div>
+  <div class="data-shown"></div>
 </container>
 
 <style>
-
 </style>

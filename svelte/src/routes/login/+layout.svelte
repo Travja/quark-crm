@@ -1,9 +1,9 @@
-<script lang='ts'>
+<script lang="ts">
   import ReusableLayout from '$lib/ReusableLayout.svelte';
 </script>
 
 <ReusableLayout>
-  <div id='main'>
+  <div id="main">
     <slot />
   </div>
 </ReusableLayout>

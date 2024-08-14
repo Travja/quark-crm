@@ -1,5 +1,4 @@
 import { sveltekit } from '@sveltejs/kit/vite';
-import preprocess from 'svelte-preprocess';
 
 /** @type {import('vite').UserConfig} */
 const config = {
@@ -8,7 +7,7 @@ const config = {
     port: 3000
   },
   define: {
-    'API_URL': JSON.stringify(process.env.API_URL)
+    API_URL: JSON.stringify(process.env.API_URL)
   }
 };
 
