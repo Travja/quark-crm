@@ -2,7 +2,7 @@
   import {
     filteredOrders,
     loadData,
-    orderStatusFilter,
+    orderStatusFilter, searchFilter,
     treeFilters
   } from '$lib/data';
   import StyledInput from '$lib/ui/StyledInput.svelte';
@@ -119,9 +119,9 @@
     role="button"
     tabindex="0"
     class="material-icons icon-button"
-    on:click={loadData}
+    on:click={() => loadData($searchFilter)}
     on:keypress={(e) => {
-      if (e.key === 'Enter') loadData();
+      if (e.key === 'Enter') loadData($searchFilter);
     }}>sync</span
   >
   <span class="spacer" />

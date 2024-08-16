@@ -141,3 +141,10 @@ export interface SearchFilter {
   statusFilter?: OrderStatus[];
   treeFilter?: TreeStatus[];
 }
+
+export interface Artist {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+}

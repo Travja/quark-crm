@@ -1,5 +1,6 @@
 import {
   derived,
+  readable,
   type Readable,
   readonly,
   type Writable,
@@ -7,7 +8,14 @@ import {
 } from 'svelte/store';
 import { OrderStatus, TreeStatus } from './models/order';
 import { afetch } from '$lib/http';
-import type { Order, SearchFilter } from 'global';
+import type { Artist, Order, SearchFilter } from 'global';
+
+export const artists: Readable<Artist[]> = readable([], (set) => {
+  afetch('http://localhost:8080/api/artist')
+    .then((res) => res.json())
+    .then((data) => set(data))
+    .catch(() => set([]));
+});
 
 export const loadData = (filter: SearchFilter): Promise<Order[]> => {
   return new Promise((resolve, reject) => {
