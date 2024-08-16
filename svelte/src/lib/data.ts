@@ -18,7 +18,7 @@ export const artists: Readable<Artist[]> = readable([], (set) => {
 });
 
 export const loadData = (filter: SearchFilter): Promise<Order[]> => {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     afetch('http://localhost:8080/order/search', {
       method: 'POST',
       headers: {
@@ -40,7 +40,7 @@ export const loadData = (filter: SearchFilter): Promise<Order[]> => {
         });
         resolve(data);
       })
-      .catch(() => reject([]));
+      .catch(() => resolve([]));
   });
 };
 

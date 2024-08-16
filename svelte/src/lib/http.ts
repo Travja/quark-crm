@@ -41,17 +41,17 @@ const validateAndRefreshToken = async (): Promise<void> => {
   // Extract the JWT data and check expiry. If expired, refresh the token
   const token = get(_token);
   if (!token) {
-    return;
+    throw new Error('No token to refresh');
   }
 
   const jwt = token.split('.');
   if (jwt.length !== 3) {
-    return;
+    throw new Error('Invalid token');
   }
 
   const payload = JSON.parse(atob(jwt[1]));
   if (!payload.exp) {
-    return;
+    throw new Error('Invalid token');
   }
 
   const expiry = new Date(payload.exp * 1000);
@@ -95,10 +95,33 @@ export const afetch = async (
     fetch(input, init)
       .then((res) => {
         if (token && res.status == 401) {
-          validateAndRefreshToken().then(() => {
-            init.headers['Authorization'] = `Bearer ${get(_token)}`;
-            fetch(input, init).then(resolve).catch(reject);
-          });
+          validateAndRefreshToken()
+            .then(() => {
+              init.headers['Authorization'] = `Bearer ${get(_token)}`;
+              fetch(input, init)
+                .then((res) => {
+                  if (get(_token) && res.status == 401) {
+                    location.href = '/login';
+                    reject('Authentication failed');
+                    return;
+                  }
+
+                  resolve(res);
+                })
+                .catch((err) => {
+                  location.href = '/login';
+                  reject(err);
+                });
+            })
+            .catch((err) => {
+              location.href = '/login';
+              console.error('failed to refresh token: ', err);
+              reject(err);
+            });
+        } else if (!token) {
+          window.location.href = '/login';
+          reject('Unauthenticated');
+          return;
         } else {
           resolve(res);
         }

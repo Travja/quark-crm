@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit';
-import type { Order } from '$lib/models/order';
 import { afetch } from '$lib/http';
+import type { Order } from 'global';
 
 /** @type {import('./$types').PageLoad} */
 export async function load({ params, fetch }) {

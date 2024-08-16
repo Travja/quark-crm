@@ -20,8 +20,7 @@
     // coords.set({x: xx, y: yy})
     unsub = coords.subscribe(({ x, y }) => {
       if (mouseDown) {
-        console.log(x, y);
-        win.electron.move(x, y);
+        win.electron?.move(x, y);
       }
     });
   });
@@ -41,7 +40,6 @@
   const down = (event: MouseEvent) => {
     prev = { x: event.x, y: event.y };
     mouseDown = true;
-    console.log('down');
   };
 </script>
 
@@ -52,7 +50,9 @@
 />
 
 <header>
-  <TitleBar />
+  {#if window.electron}
+    <TitleBar />
+  {/if}
   <slot name="header" />
 </header>
 <main>

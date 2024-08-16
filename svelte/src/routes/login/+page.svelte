@@ -2,6 +2,7 @@
   import StyledInput from '$lib/ui/StyledInput.svelte';
   import type { ApiWindow } from '@types/global';
   import { onMount } from 'svelte';
+  import { _refreshToken, _token } from '$lib/http';
 
   let win: ApiWindow;
 
@@ -13,9 +14,32 @@
   let error = false;
 
   const login = async () => {
-    win.electron
-      .login({ username, password })
-      .then((res) => (error = res.error));
+    if (win.electron) {
+      win.electron
+        .login({ username, password })
+        .then((res) => (error = res.error));
+    } else {
+      fetch('http://localhost:8080/auth/login', {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Basic ' + btoa(username + ':' + password)
+        }
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.authorized) {
+            _token.set(data.token);
+            _refreshToken.set(data.refreshToken);
+            win.location.href = '/';
+          } else {
+            error = data.error?.message ? data.error.message : data.error;
+          }
+        })
+        .catch((err) => {
+          error = err.message;
+        });
+    }
   };
 </script>
 
