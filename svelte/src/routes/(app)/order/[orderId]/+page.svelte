@@ -33,7 +33,6 @@
       style: 'currency',
       currency: 'USD'
     });
-    console.log(value, format.format(value));
     return format.format(value);
   };
 </script>

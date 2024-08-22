@@ -2,10 +2,6 @@
   import ReusableLayout             from '$lib/ReusableLayout.svelte';
   import LeftMenu                   from '$lib/LeftMenu.svelte';
   import { goto }                   from '$app/navigation';
-  import { onMount }                from 'svelte';
-  import { loadData, searchFilter } from '$lib/data';
-
-  onMount(() => loadData($searchFilter));
 </script>
 
 <ReusableLayout>
@@ -13,6 +9,15 @@
     <LeftMenu />
     <nav>
       <ul>
+<!--        <li-->
+<!--          role="menuitem"-->
+<!--          tabindex="0"-->
+<!--          class="nav-button"-->
+<!--          on:click={() => goto('/')}-->
+<!--          on:keypress={() => goto('/')}-->
+<!--        >-->
+<!--          Home-->
+<!--        </li>-->
         <li
           role="menuitem"
           tabindex="0"
@@ -20,16 +25,7 @@
           on:click={() => goto('/')}
           on:keypress={() => goto('/')}
         >
-          Home
-        </li>
-        <li
-          role="menuitem"
-          tabindex="0"
-          class="nav-button"
-          on:click={() => goto('/list')}
-          on:keypress={() => goto('/list')}
-        >
-          List
+          Dashboard
         </li>
       </ul>
     </nav>

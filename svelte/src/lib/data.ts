@@ -11,7 +11,7 @@ import { afetch } from '$lib/http';
 import type { Artist, Order, SearchFilter } from 'global';
 
 export const artists: Readable<Artist[]> = readable([], (set) => {
-  afetch('http://localhost:8080/api/artist')
+  afetch('http://localhost:8080/api/artists')
     .then((res) => res.json())
     .then((data) => set(data))
     .catch(() => set([]));
@@ -29,6 +29,7 @@ export const loadData = (filter: SearchFilter): Promise<Order[]> => {
       .then((res) => res.json())
       .then((data: Order[]) => {
         if (!data) {
+          filteredOrders.set([]);
           resolve([]);
           return;
         }
@@ -38,14 +39,17 @@ export const loadData = (filter: SearchFilter): Promise<Order[]> => {
           if (datum.requestDate)
             datum.requestDate = new Date(datum.requestDate);
         });
+        filteredOrders.set(data);
         resolve(data);
       })
-      .catch(() => resolve([]));
+      .catch(() => {
+        filteredOrders.set([]);
+        resolve([]);
+      });
   });
 };
 
-const _filteredOrders: Writable<Order[]> = writable<Order[]>([]);
-export const filteredOrders: Readable<Order[]> = readonly(_filteredOrders);
+export const filteredOrders: Writable<Order[]> = writable<Order[]>([]);
 
 export const orderStatusFilter: Writable<OrderStatus[]> = writable<
   OrderStatus[]
@@ -75,6 +79,4 @@ export const searchFilter: Readable<SearchFilter> = derived(
   }
 );
 
-searchFilter.subscribe((value) =>
-  loadData(value).then((data) => _filteredOrders.set(data))
-);
+searchFilter.subscribe(loadData);

@@ -16,6 +16,8 @@ export const getOrderStatusColor = (orderStatus: OrderStatus) => {
       return 'rgba(154,249,226,0.5)';
     case OrderStatus.QUESTION_ANSWERED:
       return 'rgba(77,207,172,0.5)';
+    case OrderStatus.TRACKING_SENT:
+      return 'rgba(255,102,0,0.5)';
     case OrderStatus.PROBABLY_NOT_ORDERING:
       return 'gray';
     case OrderStatus.ON_HOLD:

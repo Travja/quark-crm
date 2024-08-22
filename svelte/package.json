@@ -32,6 +32,7 @@
   "dependencies": {
     "@fontsource/fira-mono": "^5.0.13",
     "@lukeed/uuid": "^2.0.1",
+    "color": "^4.2.3",
     "moment": "^2.30.1"
   }
 }

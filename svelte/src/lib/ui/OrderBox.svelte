@@ -24,6 +24,7 @@
     getTreeStatusForegroundColor
   } from '$lib/api/colors';
   import { afetch } from '$lib/http';
+  import { artists } from '$lib/data';
 
   export let order: Order;
 
@@ -98,7 +99,7 @@
       id="artist"
       type="select"
       bind:value={order.artist}
-      options={['Karen', 'MaKaela']}
+      options={[...$artists.map((a) => a.firstName)]}
     >
       Artist
     </LabeledInput>

@@ -3,6 +3,7 @@
   --bg-color: white;
   --bg-secondary: #aaa;
   --fg-color: black;
+  --fg-color-light: #333;
   --link-color: #14833b;
   --ui-button-bg: #ddd;
   --ui-button-hover: #aaa;
@@ -20,6 +21,7 @@
     --bg-color: #27272a;
     --bg-secondary: #526052;
     --fg-color: white;
+    --fg-color-light: #aaa;
     --link-color: #7ffda7;
     --ui-button-bg: #303030;
     --ui-button-hover: #404040;

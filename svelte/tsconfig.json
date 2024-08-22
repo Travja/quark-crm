@@ -8,6 +8,7 @@
       "@types/*": ["./src/@types/*"],
       "$lib": ["./src/lib"],
       "$lib/*": ["./src/lib/*"]
-    }
+    },
+    "allowSyntheticDefaultImports": true
   }
 }
