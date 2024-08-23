@@ -44,6 +44,7 @@
         <span>&rarr;</span>
         <span
           class="request-date"
+          class:future={moment(order.requestDate).isAfter(moment())}
           class:request-soon={isRequestSoon(order.requestDate)}
           >{formatDate(order.requestDate)}</span
         >
@@ -105,6 +106,11 @@
   .last-contact {
     border-left: 1px solid var(--fg-color-light);
     padding-left: 0.5em;
+  }
+
+  .future {
+    color: white;
+    font-weight: bold;
   }
 
   .request-date.request-soon {

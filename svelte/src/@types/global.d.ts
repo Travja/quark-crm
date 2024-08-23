@@ -140,6 +140,7 @@ export interface Order {
 export interface SearchFilter {
   statusFilter?: OrderStatus[];
   treeFilter?: TreeStatus[];
+  keywords?: string;
 }
 
 export interface Artist {

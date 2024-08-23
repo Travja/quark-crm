@@ -2,7 +2,6 @@ import {
   derived,
   readable,
   type Readable,
-  readonly,
   type Writable,
   writable
 } from 'svelte/store';
@@ -39,6 +38,38 @@ export const loadData = (filter: SearchFilter): Promise<Order[]> => {
           if (datum.requestDate)
             datum.requestDate = new Date(datum.requestDate);
         });
+
+        // Sort the data, prioritizing the closest, non-future request dates first
+        const now = new Date().getTime();
+        data.sort((a, b) => {
+          const aTime = a.requestDate ? (<Date>a.requestDate).getTime() : 0;
+          const bTime = b.requestDate ? (<Date>b.requestDate).getTime() : 0;
+
+          const aIsFuture = aTime > now;
+          const bIsFuture = bTime > now;
+
+          if (aIsFuture && !bIsFuture) {
+            return -1;
+          } else if (!aIsFuture && bIsFuture) {
+            return 1;
+          } else if (aIsFuture && bIsFuture && a.requestDate && b.requestDate) {
+            return aTime - now - (bTime - now);
+          } else if (
+            !aIsFuture &&
+            !bIsFuture &&
+            a.requestDate &&
+            b.requestDate
+          ) {
+            return bTime - now - (aTime - now);
+          } else if (a.requestDate) {
+            return -1;
+          } else if (b.requestDate) {
+            return 1;
+          } else {
+            return 0;
+          }
+        });
+
         filteredOrders.set(data);
         resolve(data);
       })
@@ -65,18 +96,25 @@ export const orderStatusFilter: Writable<OrderStatus[]> = writable<
 export const treeFilters: Writable<TreeStatus[]> = writable<TreeStatus[]>([
   ...Object.values(TreeStatus)
 ]);
+export const searchTerms = writable<string>('');
 
 export const searchFilter: Readable<SearchFilter> = derived(
-  [orderStatusFilter, treeFilters],
+  [orderStatusFilter, treeFilters, searchTerms],
   (values) => {
     const statusFilter: OrderStatus[] = values[0];
     const treeFilter: TreeStatus[] = values[1];
 
     return <SearchFilter>{
       statusFilter,
-      treeFilter
+      treeFilter,
+      keywords: values[2]
     };
   }
 );
 
-searchFilter.subscribe(loadData);
+let timeout: number | undefined;
+searchFilter.subscribe((filter) => {
+  console.log(filter);
+  if (timeout) clearTimeout(timeout);
+  timeout = window.setTimeout(() => loadData(filter), 500);
+});

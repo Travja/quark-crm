@@ -5,6 +5,7 @@
     loadData,
     orderStatusFilter,
     searchFilter,
+    searchTerms,
     treeFilters
   } from '$lib/data';
   import StyledInput from '$lib/ui/StyledInput.svelte';
@@ -26,12 +27,23 @@
   import OrderWidget from '$lib/ui/OrderWidget.svelte';
   import { onMount } from 'svelte';
   import { formatDate } from '$lib/api/util';
+  import { clickOutside } from '$lib/api/clickoutside';
+  import Checkbox from '$lib/ui/Checkbox.svelte';
+  import { fly } from 'svelte/transition';
 
   let filterBoxShown = false;
   let notesOpen = false;
   let notesModal = undefined;
 
   onMount(() => loadData($searchFilter));
+
+  let debounceActive = false;
+  const toggleFilter = () => {
+    if (debounceActive) return;
+    debounceActive = true;
+    filterBoxShown = !filterBoxShown;
+    setTimeout(() => (debounceActive = false), 50);
+  };
 
   const checkEnter = (event: KeyboardEvent) => {
     if (event.key == 'Enter') {
@@ -50,28 +62,137 @@
       .then(() => loadData($searchFilter))
       .catch((err) => console.error('Error updating order', err));
   };
+
+  const activeStatuses = [
+    OrderStatus.ORDER_PLACED,
+    OrderStatus.UNPAID,
+    OrderStatus.INVOICED,
+    OrderStatus.PAID,
+    OrderStatus.PRINT_ORDERED,
+    OrderStatus.QUESTION_ASKED,
+    OrderStatus.QUESTION_ANSWERED
+  ];
+  const inactiveStatuses = [
+    OrderStatus.TRACKING_SENT,
+    OrderStatus.PROBABLY_NOT_ORDERING,
+    OrderStatus.ON_HOLD,
+    OrderStatus.CANCELLED
+  ];
+
+  let activeStatusesSelected = false;
+  let someActiveStatusesSelected = false;
+  let inactiveStatusesSelected = false;
+  let someInactiveStatusesSelected = false;
+
+  $: activeStatusesSelected = activeStatuses.every((status) =>
+    $orderStatusFilter.includes(status)
+  );
+  $: someActiveStatusesSelected =
+    !activeStatusesSelected &&
+    activeStatuses.some((status) => $orderStatusFilter.includes(status));
+  $: inactiveStatusesSelected = inactiveStatuses.every((status) =>
+    $orderStatusFilter.includes(status)
+  );
+  $: someInactiveStatusesSelected =
+    !inactiveStatusesSelected &&
+    inactiveStatuses.some((status) => $orderStatusFilter.includes(status));
 </script>
 
 <div class="heading-bar">
   <span id="filter-wrapper">
     <span
+      class="material-icons icon-button"
+      on:click={toggleFilter}
+      on:keypress={(e) => {
+        if (e.key === 'Enter') toggleFilter();
+      }}
       role="button"
       tabindex="0"
-      class="material-icons icon-button"
-      on:click={() => (filterBoxShown = !filterBoxShown)}
-      on:keypress={(e) => {
-        if (e.key === 'Enter') filterBoxShown = !filterBoxShown;
-      }}
     >
       filter_alt
     </span>
     {#if filterBoxShown}
-      <div id="filter-box">
+      <div
+        id="filter-box"
+        transition:fly={{ y: 50, duration: 400 }}
+        use:clickOutside
+        on:outclick={toggleFilter}
+      >
         <h2>Filters</h2>
         <div class="filter">
           <div class="filter-section">
             <h3>Order Status</h3>
+            <div class="order-status">
+              <Checkbox
+                id="all"
+                checked={$orderStatusFilter.length ===
+                  Object.values(OrderStatus).length}
+                indeterminate={$orderStatusFilter.length > 0 &&
+                  $orderStatusFilter.length !==
+                    Object.values(OrderStatus).length}
+                on:change={() => {
+                  if (
+                    $orderStatusFilter.length ===
+                    Object.values(OrderStatus).length
+                  ) {
+                    orderStatusFilter.set([]);
+                  } else {
+                    orderStatusFilter.set(Object.values(OrderStatus));
+                  }
+                }}
+              />
+              <label for="all">All</label>
+            </div>
+
+            <br />
+            <div class="order-status">
+              <!-- Active statuses are Order Placed, Unpaid, Invoiced, Paid, PrintOrdered, Question Asked, Question Answered -->
+              <Checkbox
+                id="active"
+                checked={activeStatusesSelected}
+                indeterminate={someActiveStatusesSelected}
+                on:change={() => {
+                  if (activeStatusesSelected) {
+                    orderStatusFilter.set(
+                      $orderStatusFilter.filter(
+                        (status) => !activeStatuses.includes(status)
+                      )
+                    );
+                  } else {
+                    orderStatusFilter.set([
+                      ...$orderStatusFilter,
+                      ...activeStatuses
+                    ]);
+                  }
+                }}
+              />
+              <label for="active">Active</label>
+            </div>
             {#each Object.values(OrderStatus) as status}
+              {#if status === OrderStatus.TRACKING_SENT}
+                <div class="order-status">
+                  <Checkbox
+                    id="inactive"
+                    checked={inactiveStatusesSelected}
+                    indeterminate={someInactiveStatusesSelected}
+                    on:change={() => {
+                      if (inactiveStatusesSelected) {
+                        orderStatusFilter.set(
+                          $orderStatusFilter.filter(
+                            (status) => !inactiveStatuses.includes(status)
+                          )
+                        );
+                      } else {
+                        orderStatusFilter.set([
+                          ...$orderStatusFilter,
+                          ...inactiveStatuses
+                        ]);
+                      }
+                    }}
+                  />
+                  <label for="inactive">Inactive</label>
+                </div>
+              {/if}
               <div class="filter-order-status">
                 <input
                   type="checkbox"
@@ -125,20 +246,21 @@
     {/if}
   </span>
   <span
-    role="button"
-    tabindex="0"
     class="material-icons icon-button"
     on:click={() => loadData($searchFilter)}
     on:keypress={(e) => {
       if (e.key === 'Enter') loadData($searchFilter);
-    }}>sync</span
+    }}
+    role="button"
+    tabindex="0">sync</span
   >
   <span class="spacer" />
   <StyledInput
-    placeholder="Search..."
     fontSize="1.2em"
     margin="0"
+    bind:value={$searchTerms}
     on:keypress={checkEnter}
+    placeholder="Search..."
   />
 </div>
 <div class="center">
@@ -289,17 +411,21 @@
   </table>
 </div>
 
-{#each $filteredOrders as order}
-  <OrderWidget {order} />
-{/each}
+{#if $filteredOrders.length === 0}
+  <p class="no-orders">No orders found</p>
+{:else}
+  {#each $filteredOrders as order}
+    <OrderWidget {order} />
+  {/each}
+{/if}
 
 <Modal bind:open={notesOpen} width="50vw">
   <h2>Notes</h2>
   <LabeledInput
+    bind:value={notesModal.notes}
+    fillSpace="true"
     readonly
     type="textarea"
-    fillSpace="true"
-    bind:value={notesModal.notes}
   />
 </Modal>
 
@@ -308,9 +434,8 @@
     display: flex;
     align-items: center;
     margin-bottom: 0.5em;
-    position: sticky;
+    /*position: sticky;*/
     top: 0;
-    left: 0;
   }
 
   .center {
@@ -365,12 +490,16 @@
     margin: 0;
   }
 
-  .filter-section {
-    display: flex;
-    flex-direction: column;
+  .filter-order-status {
+    margin-left: 0.5rem;
   }
 
   label {
     user-select: none;
+  }
+
+  .no-orders {
+    color: var(--fg-color-light);
+    font-style: italic;
   }
 </style>
