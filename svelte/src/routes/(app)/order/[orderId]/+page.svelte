@@ -43,22 +43,16 @@
   <span>
     <div class="customer-info">
       <h3>
-        {customer.customerName} -
+        <a href="/customer/{customer.id}">{customer.customerName}</a>
+        <span
+          class="new-customer material-symbols-outlined"
+          hidden={customer.customerType != CustomerType.NEW}
+        >
+          new_releases
+        </span>
+        <span> - </span>
         <a href="mailto:{customer.customerEmail}">{customer.customerEmail}</a>
       </h3>
-      <div class="column">
-        <LabeledInput bind:value={customer.customerAddress}>
-          Address
-        </LabeledInput>
-      </div>
-      <div class="column">
-        <LabeledInput
-          bind:value={customer.customerType}
-          options={Object.values(CustomerType)}
-        >
-          Customer Type
-        </LabeledInput>
-      </div>
     </div>
     {#each orders as order}
       <div class="demo">
@@ -113,6 +107,10 @@
 {/if}
 
 <style>
+  .new-customer {
+    font-size: 1rem;
+  }
+
   .sp-in {
     position: relative;
     margin: 0.5rem 0;
@@ -194,10 +192,5 @@
 
   .column {
     flex: 1;
-  }
-
-  h3 a {
-    color: var(--title-accent-color);
-    text-decoration: none;
   }
 </style>

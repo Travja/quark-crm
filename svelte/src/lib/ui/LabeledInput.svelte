@@ -6,7 +6,16 @@
 
   export let id: string = undefined;
   export let value: any = undefined;
-  export let type = 'text';
+  export let type:
+    | 'text'
+    | 'number'
+    | 'date'
+    | 'datetime'
+    | 'password'
+    | 'select'
+    | 'textarea'
+    | 'checkbox'
+    | 'radio' = 'text';
   export let placeholder = '';
   export let group: any = undefined;
   export let options: any[] = undefined;

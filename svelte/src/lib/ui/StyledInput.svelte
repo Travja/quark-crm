@@ -1,5 +1,3 @@
-<!--suppress ALL -->
-
 <script lang="ts">
   import moment from 'moment';
 
@@ -8,7 +6,16 @@
   export let value: any = undefined;
   export let margin = '0';
   export let placeholder = '';
-  export let type = 'text';
+  export let type:
+    | 'text'
+    | 'number'
+    | 'date'
+    | 'datetime'
+    | 'password'
+    | 'select'
+    | 'textarea'
+    | 'checkbox'
+    | 'radio' = 'text';
   export let underlineColor = 'var(--accent-color)';
   export let backgroundColor = undefined;
   export let color = undefined;
@@ -77,12 +84,12 @@
 
 <div
   class="styled-input wrapper"
-  class:check={type == 'checkbox'}
+  class:check={type === 'checkbox'}
   style:--input-bg={backgroundColor || 'var(--ui-button-bg)'}
   style:--color={color || 'var(--fg-color)'}
   style="margin: {margin}; --font-size: {fontSize}; --background-color: {underlineColor}"
 >
-  {#if type == 'text'}
+  {#if type === 'text'}
     <input
       {disabled}
       {readonly}
@@ -98,7 +105,7 @@
       on:keypress
       on:keyup
     />
-  {:else if type == 'number'}
+  {:else if type === 'number'}
     <div class="input-wrap">
       {#if !readonly}
         <div
@@ -111,7 +118,7 @@
             if (e.key === 'Enter') element.focus();
           }}
         >
-          <span class="material-icons">keyboard_arrow_up</span>
+          <span class="material-symbols-outlined">keyboard_arrow_up</span>
         </div>
       {/if}
       <input
@@ -137,7 +144,7 @@
           <span
             role="button"
             tabindex="0"
-            class="material-icons"
+            class="material-symbols-outlined"
             on:click={stepUp}
             on:keypress={(e) => {
               if (e.key === 'Enter') stepUp();
@@ -146,7 +153,7 @@
           <span
             role="button"
             tabindex="0"
-            class="material-icons"
+            class="material-symbols-outlined"
             on:click={stepDown}
             on:keypress={(e) => {
               if (e.key === 'Enter') stepDown();
@@ -155,7 +162,7 @@
         </div>
       {/if}
     </div>
-  {:else if type == 'date'}
+  {:else if type === 'date'}
     <input
       {disabled}
       {readonly}
@@ -171,7 +178,7 @@
       on:keypress
       on:keyup
     />
-  {:else if type == 'datetime'}
+  {:else if type === 'datetime'}
     <input
       {disabled}
       {readonly}
@@ -187,7 +194,7 @@
       on:keypress
       on:keyup
     />
-  {:else if type == 'password'}
+  {:else if type === 'password'}
     <input
       {disabled}
       {readonly}
@@ -203,7 +210,7 @@
       on:keypress
       on:keyup
     />
-  {:else if type == 'select'}
+  {:else if type === 'select'}
     <select
       {disabled}
       {readonly}
@@ -218,7 +225,7 @@
     >
       <slot />
     </select>
-  {:else if type == 'textarea'}
+  {:else if type === 'textarea'}
     <textarea
       {disabled}
       {readonly}
@@ -231,7 +238,7 @@
       on:focus={() => (focused = true)}
       on:blur={() => (focused = false)}
     />
-  {:else if type == 'checkbox'}
+  {:else if type === 'checkbox'}
     <input
       type="checkbox"
       {disabled}
@@ -242,11 +249,13 @@
       bind:this={element}
       on:change
     />
-    <label for={id} class="checkbox material-icons" class:checked={value}
-      >check</label
+    <label
+      for={id}
+      class="checkbox material-symbols-outlined"
+      class:checked={value}>check</label
     >
-  {:else if type == 'radio'}
-    <label for={id} class="radio-wrap" class:checked={group == value}>
+  {:else if type === 'radio'}
+    <label for={id} class="radio-wrap" class:checked={group === value}>
       <slot />
       <input
         type="radio"
@@ -264,12 +273,12 @@
     Unknown type
   {/if}
 
-  {#if type != 'checkbox' && type != 'radio'}
+  {#if type !== 'checkbox' && type !== 'radio'}
     <label
       for={id}
       class="border"
       class:shown={focused}
-      class:check={type == 'checkbox'}
+      class:check={type === 'checkbox'}
     />
   {/if}
 </div>
@@ -359,7 +368,7 @@
 
   .border {
     height: 2px;
-    width: 0px;
+    width: 0;
     background-color: var(--background-color);
     transition: width 0.5s ease;
   }
@@ -408,13 +417,13 @@
     transition: color 0.5s ease;
   }
 
-  .buttons .material-icons {
+  .buttons .material-symbols-outlined {
     text-align: center;
     font-size: 1rem;
     padding: 0 0.5rem;
   }
 
-  .input-wrap:hover .buttons .material-icons {
+  .input-wrap:hover .buttons .material-symbols-outlined {
     color: var(--color);
   }
 
@@ -422,11 +431,11 @@
     cursor: pointer;
   }
 
-  .buttons .material-icons:hover {
+  .buttons .material-symbols-outlined:hover {
     background-color: var(--ui-button-hover);
   }
 
-  .buttons.hidden .material-icons {
+  .buttons.hidden .material-symbols-outlined {
     opacity: 0;
   }
 

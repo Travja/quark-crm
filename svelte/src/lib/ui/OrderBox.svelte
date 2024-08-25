@@ -1,6 +1,5 @@
 <!--suppress XmlInvalidId -->
 <script lang="ts">
-  import type { Order } from '$lib/models/order';
   import LabeledInput from '$lib/ui/LabeledInput.svelte';
   import {
     AncestryType,
@@ -25,6 +24,7 @@
   } from '$lib/api/colors';
   import { afetch } from '$lib/http';
   import { artists } from '$lib/data';
+  import type { Order } from '@types/global';
 
   export let order: Order;
 
@@ -63,6 +63,9 @@
 <div class="wrapper">
   <div class="column">
     Order ID: {order.id}
+    <LabeledInput id="shippingAddress" bind:value={order.shippingAddress}>
+      Shipping Address
+    </LabeledInput>
     <LabeledInput
       id="order-status"
       bind:value={order.status}

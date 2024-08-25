@@ -138,6 +138,16 @@ main {
   background-color: var(--ui-button-hover);
 }
 
-.material-icons {
+.material-symbols-outlined {
   user-select: none;
+}
+
+a {
+  color: var(--link-color);
+  text-decoration: none;
+}
+
+hr {
+  border-color: rgba(0, 0, 0, 0.4);
+  border-radius: 100vw;
 }

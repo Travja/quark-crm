@@ -9,6 +9,22 @@ import { OrderStatus, TreeStatus } from './models/order';
 import { afetch } from '$lib/http';
 import type { Artist, Order, SearchFilter } from 'global';
 
+export const activeStatuses = [
+  OrderStatus.ORDER_PLACED,
+  OrderStatus.UNPAID,
+  OrderStatus.INVOICED,
+  OrderStatus.PAID,
+  OrderStatus.PRINT_ORDERED,
+  OrderStatus.QUESTION_ASKED,
+  OrderStatus.QUESTION_ANSWERED
+];
+export const inactiveStatuses = [
+  OrderStatus.TRACKING_SENT,
+  OrderStatus.PROBABLY_NOT_ORDERING,
+  OrderStatus.ON_HOLD,
+  OrderStatus.CANCELLED
+];
+
 export const artists: Readable<Artist[]> = readable([], (set) => {
   afetch('http://localhost:8080/api/artists')
     .then((res) => res.json())
@@ -39,36 +55,7 @@ export const loadData = (filter: SearchFilter): Promise<Order[]> => {
             datum.requestDate = new Date(datum.requestDate);
         });
 
-        // Sort the data, prioritizing the closest, non-future request dates first
-        const now = new Date().getTime();
-        data.sort((a, b) => {
-          const aTime = a.requestDate ? (<Date>a.requestDate).getTime() : 0;
-          const bTime = b.requestDate ? (<Date>b.requestDate).getTime() : 0;
-
-          const aIsFuture = aTime > now;
-          const bIsFuture = bTime > now;
-
-          if (aIsFuture && !bIsFuture) {
-            return -1;
-          } else if (!aIsFuture && bIsFuture) {
-            return 1;
-          } else if (aIsFuture && bIsFuture && a.requestDate && b.requestDate) {
-            return aTime - now - (bTime - now);
-          } else if (
-            !aIsFuture &&
-            !bIsFuture &&
-            a.requestDate &&
-            b.requestDate
-          ) {
-            return bTime - now - (aTime - now);
-          } else if (a.requestDate) {
-            return -1;
-          } else if (b.requestDate) {
-            return 1;
-          } else {
-            return 0;
-          }
-        });
+        data.sort(sortOrders);
 
         filteredOrders.set(data);
         resolve(data);
@@ -84,15 +71,7 @@ export const filteredOrders: Writable<Order[]> = writable<Order[]>([]);
 
 export const orderStatusFilter: Writable<OrderStatus[]> = writable<
   OrderStatus[]
->([
-  OrderStatus.ORDER_PLACED,
-  OrderStatus.UNPAID,
-  OrderStatus.INVOICED,
-  OrderStatus.PAID,
-  OrderStatus.PRINT_ORDERED,
-  OrderStatus.QUESTION_ASKED,
-  OrderStatus.QUESTION_ANSWERED
-]);
+>([...activeStatuses]);
 export const treeFilters: Writable<TreeStatus[]> = writable<TreeStatus[]>([
   ...Object.values(TreeStatus)
 ]);
@@ -112,9 +91,45 @@ export const searchFilter: Readable<SearchFilter> = derived(
   }
 );
 
+export let isActive = (status: OrderStatus): boolean => {
+  return activeStatuses.includes(status);
+};
+
 let timeout: number | undefined;
 searchFilter.subscribe((filter) => {
   console.log(filter);
   if (timeout) clearTimeout(timeout);
   timeout = window.setTimeout(() => loadData(filter), 500);
 });
+
+export let sortOrders = (a: Order, b: Order) => {
+  const now = new Date().getTime();
+  const aTime = a.requestDate ? (<Date>a.requestDate).getTime() : 0;
+  const bTime = b.requestDate ? (<Date>b.requestDate).getTime() : 0;
+
+  const aIsFuture = aTime > now;
+  const bIsFuture = bTime > now;
+
+  const aOpen = isActive(a.status);
+  const bOpen = isActive(b.status);
+
+  if (aOpen && !bOpen) {
+    return -1;
+  } else if (!aOpen && bOpen) {
+    return 1;
+  } else if (aIsFuture && !bIsFuture) {
+    return -1;
+  } else if (!aIsFuture && bIsFuture) {
+    return 1;
+  } else if (aIsFuture && bIsFuture && a.requestDate && b.requestDate) {
+    return aTime - now - (bTime - now);
+  } else if (!aIsFuture && !bIsFuture && a.requestDate && b.requestDate) {
+    return bTime - now - (aTime - now);
+  } else if (a.requestDate) {
+    return -1;
+  } else if (b.requestDate) {
+    return 1;
+  } else {
+    return 0;
+  }
+};

@@ -16,9 +16,9 @@ import {
 } from '$lib/models/order';
 
 interface IFileSystemAPI {
-  send(arg0: string, arg1): void;
+  send(arg0: string, arg1: any): void;
 
-  receive(arg0: string, func: (arg0) => void): void;
+  receive(arg0: string, func: (arg0: any) => void): void;
 }
 
 interface IElectronAPI {
@@ -63,15 +63,20 @@ export interface Coupon {
 }
 
 export interface Customer {
+  id: string;
   customerName: string;
   customerEmail: string;
-  customerAddress: string;
   customerType: CustomerType;
+  alternateEmails: string[];
+  alternateNames: string[];
+  orders: Order[];
+  notes: string;
 }
 
 export interface Order {
   id: string;
   customer: Customer;
+  shippingAddress: string;
   artist: 'Karen' | 'MaKaela';
   status: OrderStatus;
   treeStatus: TreeStatus;

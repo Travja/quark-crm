@@ -19,7 +19,7 @@
     <span
       role="menuitem"
       tabindex="0"
-      class="ui-button material-icons"
+      class="ui-button material-symbols-outlined"
       on:click={win.electron.showDevTools}
       on:keypress={(e) => e.key === 'Enter' && win.electron.showDevTools()}
       >info</span
@@ -27,7 +27,7 @@
     <span
       role="menuitem"
       tabindex="0"
-      class="ui-button material-icons"
+      class="ui-button material-symbols-outlined"
       on:click={win.electron.minimize}
       on:keypress={(e) => e.key === 'Enter' && win.electron.minimize()}
       >minimize</span
@@ -35,7 +35,7 @@
     <span
       role="menuitem"
       tabindex="0"
-      class="ui-button material-icons"
+      class="ui-button material-symbols-outlined"
       on:click={win.electron.maximize}
       on:keypress={(e) => e.key === 'Enter' && win.electron.maximize()}
       >crop_square</span
@@ -43,7 +43,7 @@
     <span
       role="menuitem"
       tabindex="0"
-      class="ui-button close-button material-icons"
+      class="ui-button close-button material-symbols-outlined"
       on:click={win.electron.close}
       on:keypress={(e) => e.key === 'Enter' && win.electron.close()}>close</span
     >
@@ -82,7 +82,7 @@
     background-color: red;
   }
 
-  .ui-button.material-icons {
+  .ui-button.material-symbols-outlined {
     font-size: 1.3em;
   }
 </style>
