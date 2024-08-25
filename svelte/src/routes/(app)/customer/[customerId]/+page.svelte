@@ -24,7 +24,6 @@
     });
 
     // Sort the data, prioritizing the closest, non-future request dates first
-    const now = new Date().getTime();
     customer.orders.sort(sortOrders);
   });
 

@@ -7,7 +7,7 @@ import {
 } from 'svelte/store';
 import { OrderStatus, TreeStatus } from './models/order';
 import { afetch } from '$lib/http';
-import type { Artist, Order, SearchFilter } from 'global';
+import type { Artist, Order, SearchFilter } from '@types/global';
 
 export const activeStatuses = [
   OrderStatus.ORDER_PLACED,
@@ -102,7 +102,7 @@ searchFilter.subscribe((filter) => {
   timeout = window.setTimeout(() => loadData(filter), 500);
 });
 
-export let sortOrders = (a: Order, b: Order) => {
+export let sortOrders = (a: Order, b: Order): number => {
   const now = new Date().getTime();
   const aTime = a.requestDate ? (<Date>a.requestDate).getTime() : 0;
   const bTime = b.requestDate ? (<Date>b.requestDate).getTime() : 0;
