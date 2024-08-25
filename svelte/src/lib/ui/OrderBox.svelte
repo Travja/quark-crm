@@ -63,7 +63,8 @@
 <div class="wrapper">
   <div class="column">
     Order ID: {order.id}
-    <LabeledInput id="shippingAddress" bind:value={order.shippingAddress}>
+    <LabeledInput id="ship-to" bind:value={order.shipTo}>Ship To</LabeledInput>
+    <LabeledInput id="shipping-address" bind:value={order.shippingAddress}>
       Shipping Address
     </LabeledInput>
     <LabeledInput

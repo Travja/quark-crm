@@ -76,6 +76,7 @@ export interface Customer {
 export interface Order {
   id: string;
   customer: Customer;
+  shipTo: string;
   shippingAddress: string;
   artist: 'Karen' | 'MaKaela';
   status: OrderStatus;
