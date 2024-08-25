@@ -103,7 +103,7 @@
       id="artist"
       type="select"
       bind:value={order.artist}
-      options={[...$artists.map((a) => a.firstName)]}
+      options={['', ...$artists.map((a) => a.firstName)]}
     >
       Artist
     </LabeledInput>

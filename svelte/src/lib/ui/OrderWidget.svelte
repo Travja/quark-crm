@@ -59,7 +59,9 @@
       >{order.notes || 'No notes...'}</span
     >
     <span class="spacer" />
-    <span class="artist">{order.artist}</span>
+    <span class="artist" class:unassigned={!order.artist}
+      >{order.artist || 'Unassigned'}</span
+    >
   </div>
 </a>
 
@@ -154,5 +156,10 @@
   .profit {
     color: #5276ff;
     font-weight: bold;
+  }
+
+  .unassigned {
+    color: var(--fg-color-light);
+    font-style: italic;
   }
 </style>
