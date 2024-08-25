@@ -108,6 +108,7 @@
 
 <style>
   .new-customer {
+    color: #5276ff;
     font-size: 1rem;
   }
 

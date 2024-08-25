@@ -37,7 +37,15 @@
 </script>
 
 {#if customer}
-  <h2>{customer.customerName}</h2>
+  <h2>
+    <span>{customer.customerName}</span>
+    <span
+      class="new-customer material-symbols-outlined"
+      hidden={customer.customerType != CustomerType.NEW}
+    >
+      new_releases
+    </span>
+  </h2>
 
   <div class="body">
     <div class="aside">
@@ -124,6 +132,11 @@
 {/if}
 
 <style>
+  .new-customer {
+    color: #5276ff;
+    font-size: 0.8em;
+  }
+
   .identities {
     display: flex;
     flex-direction: column;
