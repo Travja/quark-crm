@@ -29,7 +29,8 @@
 
   $: knownAddresses = customer?.orders
     .map((order) => order.shippingAddress)
-    .filter((address) => !!address);
+    .filter((address) => !!address)
+    .filter((value, index, self) => self.indexOf(value) === index);
   $: openOrders = customer?.orders.filter((order) =>
     isActive(order.status)
   ).length;

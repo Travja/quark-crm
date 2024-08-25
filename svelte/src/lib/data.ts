@@ -7,6 +7,7 @@ import {
 } from 'svelte/store';
 import { OrderStatus, TreeStatus } from './models/order';
 import { afetch } from '$lib/http';
+// @ts-ignore
 import type { Artist, Order, SearchFilter } from '@types/global';
 
 export const activeStatuses = [
