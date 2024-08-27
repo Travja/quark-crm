@@ -158,6 +158,9 @@
 
   .orders {
     grid-area: body;
+
+    display: flex;
+    flex-direction: column;
   }
 
   .orders-header {

@@ -25,6 +25,13 @@
   import { afetch } from '$lib/http';
   import { artists } from '$lib/data';
   import type { Order } from '@types/global';
+  import {
+    formatCurrency,
+    sumOperatingCosts,
+    sumExpenses,
+    totalOperatingCosts
+  } from '$lib/api/util';
+  import InsetInput from '$lib/ui/InsetInput.svelte';
 
   export let order: Order;
 
@@ -57,20 +64,6 @@
         dirty = false;
       })
       .catch((err) => console.error('Error updating order', err));
-  };
-
-  const sumOperatingCosts = (order: Order): string => {
-    const value =
-      order.printCost +
-      order.shippingCost -
-      order.printExpense -
-      order.shippingExpense -
-      order.tax;
-    const format = new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD'
-    });
-    return format.format(value);
   };
 </script>
 
@@ -144,7 +137,7 @@
         Tree Type
       </LabeledInput>
 
-      {#if order.type == TreeType.ANCESTRY || order.type == TreeType.ANCESTRY_ROOTS}
+      {#if order.type === TreeType.ANCESTRY || order.type === TreeType.ANCESTRY_ROOTS}
         <LabeledInput
           id="ancestryType"
           bind:value={order.ancestryType}
@@ -387,45 +380,110 @@
   </div>
   <div class="aside">
     <div class="aside-content">
-      <LabeledInput
-        bind:value={order.shippingCost}
-        id="shipping-cost"
+      <h3>
+        In: <span class="income"
+          >{formatCurrency(sumOperatingCosts(order))}</span
+        >
+      </h3>
+      <InsetInput
+        bind:value={order.creationCost}
+        id="creation-cost"
         type="number"
       >
-        Shipping Cost
-      </LabeledInput>
-      <h2>Out</h2>
-      <LabeledInput
-        bind:value={order.printExpense}
-        id="print-expense"
-        type="number"
-      >
-        Print
-      </LabeledInput>
-      <LabeledInput
-        bind:value={order.shippingExpense}
-        id="shipping-expense"
-        type="number"
-      >
-        Shipping
-      </LabeledInput>
-      <LabeledInput bind:value={order.tax} id="tax" type="number">
-        Tax
-      </LabeledInput>
-      <hr />
-      <LabeledInput readonly type="text" value={sumOperatingCosts(order)}>
-        Total
-      </LabeledInput>
-      <div class="sp-in">
-        <input
-          class="sp-input"
-          name="test"
-          placeholder=" "
+        Creation
+      </InsetInput>
+      {#if order.roots}
+        <InsetInput bind:value={order.rootCost} id="root-cost" type="number">
+          Roots
+        </InsetInput>
+      {/if}
+      {#if order.hasDateBranches}
+        <InsetInput bind:value={order.dateBranchCost} id="date-branch-cost">
+          Date Branches
+        </InsetInput>
+      {/if}
+      {#if order.hasLeaves}
+        <InsetInput bind:value={order.leafCost} id="leaf-cost" type="number">
+          Leaves
+        </InsetInput>
+      {/if}
+      {#if order.printSize}
+        <InsetInput bind:value={order.printCost} id="print-cost" type="number">
+          Print
+        </InsetInput>
+        {#if order.frame}
+          <InsetInput
+            bind:value={order.frameCost}
+            id="frame-cost"
+            type="number"
+          >
+            Frame
+          </InsetInput>
+        {/if}
+        {#if order.additionalPrints}
+          <InsetInput
+            value={order.additionalPrints
+              .map((p) => p.cost + p.frameCost)
+              .reduce((a, b) => a + b, 0)}
+            id="additional-print-cost"
+            type="number"
+          >
+            Additional Prints
+          </InsetInput>
+        {/if}
+        <InsetInput
+          bind:value={order.shippingCost}
+          id="shipping-cost"
           type="number"
-          value="100"
-        />
-        <label for="test">Test</label>
-      </div>
+        >
+          Shipping
+        </InsetInput>
+      {/if}
+      <InsetInput bind:value={order.customCharge} id="custom-expense">
+        Custom
+      </InsetInput>
+
+      <h3>
+        Out: <span class="expense">{formatCurrency(sumExpenses(order))}</span>
+      </h3>
+      {#if order.printSize}
+        <InsetInput
+          bind:value={order.printExpense}
+          id="print-expense"
+          type="number"
+        >
+          Prints
+        </InsetInput>
+        {#if order.frame}
+          <InsetInput
+            bind:value={order.frameExpense}
+            id="frame-expense"
+            type="number"
+          >
+            Frames
+          </InsetInput>
+        {/if}
+        <InsetInput
+          bind:value={order.shippingExpense}
+          id="shipping-expense"
+          type="number"
+        >
+          Shipping
+        </InsetInput>
+      {/if}
+      <InsetInput bind:value={order.tax} id="tax" type="number">Tax</InsetInput>
+      <InsetInput bind:value={order.fees} id="fees" type="number"
+        >Fees</InsetInput
+      >
+      <InsetInput bind:value={order.customExpense} id="custom-charge">
+        Custom
+      </InsetInput>
+      <hr />
+      <h2>
+        Profit: <span class="profit"
+          >{formatCurrency(totalOperatingCosts(order))}</span
+        >
+      </h2>
     </div>
   </div>
 </div>
@@ -455,15 +513,17 @@
   }
 
   .aside {
+    height: 100%;
     margin-left: 0.5rem;
     padding-left: 0.5rem;
     border-left: 2px groove rgba(0, 0, 0, 0.4);
   }
 
-  /*.aside-content {*/
-  /*  position: sticky;*/
-  /*  top: 0;*/
-  /*}*/
+  .aside-content {
+    /*  position: sticky;*/
+    /*  top: 0;*/
+    height: 100%;
+  }
 
   .group {
     display: flex;
@@ -514,45 +574,10 @@
     box-shadow: inset -0.2rem -0.2rem 0.3rem #333;
   }
 
-  .sp-in {
-    position: relative;
-    margin: 0.5rem 0;
-  }
+  .total {
+    position: sticky;
+    bottom: 0;
 
-  .sp-in label {
-    position: absolute;
-    top: 0.5rem;
-    left: 0;
-    color: #aaa;
-    padding-inline: 0.5rem;
-    pointer-events: none;
-    transition: all 0.2s ease;
-    /*background-color: red;*/
-    /*height: 5px;*/
-
-    display: flex;
-    align-items: center;
-  }
-
-  .sp-in:has(input:not(:placeholder-shown)) label,
-  .sp-in:has(input:focus) label {
-    color: white;
-    background-color: #222;
-    transform: translate(-0.25rem, -1rem) scale(0.8);
-  }
-
-  .sp-input {
-    border: none;
-    background-color: green;
-    color: white;
-    width: 100%;
-    box-sizing: border-box;
-    font-size: 1rem;
-    padding: 0.5rem;
-  }
-
-  .sp-input:focus {
-    outline: none;
-    border-bottom: 2px solid var(--title-accent-color);
+    background: var(--bg-color);
   }
 </style>

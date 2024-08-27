@@ -153,3 +153,18 @@ hr {
   border-color: rgba(0, 0, 0, 0.4);
   border-radius: 100vw;
 }
+
+.profit {
+  color: #5276ff;
+  font-weight: bold;
+}
+
+.income {
+  color: #00a115;
+  font-weight: bold;
+}
+
+.expense {
+  color: #ff0000;
+  font-weight: bold;
+}

@@ -1,3 +1,6 @@
+// @ts-ignore
+import type { Order } from '@types/global';
+
 const dateFormat = new Intl.DateTimeFormat('en-US', {
   dateStyle: 'medium'
 });
@@ -24,4 +27,34 @@ export const formatCurrency = (value: number): string => {
       currency: 'USD'
     });
   }
+};
+
+export const totalOperatingCosts = (order: Order): number => {
+  return sumOperatingCosts(order) - sumExpenses(order);
+};
+
+export const sumOperatingCosts = (order: Order): number => {
+  const value =
+    order.creationCost +
+    order.rootCost +
+    order.dateBranchCost +
+    order.leafCost +
+    order.printCost +
+    order.frameCost +
+    order.additionalPrints
+      .map((p) => p.cost + p.frameCost)
+      .reduce((a, b) => a + b, 0) +
+    order.shippingCost +
+    order.customCharge;
+  return value;
+};
+
+export const sumExpenses = (order: Order): number => {
+  const value =
+    order.printExpense +
+    order.frameExpense +
+    order.shippingExpense +
+    order.tax +
+    order.customExpense;
+  return value;
 };

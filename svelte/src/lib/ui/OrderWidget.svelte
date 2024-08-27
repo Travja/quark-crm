@@ -73,9 +73,15 @@
 
     background-color: var(--title-bg-color);
     padding: 0.5em 0.75em;
-    margin: 0.4em 0.5em;
+    margin: 0.25em 0.5em;
     border-radius: 0.5em;
     border: 1px solid var(--ui-button-hover);
+
+    transition: border 0.4s ease-in-out;
+  }
+
+  .widget:hover {
+    border: 1px solid var(--accent-color);
   }
 
   .header-row,
@@ -135,27 +141,12 @@
     flex: 1;
   }
 
-  .income {
-    color: #00a115;
-    font-weight: bold;
-  }
-
   .income::before {
     content: '+';
   }
 
-  .expense {
-    color: #ff0000;
-    font-weight: bold;
-  }
-
   .expense::before {
     content: '-';
-  }
-
-  .profit {
-    color: #5276ff;
-    font-weight: bold;
   }
 
   .unassigned {

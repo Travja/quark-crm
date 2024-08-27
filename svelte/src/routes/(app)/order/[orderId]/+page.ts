@@ -5,10 +5,10 @@ import type { Order } from 'global';
 /** @type {import('./$types').PageLoad} */
 export async function load({ params, fetch }) {
   const order: Order = await new Promise((resolve) => {
-    afetch(`http://localhost:8080/order/${params.orderId}`)
+    afetch(`http://localhost:8080/order/${params.orderId}`, undefined, fetch)
       .then((res) => res.json())
       .then((data) => resolve(data))
-      .catch((e) => resolve(null));
+      .catch((_) => resolve(null));
   });
 
   if (!order) throw error(404, 'Not found');

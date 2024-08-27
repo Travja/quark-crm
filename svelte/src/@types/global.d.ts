@@ -50,6 +50,8 @@ export interface AdditionalPrint {
   printSize: PrintSize;
   frame?: string;
   quantity: number;
+  cost: number;
+  frameCost: number;
 }
 
 export interface Coupon {
@@ -115,8 +117,10 @@ export interface Order {
   treeStyle: TreeStyle;
   printType: PrintType;
   texture?: Texture;
+  creationCost: number;
   printSize?: PrintSize;
   printCost?: number;
+  frameCost?: number;
   shippingType: ShippingType;
   shippingCost: number;
   additionalPrints?: AdditionalPrint[];
@@ -138,6 +142,7 @@ export interface Order {
   fees: number;
   tax: number;
   printExpense: number;
+  frameExpense: number;
   coupon?: Coupon;
 
   lastContact?: string;

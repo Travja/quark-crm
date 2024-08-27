@@ -5,7 +5,11 @@ import type { Customer } from 'global';
 /** @type {import('./$types').PageLoad} */
 export async function load({ params, fetch }) {
   const customer: Customer = await new Promise((resolve) => {
-    afetch(`http://localhost:8080/customer/${params.customerId}`)
+    afetch(
+      `http://localhost:8080/customer/${params.customerId}`,
+      undefined,
+      fetch
+    )
       .then((res) => res.json())
       .then((data) => resolve(data))
       .catch((e) => resolve(null));

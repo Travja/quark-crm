@@ -98,7 +98,6 @@ export let isActive = (status: OrderStatus): boolean => {
 
 let timeout: number | undefined;
 searchFilter.subscribe((filter) => {
-  console.log(filter);
   if (timeout) clearTimeout(timeout);
   timeout = window.setTimeout(() => loadData(filter), 500);
 });

@@ -79,7 +79,8 @@ const validateAndRefreshToken = async (): Promise<void> => {
 
 export const afetch = async (
   input: RequestInfo,
-  init?: RequestInit
+  init?: RequestInit,
+  fetch = window.fetch
 ): Promise<Response> => {
   let token = get(_token);
   if (token) {
