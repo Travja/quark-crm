@@ -20,7 +20,7 @@
 
 <a href="/order/{order.id}" class="widget">
   <div class="header-row">
-    <span class="name">{order.customer.customerName}</span>
+    <span class="name">{order.customer.customerName} - {order.familyName}</span>
     <Pill color={getOrderStatusColor(order.status)}>{order.status}</Pill>
     <Pill color={getTreeStatusColor(order.treeStatus)}>{order.treeStatus}</Pill>
     <Pill>{order.generations}gen {order.type}</Pill>
