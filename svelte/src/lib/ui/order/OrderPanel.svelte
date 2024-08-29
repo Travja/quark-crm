@@ -90,7 +90,11 @@
       <LabeledInput bind:value={order.shipTo} id="ship-to" canCopy
         >Ship To
       </LabeledInput>
-      <LabeledInput bind:value={order.shippingAddress} id="shipping-address" canCopy>
+      <LabeledInput
+        bind:value={order.shippingAddress}
+        id="shipping-address"
+        canCopy
+      >
         Shipping Address
       </LabeledInput>
       <LabeledInput
@@ -241,7 +245,7 @@
     </div>
 
     <div class="column">
-      <LabeledInput bind:value={order.familyName} id="familyName">
+      <LabeledInput bind:value={order.familyName} id="familyName" canCopy>
         Family Name
       </LabeledInput>
 
@@ -333,7 +337,7 @@
         Order Notes
       </LabeledInput>
 
-      <LabeledInput bind:value={order.groundText} id="groundText">
+      <LabeledInput bind:value={order.groundText} id="groundText" canCopy>
         Ground Text
       </LabeledInput>
 
@@ -343,7 +347,9 @@
         </LabeledInput>
       {/if}
 
-      <LabeledInput bind:value={order.quote} id="quote">Quote</LabeledInput>
+      <LabeledInput bind:value={order.quote} id="quote" canCopy
+        >Quote</LabeledInput
+      >
 
       {#if order.quote}
         <div class="section" transition:slide|local>
