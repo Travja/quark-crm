@@ -1,7 +1,7 @@
 <script lang="ts">
   export let value: any;
   export let id: string;
-  export let type: 'number' = 'number';
+  export let type: 'number' | 'text' | 'dropdown' = 'text';
   export let min: number = undefined;
   export let max: number = undefined;
   export let step: number = undefined;

@@ -4,9 +4,9 @@
     sumExpenses,
     sumOperatingCosts,
     totalOperatingCosts
-  }                     from '$lib/api/util';
+  } from '$lib/api/util';
   import type { Order } from '@types/global';
-  import InsetInput     from '$lib/ui/InsetInput.svelte';
+  import InsetInput from '$lib/ui/InsetInput.svelte';
 
   export let order: Order;
 </script>
@@ -57,9 +57,14 @@
     Shipping
   </InsetInput>
 {/if}
-<InsetInput bind:value={order.customCharge} id="custom-expense">
+<InsetInput bind:value={order.customCharge} id="custom-expense" type="number">
   Custom
 </InsetInput>
+{#if order.customCharge}
+  <InsetInput bind:value={order.customDescription} id="custom-charge">
+    Custom Description
+  </InsetInput>
+{/if}
 
 <h3>
   Out: <span class="expense">{formatCurrency(sumExpenses(order))}</span>
@@ -87,9 +92,17 @@
 {/if}
 <InsetInput bind:value={order.tax} id="tax" type="number">Tax</InsetInput>
 <InsetInput bind:value={order.fees} id="fees" type="number">Fees</InsetInput>
-<InsetInput bind:value={order.customExpense} id="custom-charge">
+<InsetInput bind:value={order.customExpense} id="custom-charge" type="number">
   Custom
 </InsetInput>
+{#if order.customExpense}
+  <InsetInput
+    bind:value={order.customExpenseDescription}
+    id="custom-expense-description"
+  >
+    Custom Description
+  </InsetInput>
+{/if}
 <hr />
 <h2>
   Profit: <span class="profit"

@@ -24,18 +24,18 @@
   } from '$lib/api/colors';
   import { afetch } from '$lib/http';
   import { artists } from '$lib/data';
-  import type { AdditionalPrint, Customer, Order } from '@types/global';
+  import type { Customer, Order } from '@types/global';
   import OrderFinancials from '$lib/ui/order/OrderFinancials.svelte';
   import AdditionalPrintWidget from '$lib/ui/order/AdditionalPrintWidget.svelte';
   import Pill from '$lib/ui/Pill.svelte';
-  import InsetInput from '$lib/ui/InsetInput.svelte';
+  import NewAdditionalPrint from '$lib/ui/order/NewAdditionalPrint.svelte';
 
   export let order: Order;
   let customer: Customer;
 
   let dirty = false;
   let originalOrder;
-  let newPrint: AdditionalPrint = undefined;
+  let newPrint = false;
 
   onMount(() => {
     if (!originalOrder) originalOrder = { ...order };
@@ -87,10 +87,10 @@
     {/if}
     <div class="column">
       Order ID: {order.id}
-      <LabeledInput bind:value={order.shipTo} id="ship-to"
+      <LabeledInput bind:value={order.shipTo} id="ship-to" canCopy
         >Ship To
       </LabeledInput>
-      <LabeledInput bind:value={order.shippingAddress} id="shipping-address">
+      <LabeledInput bind:value={order.shippingAddress} id="shipping-address" canCopy>
         Shipping Address
       </LabeledInput>
       <LabeledInput
@@ -391,9 +391,11 @@
         >
           Print Size
         </LabeledInput>
+      {/if}
+      {#if order.printType === PrintType.STANDARD || order.printType === PrintType.MOUNTED_AND_TEXTURED}
         <LabeledInput bind:value={order.frame} id="frame">Frame</LabeledInput>
       {/if}
-      {#if order.printSize}
+      {#if order.printType !== PrintType.DIGITAL}
         <div>
           <h3>Additional Prints</h3>
           {#each order.additionalPrints as print}
@@ -408,110 +410,20 @@
           {/each}
           <div>
             {#if !newPrint}
-              <Pill
-                hover
-                on:click={() =>
-                  (newPrint = {
-                    quantity: 1,
-                    printType: PrintType.STANDARD,
-                    printSize: PrintSize.EIGHT_BY_TEN,
-                    frame: '',
-                    cost: 0,
-                    frameCost: 0
-                  })}
-              >
+              <Pill hover on:click={() => (newPrint = true)}>
                 <span class="material-symbols-outlined">add</span>
               </Pill>
             {:else}
-              <InsetInput
-                bind:value={newPrint.quantity}
-                id="new-print-quantity"
-                type="number"
-                min=1
-              >
-                Quantity
-              </InsetInput>
-              <InsetInput
-                bind:value={newPrint.printType}
-                id="new-print-type"
-                type="dropdown"
-                on:change={() => {
-                  if (newPrint.printType === PrintType.DIGITAL) {
-                    newPrint.printSize = undefined;
-                  }
-                  if (
-                    newPrint.printType === PrintType.CANVAS ||
-                    newPrint.printType === PrintType.DIGITAL
-                  ) {
-                    newPrint.frame = undefined;
-                    newPrint.frameCost = 0;
-                  }
-                }}
-              >
-                <svelte:fragment slot="dropdown">
-                  {#each Object.values(PrintType) as type}
-                    <option value={type}>{type}</option>
-                  {/each}
-                </svelte:fragment>
-                <span slot="default">Print Type</span>
-              </InsetInput>
-              {#if newPrint.printType !== PrintType.DIGITAL}
-                <InsetInput
-                  bind:value={newPrint.printSize}
-                  id="new-print-size"
-                  type="dropdown"
-                >
-                  <svelte:fragment slot="dropdown">
-                    {#each Object.values(PrintSize) as size}
-                      <option value={size}>{size}</option>
-                    {/each}
-                  </svelte:fragment>
-                  <span slot="default">Print Size</span>
-                </InsetInput>
-                {#if newPrint.printType !== PrintType.CANVAS}
-                  <InsetInput
-                    bind:value={newPrint.frame}
-                    id="new-print-frame"
-                    type="text"
-                  >
-                    Frame
-                  </InsetInput>
-                {/if}
-              {/if}
-              <InsetInput
-                bind:value={newPrint.cost}
-                id="new-print-cost"
-                type="number"
-                min=0
-              >
-                Print Cost
-              </InsetInput>
-              {#if newPrint.frame}
-                <InsetInput
-                  bind:value={newPrint.frameCost}
-                  id="new-print-frame-cost"
-                  type="number"
-                  min=0
-                >
-                  Frame Cost
-                </InsetInput>
-              {/if}
-              <Pill
-                color="#5276ff"
-                hover
-                on:click={() => {
+              <NewAdditionalPrint
+                on:close={() => (newPrint = false)}
+                on:addPrint={(data) => {
                   order.additionalPrints = [
                     ...order.additionalPrints,
-                    newPrint
+                    data.detail
                   ];
-                  newPrint = undefined;
+                  newPrint = false;
                 }}
-              >
-                <span class="material-symbols-outlined">save</span>
-              </Pill>
-              <Pill color="red" hover on:click={() => (newPrint = undefined)}>
-                <span class="material-symbols-outlined">close</span>
-              </Pill>
+              />
             {/if}
           </div>
         </div>

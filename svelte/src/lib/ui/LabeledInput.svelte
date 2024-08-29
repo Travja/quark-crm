@@ -25,6 +25,8 @@
   export let backgroundColor = undefined;
   export let color = undefined;
 
+  export let canCopy = false;
+
   onMount(() => {
     if (options) type = 'select';
   });
@@ -49,6 +51,7 @@
     {readonly}
     {backgroundColor}
     {color}
+    {canCopy}
   >
     {#if options}
       {#each options as option}

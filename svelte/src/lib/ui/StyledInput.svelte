@@ -28,6 +28,8 @@
   export let max: number = undefined;
   export let step: number = undefined;
 
+  export let canCopy = false;
+
   let focused = false;
   let offset = 0;
   let element: HTMLInputElement;
@@ -106,40 +108,26 @@
       on:keyup
     />
   {:else if type === 'number'}
-    <div class="input-wrap">
-      {#if !readonly}
-        <div
-          role="button"
-          tabindex="0"
-          class="buttons hidden"
-          class:disabled
-          on:click={() => element.focus()}
-          on:keypress={(e) => {
-            if (e.key === 'Enter') element.focus();
-          }}
-        >
-          <span class="material-symbols-outlined">keyboard_arrow_up</span>
-        </div>
-      {/if}
-      <input
-        {disabled}
-        {readonly}
-        {id}
-        {name}
-        type="number"
-        {placeholder}
-        {min}
-        {max}
-        {step}
-        bind:value
-        bind:this={element}
-        on:focus={() => (focused = true)}
-        on:blur={() => (focused = false)}
-        on:keydown
-        on:keypress
-        on:keyup
-      />
-      {#if !readonly}
+    <input
+      {disabled}
+      {readonly}
+      {id}
+      {name}
+      type="number"
+      {placeholder}
+      {min}
+      {max}
+      {step}
+      bind:value
+      bind:this={element}
+      on:focus={() => (focused = true)}
+      on:blur={() => (focused = false)}
+      on:keydown
+      on:keypress
+      on:keyup
+    />
+    {#if !readonly}
+      <div class="input-wrap">
         <div class="buttons" class:disabled>
           <span
             role="button"
@@ -160,8 +148,8 @@
             }}>keyboard_arrow_down</span
           >
         </div>
-      {/if}
-    </div>
+      </div>
+    {/if}
   {:else if type === 'date'}
     <input
       {disabled}
@@ -273,6 +261,22 @@
     Unknown type
   {/if}
 
+  {#if canCopy}
+    <div class="input-wrap">
+      <div
+        role="button"
+        tabindex="0"
+        class="buttons"
+        on:click={() => navigator.clipboard.writeText(value)}
+        on:keypress={(e) => {
+          if (e.key === 'Enter') navigator.clipboard.writeText(value);
+        }}
+      >
+        <span class="material-symbols-outlined">content_copy</span>
+      </div>
+    </div>
+  {/if}
+
   {#if type !== 'checkbox' && type !== 'radio'}
     <label
       for={id}
@@ -354,6 +358,7 @@
   }
 
   .wrapper {
+    position: relative;
     display: inline-flex;
     flex-direction: column;
     align-items: center;
@@ -364,13 +369,12 @@
     background-color: var(--input-bg);
   }
 
-  /*:not(.check)*/
-
   .border {
     height: 2px;
     width: 0;
     background-color: var(--background-color);
     transition: width 0.5s ease;
+    z-index: 1;
   }
 
   label.border.check {
@@ -404,26 +408,33 @@
 
   .input-wrap {
     display: flex;
-    width: 100%;
-    min-width: 150px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
   }
 
   .buttons {
     display: flex;
     flex-direction: column;
     align-items: center;
+    height: 100%;
     background-color: var(--input-bg);
     color: var(--input-bg);
     transition: color 0.5s ease;
   }
 
   .buttons .material-symbols-outlined {
+    flex: 1;
     text-align: center;
     font-size: 1rem;
     padding: 0 0.5rem;
+
+    display: grid;
+    place-items: center;
   }
 
-  .input-wrap:hover .buttons .material-symbols-outlined {
+  .wrapper:hover .buttons .material-symbols-outlined {
     color: var(--color);
   }
 
@@ -433,10 +444,6 @@
 
   .buttons .material-symbols-outlined:hover {
     background-color: var(--ui-button-hover);
-  }
-
-  .buttons.hidden .material-symbols-outlined {
-    opacity: 0;
   }
 
   input[disabled] {
