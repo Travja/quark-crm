@@ -14,8 +14,8 @@
   import LabeledInput from '$lib/ui/LabeledInput.svelte';
   import { afetch } from '$lib/http';
   import type { Order } from '@types/global';
-  import OrderWidget from '$lib/ui/OrderWidget.svelte';
-  import { onMount } from 'svelte';
+  import OrderWidget    from '$lib/ui/order/OrderWidget.svelte';
+  import { onMount }    from 'svelte';
   import { clickOutside } from '$lib/api/clickoutside';
   import Checkbox from '$lib/ui/Checkbox.svelte';
   import { fly } from 'svelte/transition';

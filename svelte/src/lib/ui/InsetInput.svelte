@@ -2,6 +2,9 @@
   export let value: any;
   export let id: string;
   export let type: 'number' = 'number';
+  export let min: number = undefined;
+  export let max: number = undefined;
+  export let step: number = undefined;
 </script>
 
 <div class="sp-in">
@@ -13,15 +16,25 @@
       bind:value
       type="number"
       {id}
+      {min}
+      {max}
+      {step}
     />
-  {:else}
-    <input
+  {:else if type === 'dropdown'}
+    <select
       class="sp-input"
       name="test"
-      placeholder=" "
       bind:value
+      class:selected={!!value}
       {id}
-    />
+      on:select
+      on:change
+    >
+      <option value={undefined}></option>
+      <slot name="dropdown" />
+    </select>
+  {:else}
+    <input class="sp-input" name="test" placeholder=" " bind:value {id} />
   {/if}
   <label for="test"><slot /></label>
 </div>
@@ -50,7 +63,9 @@
   }
 
   .sp-in:has(input:not(:placeholder-shown)) label,
-  .sp-in:has(input:focus) label {
+  .sp-in:has(input:focus) label,
+  .sp-in:has(select.selected) label,
+  .sp-in:has(select:focus) label {
     color: var(--fg-color);
     background-color: var(--bg-color);
     height: 5px;
@@ -58,7 +73,7 @@
   }
 
   .sp-input {
-    border: 1px solid var(--fg-color-light);
+    border: 1px solid var(--fg-color-mid);
     border-radius: 0.3rem;
     background-color: var(--bg-color);
     color: var(--fg-color);

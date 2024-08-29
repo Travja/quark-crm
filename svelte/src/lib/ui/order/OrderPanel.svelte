@@ -1,9 +1,9 @@
-<!--suppress XmlInvalidId -->
 <script lang="ts">
   import LabeledInput from '$lib/ui/LabeledInput.svelte';
   import {
     AncestryType,
     BranchStyle,
+    CustomerType,
     FontColor,
     OrderStatus,
     PrintSize,
@@ -13,7 +13,7 @@
     TreeStatus,
     TreeStyle,
     TreeType
-  } from '$lib/models/order.js';
+  } from '$lib/models/order';
   import { onMount } from 'svelte';
   import { slide } from 'svelte/transition';
   import {
@@ -24,21 +24,22 @@
   } from '$lib/api/colors';
   import { afetch } from '$lib/http';
   import { artists } from '$lib/data';
-  import type { Order } from '@types/global';
-  import {
-    formatCurrency,
-    sumOperatingCosts,
-    sumExpenses,
-    totalOperatingCosts
-  } from '$lib/api/util';
+  import type { AdditionalPrint, Customer, Order } from '@types/global';
+  import OrderFinancials from '$lib/ui/order/OrderFinancials.svelte';
+  import AdditionalPrintWidget from '$lib/ui/order/AdditionalPrintWidget.svelte';
+  import Pill from '$lib/ui/Pill.svelte';
   import InsetInput from '$lib/ui/InsetInput.svelte';
 
   export let order: Order;
+  let customer: Customer;
 
   let dirty = false;
   let originalOrder;
+  let newPrint: AdditionalPrint = undefined;
+
   onMount(() => {
     if (!originalOrder) originalOrder = { ...order };
+    customer = order.customer;
   });
 
   $: if (originalOrder && order)
@@ -69,6 +70,21 @@
 
 <div class="wrapper">
   <div class="body">
+    {#if customer}
+      <div class="customer-info full-width">
+        <h3>
+          <a href="/customer/{customer.id}">{customer.customerName}</a>
+          <span
+            class="new-customer material-symbols-outlined"
+            hidden={customer.customerType !== CustomerType.NEW}
+          >
+            new_releases
+          </span>
+          <span> - </span>
+          <a href="mailto:{customer.customerEmail}">{customer.customerEmail}</a>
+        </h3>
+      </div>
+    {/if}
     <div class="column">
       Order ID: {order.id}
       <LabeledInput bind:value={order.shipTo} id="ship-to"
@@ -153,7 +169,7 @@
         Generations
       </LabeledInput>
 
-      {#if order.type == TreeType.ANCESTRY_ROOTS || order.type == TreeType.DESCENDANT_ROOTS}
+      {#if order.type === TreeType.ANCESTRY_ROOTS || order.type === TreeType.DESCENDANT_ROOTS}
         <LabeledInput
           id="roots"
           bind:value={order.roots}
@@ -213,7 +229,7 @@
         Background
       </LabeledInput>
 
-      {#if order.treeStyle == TreeStyle.CLASSIC}
+      {#if order.treeStyle === TreeStyle.CLASSIC}
         <LabeledInput
           id="fontColor"
           bind:value={order.fontColor}
@@ -367,7 +383,7 @@
         Print Type
       </LabeledInput>
 
-      {#if order.printType != PrintType.DIGITAL}
+      {#if order.printType !== PrintType.DIGITAL}
         <LabeledInput
           id="print-size"
           bind:value={order.printSize}
@@ -375,122 +391,146 @@
         >
           Print Size
         </LabeledInput>
+        <LabeledInput bind:value={order.frame} id="frame">Frame</LabeledInput>
+      {/if}
+      {#if order.printSize}
+        <div>
+          <h3>Additional Prints</h3>
+          {#each order.additionalPrints as print}
+            <AdditionalPrintWidget
+              bind:print
+              on:delete={() => {
+                order.additionalPrints = order.additionalPrints.filter(
+                  (p) => p !== print
+                );
+              }}
+            />
+          {/each}
+          <div>
+            {#if !newPrint}
+              <Pill
+                hover
+                on:click={() =>
+                  (newPrint = {
+                    quantity: 1,
+                    printType: PrintType.STANDARD,
+                    printSize: PrintSize.EIGHT_BY_TEN,
+                    frame: '',
+                    cost: 0,
+                    frameCost: 0
+                  })}
+              >
+                <span class="material-symbols-outlined">add</span>
+              </Pill>
+            {:else}
+              <InsetInput
+                bind:value={newPrint.quantity}
+                id="new-print-quantity"
+                type="number"
+                min=1
+              >
+                Quantity
+              </InsetInput>
+              <InsetInput
+                bind:value={newPrint.printType}
+                id="new-print-type"
+                type="dropdown"
+                on:change={() => {
+                  if (newPrint.printType === PrintType.DIGITAL) {
+                    newPrint.printSize = undefined;
+                  }
+                  if (
+                    newPrint.printType === PrintType.CANVAS ||
+                    newPrint.printType === PrintType.DIGITAL
+                  ) {
+                    newPrint.frame = undefined;
+                    newPrint.frameCost = 0;
+                  }
+                }}
+              >
+                <svelte:fragment slot="dropdown">
+                  {#each Object.values(PrintType) as type}
+                    <option value={type}>{type}</option>
+                  {/each}
+                </svelte:fragment>
+                <span slot="default">Print Type</span>
+              </InsetInput>
+              {#if newPrint.printType !== PrintType.DIGITAL}
+                <InsetInput
+                  bind:value={newPrint.printSize}
+                  id="new-print-size"
+                  type="dropdown"
+                >
+                  <svelte:fragment slot="dropdown">
+                    {#each Object.values(PrintSize) as size}
+                      <option value={size}>{size}</option>
+                    {/each}
+                  </svelte:fragment>
+                  <span slot="default">Print Size</span>
+                </InsetInput>
+                {#if newPrint.printType !== PrintType.CANVAS}
+                  <InsetInput
+                    bind:value={newPrint.frame}
+                    id="new-print-frame"
+                    type="text"
+                  >
+                    Frame
+                  </InsetInput>
+                {/if}
+              {/if}
+              <InsetInput
+                bind:value={newPrint.cost}
+                id="new-print-cost"
+                type="number"
+                min=0
+              >
+                Print Cost
+              </InsetInput>
+              {#if newPrint.frame}
+                <InsetInput
+                  bind:value={newPrint.frameCost}
+                  id="new-print-frame-cost"
+                  type="number"
+                  min=0
+                >
+                  Frame Cost
+                </InsetInput>
+              {/if}
+              <Pill
+                color="#5276ff"
+                hover
+                on:click={() => {
+                  order.additionalPrints = [
+                    ...order.additionalPrints,
+                    newPrint
+                  ];
+                  newPrint = undefined;
+                }}
+              >
+                <span class="material-symbols-outlined">save</span>
+              </Pill>
+              <Pill color="red" hover on:click={() => (newPrint = undefined)}>
+                <span class="material-symbols-outlined">close</span>
+              </Pill>
+            {/if}
+          </div>
+        </div>
       {/if}
     </div>
   </div>
+
   <div class="aside">
     <div class="aside-content">
-      <h3>
-        In: <span class="income"
-          >{formatCurrency(sumOperatingCosts(order))}</span
-        >
-      </h3>
-      <InsetInput
-        bind:value={order.creationCost}
-        id="creation-cost"
-        type="number"
-      >
-        Creation
-      </InsetInput>
-      {#if order.roots}
-        <InsetInput bind:value={order.rootCost} id="root-cost" type="number">
-          Roots
-        </InsetInput>
-      {/if}
-      {#if order.hasDateBranches}
-        <InsetInput bind:value={order.dateBranchCost} id="date-branch-cost">
-          Date Branches
-        </InsetInput>
-      {/if}
-      {#if order.hasLeaves}
-        <InsetInput bind:value={order.leafCost} id="leaf-cost" type="number">
-          Leaves
-        </InsetInput>
-      {/if}
-      {#if order.printSize}
-        <InsetInput bind:value={order.printCost} id="print-cost" type="number">
-          Print
-        </InsetInput>
-        {#if order.frame}
-          <InsetInput
-            bind:value={order.frameCost}
-            id="frame-cost"
-            type="number"
-          >
-            Frame
-          </InsetInput>
-        {/if}
-        {#if order.additionalPrints}
-          <InsetInput
-            value={order.additionalPrints
-              .map((p) => p.cost + p.frameCost)
-              .reduce((a, b) => a + b, 0)}
-            id="additional-print-cost"
-            type="number"
-          >
-            Additional Prints
-          </InsetInput>
-        {/if}
-        <InsetInput
-          bind:value={order.shippingCost}
-          id="shipping-cost"
-          type="number"
-        >
-          Shipping
-        </InsetInput>
-      {/if}
-      <InsetInput bind:value={order.customCharge} id="custom-expense">
-        Custom
-      </InsetInput>
-
-      <h3>
-        Out: <span class="expense">{formatCurrency(sumExpenses(order))}</span>
-      </h3>
-      {#if order.printSize}
-        <InsetInput
-          bind:value={order.printExpense}
-          id="print-expense"
-          type="number"
-        >
-          Prints
-        </InsetInput>
-        {#if order.frame}
-          <InsetInput
-            bind:value={order.frameExpense}
-            id="frame-expense"
-            type="number"
-          >
-            Frames
-          </InsetInput>
-        {/if}
-        <InsetInput
-          bind:value={order.shippingExpense}
-          id="shipping-expense"
-          type="number"
-        >
-          Shipping
-        </InsetInput>
-      {/if}
-      <InsetInput bind:value={order.tax} id="tax" type="number">Tax</InsetInput>
-      <InsetInput bind:value={order.fees} id="fees" type="number"
-        >Fees</InsetInput
-      >
-      <InsetInput bind:value={order.customExpense} id="custom-charge">
-        Custom
-      </InsetInput>
-      <hr />
-      <h2>
-        Profit: <span class="profit"
-          >{formatCurrency(totalOperatingCosts(order))}</span
-        >
-      </h2>
+      <OrderFinancials bind:order />
     </div>
   </div>
 </div>
 {#if dirty}
   <footer>
-    There are unsaved changes on this order. Please save now to avoid losing
-    changes.
+    <div>
+      There are unsaved changes on this order. Please save now to avoid losing
+      changes.
+    </div>
     <button class="save-button" on:click={() => saveOrder()}>
       Save Order
     </button>
@@ -498,6 +538,20 @@
 {/if}
 
 <style>
+  .new-customer {
+    color: #5276ff;
+    font-size: 1rem;
+  }
+
+  .customer-info {
+    border-left: 3px solid var(--title-accent-color);
+    padding-left: 0.7rem;
+  }
+
+  .full-width {
+    flex-basis: 100%;
+  }
+
   .wrapper {
     flex: 1;
     display: grid;
@@ -510,6 +564,7 @@
     width: 100%;
     display: flex;
     justify-content: space-around;
+    flex-wrap: wrap;
   }
 
   .aside {
@@ -517,12 +572,6 @@
     margin-left: 0.5rem;
     padding-left: 0.5rem;
     border-left: 2px groove rgba(0, 0, 0, 0.4);
-  }
-
-  .aside-content {
-    /*  position: sticky;*/
-    /*  top: 0;*/
-    height: 100%;
   }
 
   .group {
@@ -562,6 +611,7 @@
     border-radius: 0.5rem;
     border: 2px solid var(--fg-color);
     margin: 0.5rem 0.5rem 0;
+    white-space: nowrap;
   }
 
   .save-button:hover {
@@ -574,10 +624,17 @@
     box-shadow: inset -0.2rem -0.2rem 0.3rem #333;
   }
 
-  .total {
+  footer {
+    margin-top: 0.5rem;
     position: sticky;
     bottom: 0;
+    right: 0;
+    left: 0;
+    border-radius: 1rem;
+    padding: 0.5rem 1rem;
+    background: var(--bg-secondary);
 
-    background: var(--bg-color);
+    display: grid;
+    place-items: center;
   }
 </style>

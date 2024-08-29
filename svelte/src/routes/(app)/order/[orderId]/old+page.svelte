@@ -1,10 +1,9 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import OrderBox from '$lib/ui/OrderBox.svelte';
+  import { onMount }  from 'svelte';
+  import OrderBox     from '$lib/ui/order/OrderBox.svelte';
   import LabeledInput from '$lib/ui/LabeledInput.svelte';
   import { CustomerType } from '$lib/models/order.js';
   import type { Customer, Order } from '@types/global';
-  import OrderPanel from "$lib/ui/OrderPanel.svelte";
 
   export let data: { orders: Order[] };
   let orders: Order[];
@@ -41,13 +40,13 @@
 {#if !customer}
   No orders
 {:else}
-  <span>
+  <div>
     <div class="customer-info">
       <h3>
         <a href="/customer/{customer.id}">{customer.customerName}</a>
         <span
           class="new-customer material-symbols-outlined"
-          hidden={customer.customerType != CustomerType.NEW}
+          hidden={customer.customerType !== CustomerType.NEW}
         >
           new_releases
         </span>
@@ -104,7 +103,7 @@
         </div>
       </div>
     {/each}
-  </span>
+  </div>
 {/if}
 
 <style>

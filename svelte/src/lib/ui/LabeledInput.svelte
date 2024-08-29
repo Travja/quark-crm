@@ -1,4 +1,3 @@
-<!--suppress XmlInvalidId -->
 <script lang="ts">
   import StyledInput from '$lib/ui/StyledInput.svelte';
   import { slide } from 'svelte/transition';
@@ -36,7 +35,7 @@
   out:slide
   class:fill={fillSpace}
 >
-  <label for={id} class:centered={type == 'checkbox'}>
+  <label for={id} class:centered={type === 'checkbox'}>
     <slot />
   </label>
   <StyledInput

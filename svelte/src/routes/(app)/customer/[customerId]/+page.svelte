@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Customer } from '@types/global';
-  import OrderWidget from '$lib/ui/OrderWidget.svelte';
-  import { onMount } from 'svelte';
+  import OrderWidget       from '$lib/ui/order/OrderWidget.svelte';
+  import { onMount }       from 'svelte';
   import { CustomerType } from '$lib/models/order';
   import LabeledInput from '$lib/ui/LabeledInput.svelte';
   import Pill from '$lib/ui/Pill.svelte';
