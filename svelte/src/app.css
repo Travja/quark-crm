@@ -40,6 +40,9 @@ html {
 }
 
 body {
+  border-radius: 0.75rem;
+  overflow: hidden;
+
   position: relative;
   display: flex;
   align-items: stretch;

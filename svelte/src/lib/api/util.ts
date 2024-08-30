@@ -13,7 +13,9 @@ export const formatDate = (date: Date | string): string => {
   return dateFormat.format(date);
 };
 
-export const formatCurrency = (value: number): string => {
+export const formatCurrency = (value?: number): string => {
+  if (value === undefined || value === null) return undefined;
+
   if (Number.isInteger(value)) {
     return value.toLocaleString('en-US', {
       style: 'currency',

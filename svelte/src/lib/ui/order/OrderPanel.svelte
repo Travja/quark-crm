@@ -403,7 +403,8 @@
       {/if}
       {#if order.printType !== PrintType.DIGITAL}
         <div>
-          <h3>Additional Prints</h3>
+          <h3>
+            Additional Prints</h3>
           {#each order.additionalPrints as print}
             <AdditionalPrintWidget
               bind:print

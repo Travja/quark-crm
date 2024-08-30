@@ -1,10 +1,10 @@
 <script lang="ts">
-  import moment                                      from 'moment';
-  import type { Order }                              from '@types/global';
+  import moment from 'moment';
+  import type { Order } from '@types/global';
   import { getOrderStatusColor, getTreeStatusColor } from '$lib/api/colors';
-  import Pill                                        from '$lib/ui/Pill.svelte';
-  import { formatCurrency, formatDate }              from '$lib/api/util';
-  import { PrintType }                               from '$lib/models/order';
+  import Pill from '$lib/ui/Pill.svelte';
+  import { formatCurrency, formatDate } from '$lib/api/util';
+  import { PrintType } from '$lib/models/order';
 
   export let order: Order;
 
@@ -33,9 +33,11 @@
       </div>
     </Pill>
     <span class="spacer" />
-    <span class="income">{formatCurrency(order.cost)}</span>
-    <span class="expense">{formatCurrency(order.expenses)}</span>
-    <span class="profit">{formatCurrency(order.cost - order.expenses)}</span>
+    <span class="financials">
+      <span class="income">{formatCurrency(order.cost)}</span>
+      <span class="expense">{formatCurrency(order.expenses)}</span>
+      <span class="profit">{formatCurrency(order.cost - order.expenses)}</span>
+    </span>
   </div>
   <div class="secondary-row">
     <span class="dates">

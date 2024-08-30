@@ -24,8 +24,8 @@
   export let readonly = false;
   export let group: any = undefined;
 
-  export let min: number = undefined;
-  export let max: number = undefined;
+  export let min: number | string = undefined;
+  export let max: number | string = undefined;
   export let step: number = undefined;
 
   export let canCopy = false;
@@ -39,6 +39,7 @@
     if (!val || (type != 'date' && type != 'datetime')) return;
     if (typeof val == 'string') {
       if (type == 'date') {
+        console.log('val', val);
         if (!internalDate && !val) {
           value = undefined;
           return;
@@ -64,9 +65,11 @@
     convert = mom.toISOString().split('Z')[0];
 
     value = convert;
+    console.log('convert', convert);
   };
 
-  $: processVal(internalDate ? internalDate : value);
+  $: processVal(internalDate);
+  $: processVal(value);
   $: if (type == 'checkbox' && typeof value == 'boolean') {
     focused = value;
   }
@@ -106,6 +109,7 @@
       on:keydown
       on:keypress
       on:keyup
+      on:change
     />
   {:else if type === 'number'}
     <input
@@ -125,6 +129,7 @@
       on:keydown
       on:keypress
       on:keyup
+      on:change
     />
     {#if !readonly}
       <div class="input-wrap">
@@ -156,6 +161,8 @@
       {readonly}
       {id}
       {name}
+      {min}
+      {max}
       type="date"
       {placeholder}
       bind:value={internalDate}
@@ -165,6 +172,7 @@
       on:keydown={() => console.log(element.value)}
       on:keypress
       on:keyup
+      on:change
     />
   {:else if type === 'datetime'}
     <input
@@ -181,6 +189,7 @@
       on:keydown
       on:keypress
       on:keyup
+      on:change
     />
   {:else if type === 'password'}
     <input
@@ -197,6 +206,7 @@
       on:keydown
       on:keypress
       on:keyup
+      on:change
     />
   {:else if type === 'select'}
     <select

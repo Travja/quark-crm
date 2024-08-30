@@ -82,15 +82,15 @@ class BaseWindow {
     let settings: BrowserWindowConstructorOptions = {
       ...this.settings,
       show: false, // false
-      titleBarStyle: 'hidden',
+      // titleBarStyle: 'hidden',
+      frame: false,
+      transparent: true,
       webPreferences: {
         devTools: true,
         preload: path.join(app.getAppPath(), 'dist', 'preload.js')
       },
-      icon: path.join(app.getAppPath(), 'dist', 'quark-logo.png')
+      icon: path.join(app.getAppPath(), 'dist', 'quark-logo.png'),
     };
-    // transparent: true,
-    // frame: false,};
     app.name = appName;
     let window = new BrowserWindow(settings);
     window.setMenu(null);

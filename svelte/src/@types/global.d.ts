@@ -160,3 +160,27 @@ export interface Artist {
   email: string;
   phone: string;
 }
+
+export interface Statistics {
+  totalOrders: number;
+  creation: number;
+  prints: number;
+  frames: number;
+  roots: number;
+  leaves: number;
+  dateBranches: number;
+  shipping: number;
+  updates: number;
+  custom: number;
+  printExpenses: number;
+  frameExpenses: number;
+  shippingExpenses: number;
+  taxes: number;
+  fees: number;
+  artists: number;
+  other: number;
+  newCustomers: number;
+  returningCustomers: number;
+  newCustomerIncome: number;
+  returningCustomerIncome: number;
+}

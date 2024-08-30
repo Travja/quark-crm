@@ -1,7 +1,7 @@
 import BaseWindow from './base-window';
 import { fileApi, navApi } from '../api';
 import fetch from 'electron-fetch';
-import { readCredentials, writeCredentials } from '../ipc/file-system';
+import { writeCredentials } from '../ipc/file-system';
 import IpcMainEvent = Electron.IpcMainEvent;
 
 const mainWindowSettings = {
