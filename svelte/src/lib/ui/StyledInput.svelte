@@ -39,7 +39,6 @@
     if (!val || (type != 'date' && type != 'datetime')) return;
     if (typeof val == 'string') {
       if (type == 'date') {
-        console.log('val', val);
         if (!internalDate && !val) {
           value = undefined;
           return;

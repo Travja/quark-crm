@@ -1,11 +1,12 @@
 <script lang="ts">
   import type { Customer } from '@types/global';
-  import OrderWidget       from '$lib/ui/order/OrderWidget.svelte';
-  import { onMount }       from 'svelte';
+  import OrderWidget from '$lib/ui/order/OrderWidget.svelte';
+  import { onMount } from 'svelte';
   import { CustomerType } from '$lib/models/order';
   import LabeledInput from '$lib/ui/LabeledInput.svelte';
   import Pill from '$lib/ui/Pill.svelte';
   import { isActive, sortOrders } from '$lib/data';
+  import { afetch } from '$lib/http';
 
   export let data: { customer: Customer };
   let customer: Customer;
@@ -34,17 +35,50 @@
   $: openOrders = customer?.orders.filter((order) =>
     isActive(order.status)
   ).length;
+
+  let timeout: number = -1;
+  const updateCustomer = () => {
+    if (timeout !== 0) {
+      clearTimeout(timeout);
+      timeout = 0;
+      return;
+    }
+
+    timeout = setTimeout(() => {
+      const tmpCustomer = { ...customer };
+      delete tmpCustomer.orders;
+      // Save the customer via PATCH request
+      afetch(`http://localhost:8080/customer/${customer.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(tmpCustomer)
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          data.orders.forEach((order) => {
+            order.created = new Date(order.created);
+            order.requestDate = order.requestDate
+              ? new Date(order.requestDate)
+              : null;
+            order.customer = data;
+          });
+          customer = data;
+        })
+        .catch((err) => console.error('Error updating customer', err));
+    }, 1000);
+  };
+
+  $: if (customer) updateCustomer();
 </script>
 
 {#if customer}
   <h2>
     <span>{customer.customerName}</span>
-    <span
-      class="new-customer material-symbols-outlined"
-      hidden={customer.customerType != CustomerType.NEW}
-    >
-      new_releases
-    </span>
+    {#if customer.new}
+      <span class="new-customer material-symbols-outlined">new_releases</span>
+    {/if}
   </h2>
 
   <div class="body">
@@ -106,7 +140,7 @@
 
       <hr />
 
-      <div class="section">
+      <div class="section textarea">
         <LabeledInput
           type="textarea"
           bind:value={customer.notes}
@@ -171,5 +205,9 @@
 
   .aside {
     grid-area: aside;
+  }
+
+  .textarea {
+    height: 15rem;
   }
 </style>

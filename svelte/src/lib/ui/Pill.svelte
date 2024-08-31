@@ -29,15 +29,15 @@
 </script>
 
 <span
-  on:click
-  on:keypress
   class="pill"
   class:hover
   class:wrap
+  on:click
+  on:keypress
+  role="button"
+  style:--hover-color={hover ? hoverColor : 'unset'}
   style:--pill-bg-color={color}
   style:--pill-fg-color={foregroundColor}
-  style:--hover-color={hover ? hoverColor : 'unset'}
-  role="button"
   tabindex="0"
 >
   <slot></slot>
@@ -55,6 +55,7 @@
     color: var(--pill-fg-color);
 
     font-size: 0.8rem;
+    cursor: unset;
   }
 
   .hover {

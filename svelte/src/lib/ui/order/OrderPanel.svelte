@@ -74,12 +74,11 @@
       <div class="customer-info full-width">
         <h3>
           <a href="/customer/{customer.id}">{customer.customerName}</a>
-          <span
-            class="new-customer material-symbols-outlined"
-            hidden={customer.customerType !== CustomerType.NEW}
-          >
-            new_releases
-          </span>
+          {#if customer.new}
+            <span class="new-customer material-symbols-outlined"
+              >new_releases</span
+            >
+          {/if}
           <span> - </span>
           <a href="mailto:{customer.customerEmail}">{customer.customerEmail}</a>
         </h3>
@@ -403,8 +402,7 @@
       {/if}
       {#if order.printType !== PrintType.DIGITAL}
         <div>
-          <h3>
-            Additional Prints</h3>
+          <h3>Additional Prints</h3>
           {#each order.additionalPrints as print}
             <AdditionalPrintWidget
               bind:print

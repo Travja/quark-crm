@@ -57,4 +57,11 @@
     font-weight: bold;
     margin-bottom: 0.5rem;
   }
+
+  .body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+  }
 </style>

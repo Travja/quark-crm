@@ -73,6 +73,7 @@ export interface Customer {
   alternateNames: string[];
   orders: Order[];
   notes: string;
+  new: boolean;
 }
 
 export interface Order {
@@ -183,4 +184,12 @@ export interface Statistics {
   returningCustomers: number;
   newCustomerIncome: number;
   returningCustomerIncome: number;
+  operatingExpenses: OperatingExpense[];
+}
+
+export interface OperatingExpense {
+  date: Date | string;
+  paidTo: string;
+  purpose: string;
+  amount: number;
 }

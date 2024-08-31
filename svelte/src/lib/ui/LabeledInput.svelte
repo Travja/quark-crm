@@ -33,6 +33,7 @@
 </script>
 
 <div
+  class:textarea={type === 'textarea'}
   in:slide|local={{ duration: noTransition ? 0 : 500 }}
   out:slide
   class:fill={fillSpace}
@@ -67,6 +68,10 @@
   div {
     display: flex;
     flex-direction: column;
+  }
+
+  .textarea {
+    height: 100%;
   }
 
   label:empty {
