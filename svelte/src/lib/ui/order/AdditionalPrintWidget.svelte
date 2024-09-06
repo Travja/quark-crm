@@ -2,6 +2,7 @@
   import type { AdditionalPrint } from '@types/global';
   import Pill from '$lib/ui/Pill.svelte';
   import { createEventDispatcher } from 'svelte';
+  import { formatCurrency } from '$lib/api/util';
 
   export let print: AdditionalPrint;
 
@@ -19,6 +20,7 @@
       <div class="frame">{print.frame}</div>
     {/if}
 
+    <span> - {formatCurrency(print.cost + print.frameCost)}</span>
     <span
       role="button"
       tabindex="0"

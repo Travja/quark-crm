@@ -51,7 +51,7 @@ app.on('ready', async () => {
     if (expiry < new Date()) {
       // Token expired
       // Check refresh token
-      fetch('http://localhost:8080/auth/refresh', {
+      fetch(`${process.env.VITE_API_URL}/auth/refresh`, {
         method: 'post',
         headers: {
           'Authorization': 'Bearer ' + refreshToken

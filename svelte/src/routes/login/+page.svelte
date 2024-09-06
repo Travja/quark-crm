@@ -2,7 +2,7 @@
   import StyledInput from '$lib/ui/StyledInput.svelte';
   import type { ApiWindow } from '@types/global';
   import { onMount } from 'svelte';
-  import { _refreshToken, _token } from '$lib/http';
+  import { _refreshToken, _token, apiUrl } from '$lib/http';
 
   let win: ApiWindow;
 
@@ -19,7 +19,7 @@
         .login({ username, password })
         .then((res) => (error = res.error));
     } else {
-      fetch('http://localhost:8080/auth/login', {
+      fetch(`${apiUrl}/auth/login`, {
         method: 'post',
         headers: {
           'Content-Type': 'application/json',

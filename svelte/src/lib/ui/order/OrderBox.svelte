@@ -1,6 +1,6 @@
 <!--suppress XmlInvalidId -->
 <script lang="ts">
-  import LabeledInput   from '$lib/ui/LabeledInput.svelte';
+  import LabeledInput from '$lib/ui/LabeledInput.svelte';
   import {
     AncestryType,
     BranchStyle,
@@ -13,17 +13,17 @@
     TreeStatus,
     TreeStyle,
     TreeType
-  }                     from '$lib/models/order';
-  import { onMount }    from 'svelte';
-  import { slide }      from 'svelte/transition';
+  } from '$lib/models/order';
+  import { onMount } from 'svelte';
+  import { slide } from 'svelte/transition';
   import {
     getOrderStatusColor,
     getOrderStatusForegroundColor,
     getTreeStatusColor,
     getTreeStatusForegroundColor
-  }                     from '$lib/api/colors';
-  import { afetch }     from '$lib/http';
-  import { artists }    from '$lib/data';
+  } from '$lib/api/colors';
+  import { afetch, apiUrl } from '$lib/http';
+  import { artists } from '$lib/data';
   import type { Order } from '@types/global';
 
   export let order: Order;
@@ -42,7 +42,7 @@
   // }
 
   const saveOrder = (): void => {
-    afetch('http://localhost:8080/order', {
+    afetch(`${apiUrl}/order`, {
       method: 'put',
       headers: {
         'Content-Type': 'application/json'

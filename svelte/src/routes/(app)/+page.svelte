@@ -1,7 +1,8 @@
 <script lang="ts">
   import {
     activeStatuses,
-    filteredOrders, inactiveStatuses,
+    filteredOrders,
+    inactiveStatuses,
     loadData,
     orderStatusFilter,
     searchFilter,
@@ -12,10 +13,10 @@
   import { OrderStatus, TreeStatus } from '$lib/models/order';
   import Modal from '$lib/Modal.svelte';
   import LabeledInput from '$lib/ui/LabeledInput.svelte';
-  import { afetch } from '$lib/http';
+  import { afetch, apiUrl } from '$lib/http';
   import type { Order } from '@types/global';
-  import OrderWidget    from '$lib/ui/order/OrderWidget.svelte';
-  import { onMount }    from 'svelte';
+  import OrderWidget from '$lib/ui/order/OrderWidget.svelte';
+  import { onMount } from 'svelte';
   import { clickOutside } from '$lib/api/clickoutside';
   import Checkbox from '$lib/ui/Checkbox.svelte';
   import { fly } from 'svelte/transition';
@@ -41,7 +42,7 @@
   };
 
   const updateOrder = (order: Order) => {
-    afetch('http://localhost:8080/order', {
+    afetch(`${apiUrl}/order`, {
       method: 'put',
       headers: {
         'Content-Type': 'application/json'

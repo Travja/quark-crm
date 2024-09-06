@@ -1,11 +1,11 @@
 import { error } from '@sveltejs/kit';
-import { afetch } from '$lib/http';
+import { afetch, apiUrl } from '$lib/http';
 import type { Order } from 'global';
 
 /** @type {import('./$types').PageLoad} */
 export async function load({ params, fetch }) {
   const order: Order = await new Promise((resolve) => {
-    afetch(`http://localhost:8080/order/${params.orderId}`, undefined, fetch)
+    afetch(`${apiUrl}/order/${params.orderId}`, undefined, fetch)
       .then((res) => res.json())
       .then((data) => resolve(data))
       .catch((_) => resolve(null));

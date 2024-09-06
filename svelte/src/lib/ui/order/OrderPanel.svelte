@@ -22,7 +22,7 @@
     getTreeStatusColor,
     getTreeStatusForegroundColor
   } from '$lib/api/colors';
-  import { afetch } from '$lib/http';
+  import { afetch, apiUrl } from '$lib/http';
   import { artists } from '$lib/data';
   import type { Customer, Order } from '@types/global';
   import OrderFinancials from '$lib/ui/order/OrderFinancials.svelte';
@@ -45,12 +45,12 @@
   $: if (originalOrder && order)
     dirty = JSON.stringify(order) != JSON.stringify(originalOrder);
   // $: if (dirty) {
-  // console.log('og', JSON.stringify(originalOrder));
-  // console.log('dirty', JSON.stringify(order));
+  //   console.log('og', JSON.stringify(originalOrder));
+  //   console.log('dirty', JSON.stringify(order));
   // }
 
   const saveOrder = (): void => {
-    afetch('http://localhost:8080/order', {
+    afetch(`${apiUrl}/order`, {
       method: 'put',
       headers: {
         'Content-Type': 'application/json'
@@ -232,7 +232,7 @@
         Background
       </LabeledInput>
 
-      {#if order.treeStyle === TreeStyle.CLASSIC}
+      {#if order.treeStyle === TreeStyle.CLASSIC && order.background !== 'Black' && order.background !== 'Red' && order.background !== 'Brown 1' && order.background !== 'Brown 2'}
         <LabeledInput
           id="fontColor"
           bind:value={order.fontColor}

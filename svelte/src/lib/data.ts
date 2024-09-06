@@ -6,7 +6,7 @@ import {
   writable
 } from 'svelte/store';
 import { OrderStatus, TreeStatus } from './models/order';
-import { afetch } from '$lib/http';
+import { afetch, apiUrl } from '$lib/http';
 // @ts-ignore
 import type { Artist, Order, SearchFilter } from '@types/global';
 
@@ -27,7 +27,7 @@ export const inactiveStatuses = [
 ];
 
 export const artists: Readable<Artist[]> = readable([], (set) => {
-  afetch('http://localhost:8080/api/artists')
+  afetch(`${apiUrl}/api/artists`)
     .then((res) => res.json())
     .then((data) => set(data))
     .catch(() => set([]));
@@ -35,7 +35,7 @@ export const artists: Readable<Artist[]> = readable([], (set) => {
 
 export const loadData = (filter: SearchFilter): Promise<Order[]> => {
   return new Promise((resolve) => {
-    afetch('http://localhost:8080/order/search', {
+    afetch(`${apiUrl}/order/search`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

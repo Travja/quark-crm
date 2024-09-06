@@ -3,7 +3,7 @@
   import moment, { type Moment } from 'moment';
   import Card from '$lib/ui/Card.svelte';
   import { formatCurrency } from '$lib/api/util';
-  import { afetch } from '$lib/http';
+  import { afetch, apiUrl } from '$lib/http';
   import type { OperatingExpense, Statistics } from '@types/global';
   import LabeledInput from '$lib/ui/LabeledInput.svelte';
   import { formatDate } from '$lib/api/util.js';
@@ -50,7 +50,7 @@
 
   const loadData = () => {
     afetch(
-      `http://localhost:8080/api/stats/${moment(startDate).utc().format('YYYY-MM-DD')}/${moment(endDate).utc().format('YYYY-MM-DD')}`
+      `${apiUrl}/api/stats/${moment(startDate).utc().format('YYYY-MM-DD')}/${moment(endDate).utc().format('YYYY-MM-DD')}`
     )
       .then((response) => response.json())
       .then((data) => (stats = data));
@@ -110,7 +110,7 @@
   };
 
   const createOperatingExpense = () => {
-    afetch('http://localhost:8080/api/operating-expense', {
+    afetch(`${apiUrl}/api/operating-expense`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -128,7 +128,7 @@
   };
 
   const deleteOperatingExpense = (id) => {
-    afetch(`http://localhost:8080/api/operating-expense/${id}`, {
+    afetch(`${apiUrl}/api/operating-expense/${id}`, {
       method: 'DELETE'
     }).then((_) => loadData());
   };

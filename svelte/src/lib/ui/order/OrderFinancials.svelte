@@ -33,10 +33,10 @@
     Leaves
   </InsetInput>
 {/if}
+<InsetInput bind:value={order.printCost} id="print-cost" type="number">
+  Print
+</InsetInput>
 {#if order.printSize}
-  <InsetInput bind:value={order.printCost} id="print-cost" type="number">
-    Print
-  </InsetInput>
   {#if order.frame}
     <InsetInput bind:value={order.frameCost} id="frame-cost" type="number">
       Frame

@@ -2,6 +2,8 @@ import { get, writable, type Writable } from 'svelte/store';
 import { browser } from '$app/environment';
 import type { ApiWindow } from 'global';
 
+export const apiUrl = import.meta.env.VITE_API_URL || '';
+
 const setupLocalStore = (
   key: string,
   def: string,
@@ -57,7 +59,7 @@ const validateAndRefreshToken = async (): Promise<void> => {
   const expiry = new Date(payload.exp * 1000);
   if (expiry >= new Date()) return;
 
-  return fetch('http://localhost:8080/auth/refresh', {
+  return fetch(`${apiUrl}/auth/refresh`, {
     method: 'post',
     headers: {
       Authorization: 'Bearer ' + get(_refreshToken)

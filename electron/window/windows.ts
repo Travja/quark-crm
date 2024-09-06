@@ -43,7 +43,7 @@ export const createLoginWindow = (): BaseWindow => {
       ...navApi,
       ...fileApi,
       login: (myWindow: BaseWindow, event: IpcMainEvent, args: any) => {
-        fetch('http://localhost:8080/auth/login', {
+        fetch(`${process.env.VITE_API_URL}/auth/login`, {
           method: 'post',
           headers: {
             'Content-Type': 'application/json',

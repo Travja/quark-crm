@@ -64,7 +64,6 @@
     convert = mom.toISOString().split('Z')[0];
 
     value = convert;
-    console.log('convert', convert);
   };
 
   $: processVal(internalDate);

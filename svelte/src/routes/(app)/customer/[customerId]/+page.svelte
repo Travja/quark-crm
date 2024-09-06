@@ -6,7 +6,7 @@
   import LabeledInput from '$lib/ui/LabeledInput.svelte';
   import Pill from '$lib/ui/Pill.svelte';
   import { isActive, sortOrders } from '$lib/data';
-  import { afetch } from '$lib/http';
+  import { afetch, apiUrl } from '$lib/http';
 
   export let data: { customer: Customer };
   let customer: Customer;
@@ -48,7 +48,7 @@
       const tmpCustomer = { ...customer };
       delete tmpCustomer.orders;
       // Save the customer via PATCH request
-      afetch(`http://localhost:8080/customer/${customer.id}`, {
+      afetch(`${apiUrl}/customer/${customer.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json'

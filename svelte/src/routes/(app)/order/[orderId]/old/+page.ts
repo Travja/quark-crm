@@ -1,14 +1,15 @@
 import { error } from '@sveltejs/kit';
-import type { Order } from '$lib/models/order';
-import { afetch } from '$lib/http';
+import { afetch, apiUrl } from '$lib/http';
+// @ts-ignore
+import type { Order } from '@types/global';
 
 /** @type {import('./$types').PageLoad} */
 export async function load({ params, fetch }) {
   const order: Order = await new Promise((resolve) => {
-    afetch(`http://localhost:8080/order/${params.orderId}`)
+    afetch(`${apiUrl}/order/${params.orderId}`, undefined, fetch)
       .then((res) => res.json())
       .then((data) => resolve(data))
-      .catch((e) => resolve(null));
+      .catch((_) => resolve(null));
   });
 
   if (!order) throw error(404, 'Not found');
