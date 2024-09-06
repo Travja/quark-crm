@@ -10,8 +10,10 @@
     "svelte:dev": "cd svelte && npm run dev",
     "svelte:build": "cd svelte && npm run build",
     "compile": "tsc && copyfiles -u 1 electron/*.png dist",
-    "out:win": "npm run svelte:build && npm run compile && export $(cat .env | xargs) && electron-builder build --win --publish never",
-    "publish:win": "npm run svelte:build && npm run compile && export $(cat .env | xargs) && electron-builder build --win --publish always"
+    "out:win": "export $(cat .env | xargs) && export NODE_ENV=production && npm run svelte:build && npm run compile && export $(cat .env | xargs) && electron-builder build --win --publish never",
+    "publish:win": "export $(cat .env | xargs) && export NODE_ENV=production && npm run svelte:build && npm run compile && export $(cat .env | xargs) && electron-builder build --win --publish always",
+    "out:linux": "export $(cat .env | xargs) && export NODE_ENV=production && npm run svelte:build && npm run compile && export $(cat .env | xargs) && electron-builder build --linux --publish never",
+    "publish:linux": "export $(cat .env | xargs) && export NODE_ENV=production && npm run svelte:build && npm run compile && export $(cat .env | xargs) && electron-builder build --linux --publish always"
   },
   "author": "Travja",
   "license": "ISC",
@@ -20,30 +22,28 @@
     "copyfiles": "^2.4.1",
     "electron": "^31.3.1",
     "electron-builder": "^24.13.3",
-    "electron-fetch": "^1.9.1",
-    "electron-serve": "^2.0.0",
     "electron-updater": "^6.2.1",
     "nodemon": "^3.1.4",
     "prettier": "^3.3.3",
     "typescript": "^5.5.4"
   },
   "build": {
-    "appId": "memento-ket",
+    "appId": "dev.travja.quark",
     "directories": {
       "output": "out"
     },
-    "disabled-publish": [
-      {
-        "provider": "github",
-        "owner": "el3um4s",
-        "repo": "memento-sveltekit-electron-typescript"
-      }
-    ],
     "win": {
       "target": [
         "nsis"
       ],
       "icon": "icon.ico"
+    },
+    "linux": {
+      "maintainer": "Travja <the.only.t.craft@gmail.com>",
+      "icon": "electron/quark-logo.png",
+      "target": [
+        "deb"
+      ]
     },
     "nsis": {
       "installerIcon": "icon.ico",
@@ -52,5 +52,9 @@
       "oneClick": false,
       "allowToChangeInstallationDirectory": true
     }
+  },
+  "dependencies": {
+    "electron-fetch": "^1.9.1",
+    "electron-serve": "^2.1.0"
   }
 }
