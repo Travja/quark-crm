@@ -8,15 +8,14 @@ interface APIContextBridge {
 }
 
 export function generateContextBridge(listIPC: IPC[]) {
-
   let listChannels: APIChannels[] = [];
-  listIPC.forEach(el => {
+  listIPC.forEach((el) => {
     listChannels.push(el.channels);
   });
 
   let listAPI: { [key: string]: APIContextBridge } = {};
 
-  listChannels.forEach(el => {
+  listChannels.forEach((el) => {
     const api = getContextBridge(el);
     const name = el.nameAPI;
     listAPI[name] = { ...api };
@@ -47,7 +46,7 @@ function getContextBridge(obj: APIChannels): APIContextBridge {
       }
     }
   };
-};
+}
 
 function getArrayOfValidSendChannel(obj: APIChannels): string[] {
   const { validSendChannel } = { ...obj };

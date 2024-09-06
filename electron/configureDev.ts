@@ -1,10 +1,11 @@
 import { exec } from 'child_process';
+import { loadURL } from './main.js';
 
 export interface DeveloperOptions {
-  isInProduction: boolean,
-  serveSvelteDev: boolean,
-  buildSvelteDev: boolean,
-  watchSvelteBuild: boolean
+  isInProduction: boolean;
+  serveSvelteDev: boolean;
+  buildSvelteDev: boolean;
+  watchSvelteBuild: boolean;
 }
 
 class ConfigureDev {
@@ -31,7 +32,15 @@ class ConfigureDev {
 
   _check_isInProduction() {
     if (!this.isInProduction) {
-      this.isInProduction = process.env.NODE_ENV === 'production' || !/[\\/]electron/.exec(process.execPath); // !process.execPath.match(/[\\/]electron/);
+      this.isInProduction =
+        process.env.NODE_ENV === 'production' ||
+        !/[\\/]electron/.exec(process.execPath); // !process.execPath.match(/[\\/]electron/);
+
+      if (this.isInProduction) {
+        this.serveSvelteDev = false;
+        this.buildSvelteDev = false;
+        this.watchSvelteBuild = false;
+      }
     }
   }
 
@@ -43,11 +52,10 @@ class ConfigureDev {
     exec('npm run svelte:build');
   }
 
-  _watch_Dist() {
-  }
+  _watch_Dist() {}
 
   _serve_Dist() {
-    this.loadURL = import("electron-serve").then(serve => serve.default({ directory: 'dist/www' }));
+    this.loadURL = loadURL;
   }
 
   isLocalHost() {
@@ -57,7 +65,6 @@ class ConfigureDev {
   isElectronServe() {
     return !this.serveSvelteDev;
   }
-
 }
 
 export default ConfigureDev;

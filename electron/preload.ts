@@ -19,35 +19,34 @@ contextBridge.exposeInMainWorld('electron', {
   move: (x: number, y: number) => ipcRenderer.send('window', 'move', x, y),
   login: async (data: any) => {
     ipcRenderer.send('window', 'login', data);
-    let result = await new Promise(resolve =>
-      ipcRenderer.on('login-state',
-        (event, args) => resolve(args))
+    let result = await new Promise((resolve) =>
+      ipcRenderer.on('login-state', (event, args) => resolve(args))
     );
 
     return result;
   },
   isFocused: async () => {
     ipcRenderer.send('window', 'isFocused');
-    let result = await new Promise(resolve =>
-      ipcRenderer.on('focus-state',
-        (event, args) => resolve(args))
+    let result = await new Promise((resolve) =>
+      ipcRenderer.on('focus-state', (event, args) => resolve(args))
     );
 
     return result;
   },
-  onFocus: (callback: (event: any, value: any) => void) => ipcRenderer.on('focus', callback),
-  onBlur: (callback: (event: any, value: any) => void) => ipcRenderer.on('blur', callback),
+  onFocus: (callback: (event: any, value: any) => void) =>
+    ipcRenderer.on('focus', callback),
+  onBlur: (callback: (event: any, value: any) => void) =>
+    ipcRenderer.on('blur', callback),
   isDarkTheme: async (callback: (event: any, value: any) => void) => {
     ipcRenderer.send('window', 'isDarkTheme');
-    let result = await new Promise(resolve =>
-      ipcRenderer.on('theme',
-        (event, args) => resolve(args)
-      )
+    let result = await new Promise((resolve) =>
+      ipcRenderer.on('theme', (event, args) => resolve(args))
     );
 
     return result;
   },
-  writeCredentials: (data: { token: string, refreshToken: string }) => ipcRenderer.send('api', 'writeCredentials', data)
+  writeCredentials: (data: { token: string; refreshToken: string }) =>
+    ipcRenderer.send('api', 'writeCredentials', data)
 });
 
 contextBridge.exposeInMainWorld('api', {

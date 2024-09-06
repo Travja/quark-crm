@@ -105,6 +105,7 @@ export const afetch = async (
                 .then((res) => {
                   if (get(_token) && res.status == 401) {
                     location.href = '/login';
+                    console.trace('Authentication failed');
                     reject('Authentication failed');
                     return;
                   }
@@ -113,6 +114,7 @@ export const afetch = async (
                 })
                 .catch((err) => {
                   location.href = '/login';
+                  console.trace('failed to refresh token: ', err);
                   reject(err);
                 });
             })
@@ -123,6 +125,7 @@ export const afetch = async (
             });
         } else if (!token) {
           window.location.href = '/login';
+          console.trace('Unauthenticated');
           reject('Unauthenticated');
           return;
         } else {

@@ -2,19 +2,14 @@ import BaseWindow from './base-window';
 import { fileApi, navApi } from '../api';
 import fetch from 'electron-fetch';
 import { writeCredentials } from '../ipc/file-system';
+import { screen } from 'electron';
 import IpcMainEvent = Electron.IpcMainEvent;
 
-const mainWindowSettings = {
-  width: 854,
-  height: 854,
-  enableLoadingScreen: true
-};
-
 const developerOptions = {
-  isInProduction: false,    // true if is in production
-  serveSvelteDev: true,    // true when you want to watch svelte
-  buildSvelteDev: false,     // true when you want to build svelte
-  watchSvelteBuild: false   // true when you want to watch build svelte
+  isInProduction: false, // true if is in production
+  serveSvelteDev: true, // true when you want to watch svelte
+  buildSvelteDev: false, // true when you want to build svelte
+  watchSvelteBuild: false // true when you want to watch build svelte
 };
 
 /*
@@ -23,10 +18,18 @@ const developerOptions = {
   testing both side: isInProduction: true, serveSvelteDev: false, buildSvelteDev:true, watchSvelteBuild: true
 */
 
-export const createMainWindow = (token: string, refreshToken: string): BaseWindow => {
+export const createMainWindow = (
+  token: string,
+  refreshToken: string
+): BaseWindow => {
   return new BaseWindow(
-    `/?token=${token}&refreshToken=${refreshToken}`,
-    { ...mainWindowSettings, title: 'QuarkCRM' },
+    `?token=${token}&refreshToken=${refreshToken}`,
+    {
+      width: screen.getPrimaryDisplay().workAreaSize.width * 0.8,
+      height: screen.getPrimaryDisplay().workAreaSize.height - 100,
+      enableLoadingScreen: true,
+      title: 'QuarkCRM'
+    },
     developerOptions,
     {
       ...navApi,
@@ -36,8 +39,14 @@ export const createMainWindow = (token: string, refreshToken: string): BaseWindo
 };
 
 export const createLoginWindow = (): BaseWindow => {
-  const loginWindow = new BaseWindow('/login',
-    { width: 400, height: 600, title: 'Quark - Login', enableLoadingScreen: true },
+  const loginWindow = new BaseWindow(
+    'login',
+    {
+      width: 400,
+      height: 600,
+      title: 'Quark - Login',
+      enableLoadingScreen: true
+    },
     developerOptions,
     {
       ...navApi,
@@ -47,7 +56,11 @@ export const createLoginWindow = (): BaseWindow => {
           method: 'post',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Basic ' + Buffer.from(args.username + ':' + args.password).toString('base64')
+            Authorization:
+              'Basic ' +
+              Buffer.from(args.username + ':' + args.password).toString(
+                'base64'
+              )
           }
         })
           .then((res: any) => res.json())
@@ -58,7 +71,10 @@ export const createLoginWindow = (): BaseWindow => {
                 refreshToken: data.refreshToken
               }).then(() => console.log('Wrote credentials'));
 
-              let main: BaseWindow = createMainWindow(data.token, data.refreshToken);
+              let main: BaseWindow = createMainWindow(
+                data.token,
+                data.refreshToken
+              );
               main.onLoad((base: BaseWindow) => {
                 // fileSystem.initIpcMain(ipcMain, main.window);
                 loginWindow.hide();
@@ -67,16 +83,23 @@ export const createLoginWindow = (): BaseWindow => {
 
                 // updaterInfo.initAutoUpdater(autoUpdater, main.window);
               });
-
             }
 
             event.reply('login-state', {
               authorized: data.authorized,
               token: data.token,
-              error: (data.error && data.error.message ? data.error.message : data.error)
+              error:
+                data.error && data.error.message
+                  ? data.error.message
+                  : data.error
             });
           })
-          .catch((err: any) => event.reply('login-state', { authorized: false, error: err.message }));
+          .catch((err: any) =>
+            event.reply('login-state', {
+              authorized: false,
+              error: err.message
+            })
+          );
       }
     }
   ).onLoad((window: BaseWindow) => {
@@ -86,4 +109,3 @@ export const createLoginWindow = (): BaseWindow => {
 
   return loginWindow;
 };
-

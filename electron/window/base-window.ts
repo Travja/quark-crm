@@ -6,6 +6,7 @@ import { EventEmitter } from 'events';
 import { ApiOptions } from '../types';
 import BrowserWindowConstructorOptions = Electron.BrowserWindowConstructorOptions;
 import IpcMainEvent = Electron.IpcMainEvent;
+import { loadURL } from '../main.js';
 
 const appName = 'QuarkCRM';
 
@@ -17,10 +18,10 @@ const defaultSettings = {
 };
 
 const defaultSettingsDev: DeveloperOptions = {
-  isInProduction: true,    // true if is in production
-  serveSvelteDev: false,    // true when you want to watch svelte
-  buildSvelteDev: false,     // true when you want to build svelte
-  watchSvelteBuild: false     // true when you want to watch build svelte
+  isInProduction: true, // true if is in production
+  serveSvelteDev: false, // true when you want to watch svelte
+  buildSvelteDev: false, // true when you want to build svelte
+  watchSvelteBuild: false // true when you want to watch build svelte
 };
 
 class BaseWindow {
@@ -34,12 +35,16 @@ class BaseWindow {
   private loadCallback?: (window: BaseWindow) => void;
   private isLoaded = false;
 
-  constructor(pathUrl: string = '/',
-              settings: { [key: string]: any } | null = null,
-              settingsDev: DeveloperOptions | null = null,
-              ipcApi: ApiOptions | null = null) {
+  constructor(
+    pathUrl: string = '/',
+    settings: { [key: string]: any } | null = null,
+    settingsDev: DeveloperOptions | null = null,
+    ipcApi: ApiOptions | null = null
+  ) {
     this.settings = settings ? { ...settings } : { ...defaultSettings };
-    this.settingsDev = settingsDev ? { ...settingsDev } : { ...defaultSettingsDev };
+    this.settingsDev = settingsDev
+      ? { ...settingsDev }
+      : { ...defaultSettingsDev };
 
     this.configDev = new ConfigureDev(this.settingsDev);
     this.pathUrl = pathUrl;
@@ -89,7 +94,7 @@ class BaseWindow {
         devTools: true,
         preload: path.join(app.getAppPath(), 'dist', 'preload.js')
       },
-      icon: path.join(app.getAppPath(), 'dist', 'quark-logo.png'),
+      icon: path.join(app.getAppPath(), 'dist', 'quark-logo.png')
     };
     app.name = appName;
     let window = new BrowserWindow(settings);
@@ -97,31 +102,36 @@ class BaseWindow {
 
     if (this.configDev.isLocalHost()) {
       try {
-        await window.loadURL('http://localhost:3000' + this.pathUrl);
+        await window
+          .loadURL('http://localhost:3000' + this.pathUrl)
+          .catch((error) => {
+            throw error;
+          });
       } catch (error) {
-        console.log(`ERROR: window.loadURL("http://localhost:3000${this.pathUrl}");`);
+        console.log(
+          `ERROR: window.loadURL("http://localhost:3000/${this.pathUrl ? '?' + this.pathUrl : ''}");`
+        );
         console.log(error);
+        window.close();
       }
     } else if (this.configDev.isElectronServe()) {
       try {
-        await this.configDev.loadURL(window);
+        await loadURL(window, this.pathUrl);
       } catch (error) {
         console.log(`this.configDev.loadURL(window);`);
         console.log(error);
+        window.close();
       }
     }
 
-    window.addListener('focus',
-      () => window.webContents.send('focus'));
-    window.addListener('blur',
-      () => window.webContents.send('blur'));
+    window.addListener('focus', () => window.webContents.send('focus'));
+    window.addListener('blur', () => window.webContents.send('blur'));
 
     return window;
   };
 
   onWindowAllClosed = () => {
-    if (process.platform !== 'darwin')
-      app.quit();
+    if (process.platform !== 'darwin') app.quit();
   };
 
   onActivate = () => {
@@ -168,8 +178,8 @@ class BaseWindow {
     ipcMain.removeListener('api', this.apiListener);
     this.window?.close();
   };
-  showDevConsole = (options?: Electron.OpenDevToolsOptions) => this.window?.webContents.openDevTools(options);
-
+  showDevConsole = (options?: Electron.OpenDevToolsOptions) =>
+    this.window?.webContents.openDevTools(options);
 }
 
 export default BaseWindow;

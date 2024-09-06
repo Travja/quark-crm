@@ -9,7 +9,7 @@
     "start": "export $(cat .env | xargs) && npm run compile && electron --trace-warnings . --no-sandbox",
     "svelte:dev": "cd svelte && npm run dev",
     "svelte:build": "cd svelte && npm run build",
-    "compile": "tsc && copyfiles -u 1 electron/*.png dist",
+    "compile": "tsc && node scripts/env-replace.js && copyfiles -u 1 electron/*.png dist",
     "out:win": "export $(cat .env | xargs) && export NODE_ENV=production && npm run svelte:build && npm run compile && export $(cat .env | xargs) && electron-builder build --win --publish never",
     "publish:win": "export $(cat .env | xargs) && export NODE_ENV=production && npm run svelte:build && npm run compile && export $(cat .env | xargs) && electron-builder build --win --publish always",
     "out:linux": "export $(cat .env | xargs) && export NODE_ENV=production && npm run svelte:build && npm run compile && export $(cat .env | xargs) && electron-builder build --linux --publish never",
@@ -20,6 +20,7 @@
   "devDependencies": {
     "concurrently": "^8.2.2",
     "copyfiles": "^2.4.1",
+    "dotenv": "^16.4.5",
     "electron": "^31.3.1",
     "electron-builder": "^24.13.3",
     "electron-updater": "^6.2.1",

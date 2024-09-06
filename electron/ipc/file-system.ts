@@ -8,15 +8,13 @@ const nameAPI = 'fileSystem';
 
 // to Main
 const validSendChannel: SendChannels = {
-  'readFile': readFileTodos,
-  'saveFile': saveFile,
-  'writeCredentials': writeCredentials
+  readFile: readFileTodos,
+  saveFile: saveFile,
+  writeCredentials: writeCredentials
 };
 
 // from Main
-const validReceiveChannel: string[] = [
-  'getFile'
-];
+const validReceiveChannel: string[] = ['getFile'];
 
 const fileSystem = new IPC({
   nameAPI,
@@ -26,27 +24,35 @@ const fileSystem = new IPC({
 
 export default fileSystem;
 
-export async function writeCredentials(credentials: { token: string, refreshToken: string }) {
+export async function writeCredentials(credentials: {
+  token: string;
+  refreshToken: string;
+}) {
   const userData = app.getPath('userData');
   const pathFile = path.join(userData, 'credentials');
   const data = JSON.stringify(credentials);
   await writeFile(pathFile, data);
 }
 
-export async function readCredentials(): Promise<{ token: string, refreshToken: string } | undefined> {
+export async function readCredentials(): Promise<
+  { token: string; refreshToken: string } | undefined
+> {
   const userData = app.getPath('userData');
   const pathFile = path.join(userData, 'credentials');
-  let result: { token: string, refreshToken: string } | undefined = undefined;
+  let result: { token: string; refreshToken: string } | undefined = undefined;
   try {
     const rawData = await readFile(pathFile, 'utf-8');
     result = JSON.parse(rawData);
-  } catch (_) {
-  }
+  } catch (_) {}
 
   return result;
 }
 
-async function readFileTodos(mainWindow: BrowserWindow, event: Electron.IpcMainEvent, fileName: any) {
+async function readFileTodos(
+  mainWindow: BrowserWindow,
+  event: Electron.IpcMainEvent,
+  fileName: any
+) {
   const fileExists = await checkFileTodosExists(fileName);
   if (!fileExists) {
     await createDir();
@@ -57,10 +63,14 @@ async function readFileTodos(mainWindow: BrowserWindow, event: Electron.IpcMainE
   mainWindow.webContents.send('getFile', todos);
 }
 
-async function saveFile(mainWindow: BrowserWindow, event: Electron.IpcMainEvent, data: {
-  fileName: string,
-  todo: string
-}) {
+async function saveFile(
+  mainWindow: BrowserWindow,
+  event: Electron.IpcMainEvent,
+  data: {
+    fileName: string;
+    todo: string;
+  }
+) {
   const { fileName, todo } = { ...data };
   console.log(fileName);
   console.log(todo);
@@ -119,7 +129,6 @@ async function createDir() {
     }
   }
 }
-
 
 async function loadTodos(fileName: string) {
   const userData = app.getPath('userData');

@@ -1,6 +1,6 @@
 // eslint-disable
 System.config({
-  'paths': {
+  paths: {
     '$lib/*': './src/lib/*',
     '@types/*': './src/@types/*'
   }
