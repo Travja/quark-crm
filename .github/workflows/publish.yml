@@ -20,14 +20,5 @@ jobs:
       - uses: actions/checkout@v4
       - name: Publish
         run: |
-          pwd
-          ls
-          npm i
-          ls node_modules
-          cd svelte
-          pwd
-          ls
-          npm i
-          ls node_modules
-          cd ..
+          npm run setup
           npm run publish
