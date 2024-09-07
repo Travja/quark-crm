@@ -12,7 +12,7 @@ jobs:
     container:
       image: electronuserland/builder:wine
       env:
-        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         VITE_API_URL: ${{ vars.VITE_API_URL }}
 
 
@@ -22,7 +22,6 @@ jobs:
         run: |
           mkdir /github/home/.wine
           export WINEPREFIX=/github/home/.wine
-          winecfg
           ls -la /github/home
           npm run setup
           npm run publish
