@@ -28,15 +28,15 @@
           Analytics
         </li>
         <!-- TODO: Only show this for admin users... To be completed shortly -->
-<!--        <li-->
-<!--          role="menuitem"-->
-<!--          tabindex="0"-->
-<!--          class="nav-button"-->
-<!--          on:click={() => goto('/administration')}-->
-<!--          on:keypress={() => goto('/administration')}-->
-<!--        >-->
-<!--          Admin-->
-<!--        </li>-->
+        <li
+          role="menuitem"
+          tabindex="0"
+          class="nav-button"
+          on:click={() => goto('/administration')}
+          on:keypress={() => goto('/administration')}
+        >
+          Admin
+        </li>
       </ul>
     </nav>
   </svelte:fragment>
