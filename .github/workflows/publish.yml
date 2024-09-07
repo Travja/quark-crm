@@ -1,0 +1,25 @@
+# This gh-action will build and publish the electron app to the GH releases page
+name: Publish
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        container: electronuserland/builder:wine
+
+        steps:
+            - uses: actions/checkout@v4
+            - name: Install dependencies
+              run: |
+                npm ci
+            - name: Publish
+              env:
+                GH_TOKEN: ${{ secrets.GH_TOKEN }}
+                NODE_ENV: production
+                VITE_API_URL: ${{ vars.VITE_API_URL }}
+              run: |
+                npm run publish

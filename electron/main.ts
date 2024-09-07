@@ -4,6 +4,7 @@ import { readCredentials, writeCredentials } from './ipc/file-system';
 import fetch from 'electron-fetch';
 import path from 'path';
 import { serve } from './serve';
+import { autoUpdater } from 'electron-updater';
 
 export let loadURL = serve({ directory: './dist/www' });
 
@@ -27,6 +28,8 @@ const showLoadingScreen = async () => {
 
 app.on('ready', async () => {
   const loadingWindow = await showLoadingScreen();
+
+  autoUpdater.checkForUpdatesAndNotify().then((result) => console.log(result));
 
   const credentials = readCredentials();
   credentials
@@ -107,3 +110,5 @@ app.on('ready', async () => {
       loadingWindow.close();
     });
 });
+
+autoUpdater.on('update-downloaded', (_) => autoUpdater.quitAndInstall());

@@ -1,6 +1,6 @@
 {
   "name": "quark-crm",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Quark CRM",
   "main": "dist/main.js",
   "scripts": {
@@ -10,10 +10,12 @@
     "svelte:dev": "cd svelte && npm run dev",
     "svelte:build": "cd svelte && npm run build",
     "compile": "tsc && node scripts/env-replace.js && copyfiles -u 1 electron/*.png dist",
-    "out:win": "export $(cat .env | xargs) && export NODE_ENV=production && npm run svelte:build && npm run compile && export $(cat .env | xargs) && electron-builder build --win --publish never",
-    "publish:win": "export $(cat .env | xargs) && export NODE_ENV=production && npm run svelte:build && npm run compile && export $(cat .env | xargs) && electron-builder build --win --publish always",
-    "out:linux": "export $(cat .env | xargs) && export NODE_ENV=production && npm run svelte:build && npm run compile && export $(cat .env | xargs) && electron-builder build --linux --publish never",
-    "publish:linux": "export $(cat .env | xargs) && export NODE_ENV=production && npm run svelte:build && npm run compile && export $(cat .env | xargs) && electron-builder build --linux --publish always"
+    "build": "export $(cat .env | xargs) && npm run svelte:build && npm run compile && electron-builder build --win --linux --publish never",
+    "publish": "export $(cat .env | xargs) && npm run svelte:build && npm run compile && electron-builder build --win --linux --publish always",
+    "out:win": "export $(cat .env | xargs) && npm run svelte:build && npm run compile && electron-builder build --win --publish never",
+    "publish:win": "export $(cat .env | xargs) && npm run svelte:build && npm run compile && electron-builder build --win --publish always",
+    "out:linux": "export $(cat .env | xargs) && npm run svelte:build && npm run compile && electron-builder build --linux --publish never",
+    "publish:linux": "export $(cat .env | xargs) && npm run svelte:build && npm run compile && electron-builder build --linux --publish always"
   },
   "author": "Travja",
   "license": "ISC",
@@ -30,6 +32,11 @@
   },
   "build": {
     "appId": "dev.travja.quark",
+    "publish": {
+      "provider": "github",
+      "owner": "Travja",
+      "repo": "quark-crm"
+    },
     "directories": {
       "output": "out"
     },
@@ -37,7 +44,8 @@
       "target": [
         "nsis"
       ],
-      "icon": "icon.ico"
+      "icon": "electron/quark-logo.png",
+      "publisherName": "Travja"
     },
     "linux": {
       "maintainer": "Travja <the.only.t.craft@gmail.com>",
@@ -47,8 +55,8 @@
       ]
     },
     "nsis": {
-      "installerIcon": "icon.ico",
-      "uninstallerIcon": "icon.ico",
+      "installerIcon": "electron/icon.ico",
+      "uninstallerIcon": "electron/icon.ico",
       "uninstallDisplayName": "Quark",
       "oneClick": false,
       "allowToChangeInstallationDirectory": true
