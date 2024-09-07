@@ -15,10 +15,12 @@ jobs:
         GH_TOKEN: ${{ secrets.GH_TOKEN }}
         VITE_API_URL: ${{ vars.VITE_API_URL }}
 
+
     steps:
       - uses: actions/checkout@v4
       - name: Publish
         run: |
+          export
+          ls -la /github
           npm run setup
-          export NODE_ENV=production
           npm run publish
