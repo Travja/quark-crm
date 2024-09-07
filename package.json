@@ -1,6 +1,6 @@
 {
   "name": "quark-crm",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Quark CRM",
   "main": "dist/main.js",
   "scripts": {
@@ -17,7 +17,8 @@
     "out:win": "npm run svelte:build && npm run compile && electron-builder build --win --publish never",
     "publish:win": "npm run svelte:build && npm run compile && electron-builder build --win --publish always",
     "out:linux": "npm run svelte:build && npm run compile && electron-builder build --linux --publish never",
-    "publish:linux": "npm run svelte:build && npm run compile && electron-builder build --linux --publish always"
+    "publish:linux": "npm run svelte:build && npm run compile && electron-builder build --linux --publish always",
+    "bump": "npm version patch"
   },
   "author": "Travja",
   "license": "ISC",
@@ -27,7 +28,6 @@
     "dotenv": "^16.4.5",
     "electron": "^31.3.1",
     "electron-builder": "^24.13.3",
-    "electron-updater": "^6.2.1",
     "nodemon": "^3.1.4",
     "prettier": "^3.3.3",
     "typescript": "^5.5.4"
@@ -66,6 +66,7 @@
   },
   "dependencies": {
     "electron-fetch": "^1.9.1",
-    "electron-serve": "^2.1.0"
+    "electron-serve": "^2.1.0",
+    "electron-updater": "^6.3.4"
   }
 }

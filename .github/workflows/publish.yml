@@ -25,3 +25,10 @@ jobs:
           ls -la /github/home
           npm run setup
           npm run publish
+
+      - name: Update version
+        # Don't tag the commit, it will be tagged by Publish step
+        # Make the commit message "[ci skip] Bump version to vX.X.X"
+        run: |
+          npm config set git-tag-version false
+          npm version patch -m "[ci skip] Bump version to %s"
