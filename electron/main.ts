@@ -1,12 +1,10 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, dialog, MessageBoxOptions } from 'electron';
 import { createLoginWindow, createMainWindow } from './window/windows';
 import { readCredentials, writeCredentials } from './ipc/file-system';
 import fetch from 'electron-fetch';
 import path from 'path';
 import { serve } from './serve';
 import { autoUpdater } from 'electron-updater';
-import dialog = Electron.dialog;
-import MessageBoxOptions = Electron.MessageBoxOptions;
 
 export let installingUpdate = false;
 export let loadURL = serve({ directory: './dist/www' });
