@@ -32,3 +32,4 @@ jobs:
         run: |
           npm config set git-tag-version false
           npm version patch -m "[ci skip] Bump version to %s"
+          git push
