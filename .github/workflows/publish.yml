@@ -9,23 +9,22 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container:
-      image: electronuserland/builder:wine
-      env:
-        GH_TOKEN: ${{ secrets.GH_TOKEN }}
-        NODE_ENV: production
-        VITE_API_URL: ${{ vars.VITE_API_URL }}
-        WINEPREFIX: /tmp/.wine
+    env:
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      NODE_ENV: production
+      VITE_API_URL: ${{ vars.VITE_API_URL }}
+      WINEPREFIX: /tmp/.wine
 
     steps:
       - uses: actions/checkout@v4
       - name: Install dependencies
         run: |
           pwd
-          npm ci
+          npm i
           cd svelte
           pwd
-          npm ci
+          npm i
+          cd ..
       - name: Publish
         run: |
-          npm run publish
+          docker run --rm -v ${PWD}:/project -v ~/cache/electron:/root/.cache/electron -v ~/.cache/electron-builder:/root/.cache/electron-builder electronuserland/builder:wine bash -c "npm i && npm run publish"
