@@ -7,21 +7,23 @@ on:
       - main
 
 jobs:
-    build:
-        runs-on: ubuntu-latest
-        container: electronuserland/builder:wine
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: electronuserland/builder:wine
+      env:
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        NODE_ENV: production
+        VITE_API_URL: ${{ vars.VITE_API_URL }}
+        WINEPREFIX: /tmp/.wine
 
-        steps:
-            - uses: actions/checkout@v4
-            - name: Install dependencies
-              run: |
-                npm ci
-                cd svelte
-                npm ci
-            - name: Publish
-              env:
-                GH_TOKEN: ${{ secrets.GH_TOKEN }}
-                NODE_ENV: production
-                VITE_API_URL: ${{ vars.VITE_API_URL }}
-              run: |
-                npm run publish
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: |
+          npm ci
+          cd svelte
+          npm ci
+      - name: Publish
+        run: |
+          npm run publish
