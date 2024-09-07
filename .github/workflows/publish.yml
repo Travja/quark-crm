@@ -21,8 +21,10 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install dependencies
         run: |
+          pwd
           npm ci
           cd svelte
+          pwd
           npm ci
       - name: Publish
         run: |
