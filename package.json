@@ -47,7 +47,8 @@
         "nsis"
       ],
       "icon": "electron/quark-logo.png",
-      "publisherName": "Travja"
+      "publisherName": "Travja",
+      "verifyUpdateCodeSignature": false
     },
     "linux": {
       "maintainer": "Travja <the.only.t.craft@gmail.com>",

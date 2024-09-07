@@ -32,8 +32,8 @@
           role="menuitem"
           tabindex="0"
           class="nav-button"
-          on:click={() => goto('/administration')}
-          on:keypress={() => goto('/administration')}
+          on:click={() => goto('/admin')}
+          on:keypress={() => goto('/admin')}
         >
           Admin
         </li>
