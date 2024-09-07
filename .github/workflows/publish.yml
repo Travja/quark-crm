@@ -21,6 +21,8 @@ jobs:
       - name: Publish
         run: |
           export
-          ls -la /github
+          ls -la /github/
+          ls -la /github/home
+          ls -la /github/home/.cache
           npm run setup
           npm run publish
