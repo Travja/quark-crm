@@ -13,18 +13,21 @@ jobs:
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
       NODE_ENV: production
       VITE_API_URL: ${{ vars.VITE_API_URL }}
-      WINEPREFIX: /tmp/.wine
 
     steps:
       - uses: actions/checkout@v4
-      - name: Install dependencies
-        run: |
-          pwd
-          npm i
-          cd svelte
-          pwd
-          npm i
-          cd ..
       - name: Publish
         run: |
-          docker run --rm -v ${PWD}:/project -v ~/cache/electron:/root/.cache/electron -v ~/.cache/electron-builder:/root/.cache/electron-builder electronuserland/builder:wine bash -c "npm i && npm run publish"
+          docker run --rm -v ${PWD}:/project \
+          -v ~/cache/electron:/root/.cache/electron \
+          -v ~/.cache/electron-builder:/root/.cache/electron-builder \
+          -e GH_TOKEN \
+          -e NODE_ENV \
+          -e VITE_API_URL \
+          electronuserland/builder:wine bash -c "
+            npm ci &&
+            cd svelte &&
+            npm ci &&
+            cd .. &&
+            npm run publish
+          "
