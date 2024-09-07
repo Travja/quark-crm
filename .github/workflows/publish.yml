@@ -33,6 +33,7 @@ jobs:
         run: |
           git config --global user.email "<>"
           git config --global user.name "Quantum Assembler"
+          git config --global --add safe.directory "$(pwd)"
       - name: Update version
         # Don't tag the commit, it will be tagged by Publish step
         # Make the commit message "[ci skip] Bump version to vX.X.X"
