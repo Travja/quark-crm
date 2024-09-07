@@ -29,6 +29,10 @@ jobs:
           npm run setup
           npm run publish
 
+      - name: Configure git
+        run: |
+          git config --global user.email "<>"
+          git config --global user.name "Quantum Assembler"
       - name: Update version
         # Don't tag the commit, it will be tagged by Publish step
         # Make the commit message "[ci skip] Bump version to vX.X.X"
