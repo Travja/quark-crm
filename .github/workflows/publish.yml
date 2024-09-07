@@ -9,25 +9,24 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      GH_TOKEN: ${{ secrets.GH_TOKEN }}
-      NODE_ENV: production
-      VITE_API_URL: ${{ vars.VITE_API_URL }}
+    container:
+      image: electronuserland/builder:wine
+      env:
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        NODE_ENV: production
+        VITE_API_URL: ${{ vars.VITE_API_URL }}
 
     steps:
       - uses: actions/checkout@v4
       - name: Publish
         run: |
-          docker run --rm -v ${PWD}:/project \
-          -v ~/cache/electron:/root/.cache/electron \
-          -v ~/.cache/electron-builder:/root/.cache/electron-builder \
-          -e GH_TOKEN \
-          -e NODE_ENV \
-          -e VITE_API_URL \
-          electronuserland/builder:wine bash -c "
-            npm ci &&
-            cd svelte &&
-            npm ci &&
-            cd .. &&
-            npm run publish
-          "
+          pwd
+          ls
+          npm ci
+          ls node_modules
+          cd svelte
+          pwd ls
+          npm ci
+          ls node_modules
+          cd ..
+          npm run publish
