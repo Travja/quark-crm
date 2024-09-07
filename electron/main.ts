@@ -5,7 +5,10 @@ import fetch from 'electron-fetch';
 import path from 'path';
 import { serve } from './serve';
 import { autoUpdater } from 'electron-updater';
+import dialog = Electron.dialog;
+import MessageBoxOptions = Electron.MessageBoxOptions;
 
+export let installingUpdate = false;
 export let loadURL = serve({ directory: './dist/www' });
 
 app.disableHardwareAcceleration();
@@ -28,8 +31,6 @@ const showLoadingScreen = async () => {
 
 app.on('ready', async () => {
   const loadingWindow = await showLoadingScreen();
-
-  autoUpdater.checkForUpdatesAndNotify().then((result) => console.log(result));
 
   const credentials = readCredentials();
   credentials
@@ -101,6 +102,25 @@ app.on('ready', async () => {
           loadingWindow.hide();
           loadingWindow.close();
           base.show();
+
+          autoUpdater.checkForUpdatesAndNotify().then((result) => console.log(result));
+          autoUpdater.on('update-downloaded', (_) => {
+            // Show dialog to user that there is an update
+            const options = <MessageBoxOptions>{
+              type: 'info',
+              buttons: ['Restart', 'Later'],
+              defaultId: 0,
+              title: 'Update Available',
+              message: 'A new update is available. Restart the application to apply the updates.',
+            };
+
+            dialog.showMessageBox(base.window, options).then((response) => {
+              if (response.response === 0) { // 'Restart' button index
+                installingUpdate = true;
+                autoUpdater.quitAndInstall();
+              }
+            });
+          });
         });
       }
     })
@@ -110,5 +130,3 @@ app.on('ready', async () => {
       loadingWindow.close();
     });
 });
-
-autoUpdater.on('update-downloaded', (_) => autoUpdater.quitAndInstall());

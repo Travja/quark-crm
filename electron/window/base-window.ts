@@ -6,7 +6,7 @@ import { EventEmitter } from 'events';
 import { ApiOptions } from '../types';
 import BrowserWindowConstructorOptions = Electron.BrowserWindowConstructorOptions;
 import IpcMainEvent = Electron.IpcMainEvent;
-import { loadURL } from '../main.js';
+import { installingUpdate, loadURL } from '../main.js';
 
 const appName = 'QuarkCRM';
 
@@ -131,6 +131,7 @@ class BaseWindow {
   };
 
   onWindowAllClosed = () => {
+    if (installingUpdate) return;
     if (process.platform !== 'darwin') app.quit();
   };
 
