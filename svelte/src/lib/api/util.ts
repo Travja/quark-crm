@@ -33,6 +33,14 @@ export const formatCurrency = (value?: number): string => {
   }
 };
 
+export const formatPhone = (phone: string): string => {
+  if (phone.length === 10) {
+    return `(${phone.slice(0, 3)}) ${phone.slice(3, 6)}-${phone.slice(6)}`;
+  } else {
+    return phone;
+  }
+};
+
 export const totalOperatingCosts = (order: Order): number => {
   return sumOperatingCosts(order) - sumExpenses(order);
 };

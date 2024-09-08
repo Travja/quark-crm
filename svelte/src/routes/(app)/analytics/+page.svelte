@@ -170,14 +170,9 @@
       </span>
     </span>
   </div>
-  <div class="search-filters">
-    <div class="dates">
-      <!--      <div class="date-title">Select a Time Period to Display</div>-->
-    </div>
-  </div>
   <div class="cards">
     <Card>
-      <svelte:fragment slot="header">{stats?.totalOrders}</svelte:fragment>
+      <svelte:fragment slot="header">{stats?.totalOrders || 0}</svelte:fragment>
       <div>Orders</div>
     </Card>
     <Card color="#3cf">
@@ -296,8 +291,11 @@
 
     <div class="form">
       <h4>Add Operating Expense</h4>
-      <InsetInput bind:value={newOperatingExpense.date} name="date" type="date"
-                  id="op-expense-date"
+      <InsetInput
+        bind:value={newOperatingExpense.date}
+        name="date"
+        type="date"
+        id="op-expense-date"
         >Date
       </InsetInput>
       <InsetInput

@@ -55,6 +55,8 @@
     border-radius: 0.4rem;
     user-select: none;
     -webkit-user-select: none;
+
+    align-self: var(--align-self, auto);
   }
 
   .inline {

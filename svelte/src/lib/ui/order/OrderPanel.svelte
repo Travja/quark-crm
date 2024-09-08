@@ -28,8 +28,9 @@
   import AdditionalPrintWidget from '$lib/ui/order/AdditionalPrintWidget.svelte';
   import Pill from '$lib/ui/Pill.svelte';
   import NewAdditionalPrint from '$lib/ui/order/NewAdditionalPrint.svelte';
-  import { sanitizeOrder } from "$lib/api/util";
-  import { get } from "svelte/store";
+  import { get } from 'svelte/store';
+  import Toggle from '$lib/ui/Toggle.svelte';
+  import StyledInput from '$lib/ui/StyledInput.svelte';
 
   export let order: Order;
   let customer: Customer;
@@ -37,6 +38,7 @@
   let dirty = false;
   let originalOrder;
   let newPrint = false;
+  let commentsActive = true;
 
   onMount(() => {
     if (!originalOrder) originalOrder = { ...order };
@@ -90,13 +92,13 @@
     {/if}
     <div class="column">
       Order ID: {order.id}
-      <LabeledInput bind:value={order.shipTo} id="ship-to" canCopy
+      <LabeledInput bind:value={order.shipTo} canCopy id="ship-to"
         >Ship To
       </LabeledInput>
       <LabeledInput
         bind:value={order.shippingAddress}
-        id="shipping-address"
         canCopy
+        id="shipping-address"
       >
         Shipping Address
       </LabeledInput>
@@ -141,15 +143,6 @@
       >
         Artist
       </LabeledInput>
-
-      <LabeledInput
-        fillSpace={true}
-        id="history"
-        placeholder="No history 😨"
-        type="textarea"
-      >
-        History
-      </LabeledInput>
     </div>
 
     <div class="column">
@@ -162,11 +155,13 @@
       </LabeledInput>
 
       {#if order.type === TreeType.ANCESTRY || order.type === TreeType.ANCESTRY_ROOTS}
-        <LabeledInput
-          id="ancestryType"
-          bind:value={order.ancestryType}
-          options={Object.values(AncestryType)}
-        />
+        <div transition:slide>
+          <LabeledInput
+            id="ancestryType"
+            bind:value={order.ancestryType}
+            options={Object.values(AncestryType)}
+          />
+        </div>
       {/if}
 
       <LabeledInput
@@ -178,13 +173,15 @@
       </LabeledInput>
 
       {#if order.type === TreeType.ANCESTRY_ROOTS || order.type === TreeType.DESCENDANT_ROOTS}
-        <LabeledInput
-          id="roots"
-          bind:value={order.roots}
-          options={Object.values(RootType)}
-        >
-          Roots
-        </LabeledInput>
+        <div transition:slide>
+          <LabeledInput
+            id="roots"
+            bind:value={order.roots}
+            options={Object.values(RootType)}
+          >
+            Roots
+          </LabeledInput>
+        </div>
       {/if}
 
       <div class="section">
@@ -238,18 +235,20 @@
       </LabeledInput>
 
       {#if order.treeStyle === TreeStyle.CLASSIC && order.background !== 'Black' && order.background !== 'Red' && order.background !== 'Brown 1' && order.background !== 'Brown 2'}
-        <LabeledInput
-          id="fontColor"
-          bind:value={order.fontColor}
-          options={Object.values(FontColor)}
-        >
-          Font Color
-        </LabeledInput>
+        <div transition:slide>
+          <LabeledInput
+            id="fontColor"
+            bind:value={order.fontColor}
+            options={Object.values(FontColor)}
+          >
+            Font Color
+          </LabeledInput>
+        </div>
       {/if}
     </div>
 
     <div class="column">
-      <LabeledInput bind:value={order.familyName} id="familyName" canCopy>
+      <LabeledInput bind:value={order.familyName} canCopy id="familyName">
         Family Name
       </LabeledInput>
 
@@ -271,7 +270,6 @@
               id="quote-center"
               bind:group={order.nameLocation}
               fillSpace={true}
-              noTransition
               value={TextLocation.CENTER}
             >
               <svelte:fragment slot="value">Center</svelte:fragment>
@@ -289,11 +287,9 @@
           </LabeledInput>
         </div>
 
-        <!--{#if order.established}-->
         <LabeledInput id="established" bind:value={order.established}>
           Established
         </LabeledInput>
-        <!--{/if}-->
 
         <LabeledInput id="familyFont" bind:value={order.familyFont}>
           Family Font
@@ -315,45 +311,33 @@
       </div>
 
       {#if order.hasDateBranches}
-        <LabeledInput id="num-date-branches" bind:value={order.branchesAmount}>
-          Number of Branches
-        </LabeledInput>
+        <div transition:slide>
+          <LabeledInput
+            id="num-date-branches"
+            bind:value={order.branchesAmount}
+          >
+            Number of Branches
+          </LabeledInput>
+        </div>
       {/if}
 
-      <LabeledInput
-        bind:value={order.comments}
-        fillSpace={true}
-        id="comments"
-        type="textarea"
-      >
-        Comments
-      </LabeledInput>
-    </div>
-
-    <div class="column">
-      <LabeledInput
-        bind:value={order.notes}
-        fillSpace={true}
-        id="notes"
-        placeholder="Notes..."
-        type="textarea"
-      >
-        Order Notes
-      </LabeledInput>
-
-      <LabeledInput bind:value={order.groundText} id="groundText" canCopy>
+      <LabeledInput bind:value={order.groundText} canCopy id="groundText">
         Ground Text
       </LabeledInput>
 
       {#if order.groundText}
-        <LabeledInput id="groundFont" bind:value={order.groundFont}>
-          Ground Font
-        </LabeledInput>
+        <span transition:slide>
+          <LabeledInput id="groundFont" bind:value={order.groundFont}>
+            Ground Font
+          </LabeledInput>
+        </span>
       {/if}
+    </div>
 
-      <LabeledInput bind:value={order.quote} id="quote" canCopy
-        >Quote</LabeledInput
-      >
+    <div class="column">
+      <LabeledInput bind:value={order.quote} canCopy id="quote"
+        >Quote
+      </LabeledInput>
 
       {#if order.quote}
         <div class="section" transition:slide|local>
@@ -362,7 +346,6 @@
             id="quote-left"
             bind:group={order.quoteLocation}
             fillSpace={true}
-            noTransition
             value={TextLocation.LEFT}
           >
             <svelte:fragment slot="value">Left</svelte:fragment>
@@ -373,16 +356,17 @@
             id="quote-right"
             bind:group={order.quoteLocation}
             fillSpace={true}
-            noTransition
             value={TextLocation.RIGHT}
           >
             <svelte:fragment slot="value">Right</svelte:fragment>
           </LabeledInput>
         </div>
 
-        <LabeledInput id="quoteFont" bind:value={order.quoteFont}>
-          Quote Font
-        </LabeledInput>
+        <div transition:slide>
+          <LabeledInput id="quoteFont" bind:value={order.quoteFont}>
+            Quote Font
+          </LabeledInput>
+        </div>
       {/if}
 
       <LabeledInput
@@ -394,19 +378,23 @@
       </LabeledInput>
 
       {#if order.printType !== PrintType.DIGITAL}
-        <LabeledInput
-          id="print-size"
-          bind:value={order.printSize}
-          options={Object.values(PrintSize)}
-        >
-          Print Size
-        </LabeledInput>
+        <div transition:slide>
+          <LabeledInput
+            id="print-size"
+            bind:value={order.printSize}
+            options={Object.values(PrintSize)}
+          >
+            Print Size
+          </LabeledInput>
+        </div>
       {/if}
       {#if order.printType === PrintType.STANDARD || order.printType === PrintType.MOUNTED_AND_TEXTURED}
-        <LabeledInput bind:value={order.frame} id="frame">Frame</LabeledInput>
+        <div transition:slide>
+          <LabeledInput bind:value={order.frame} id="frame">Frame</LabeledInput>
+        </div>
       {/if}
       {#if order.printType !== PrintType.DIGITAL}
-        <div>
+        <div transition:slide>
           <h3>Additional Prints</h3>
           {#each order.additionalPrints as print}
             <AdditionalPrintWidget
@@ -439,6 +427,42 @@
         </div>
       {/if}
     </div>
+  </div>
+
+  <div class="extra">
+    <div class="comments">
+      <Toggle
+        --align-self="flex-start"
+        bind:value={commentsActive}
+        left="Comments"
+        right="History"
+      />
+      {#if commentsActive}
+        <StyledInput
+          bind:value={order.comments}
+          id="comments"
+          type="textarea"
+          placeholder="No comments..."
+        />
+      {:else}
+        <StyledInput
+          bind:value={order.history}
+          id="history"
+          type="textarea"
+          placeholder="No history 😨"
+        />
+      {/if}
+    </div>
+
+    <LabeledInput
+      bind:value={order.notes}
+      fillSpace={true}
+      id="notes"
+      placeholder="Notes..."
+      type="textarea"
+    >
+      <span class="notes-label">Order Notes</span>
+    </LabeledInput>
   </div>
 
   <div class="aside">
@@ -477,8 +501,11 @@
   .wrapper {
     flex: 1;
     display: grid;
-    grid-template-areas: 'body aside';
+    grid-template-areas:
+      'body  aside'
+      'extra aside';
     grid-template-columns: auto 13rem;
+    grid-template-rows: auto 200px;
   }
 
   .body {
@@ -490,6 +517,8 @@
   }
 
   .aside {
+    grid-area: aside;
+    column-span: all;
     height: 100%;
     margin-left: 0.5rem;
     padding-left: 0.5rem;
@@ -522,8 +551,42 @@
     overflow: hidden;
   }
 
-  footer {
-    text-align: right;
+  @media (max-width: 800px) {
+    .wrapper {
+      grid-template-areas:
+        'body'
+        'extra'
+        'aside';
+      grid-template-columns: auto;
+      grid-template-rows: auto auto auto;
+    }
+
+    .aside {
+      margin-left: 0;
+      padding-left: 0;
+      border-left: none;
+      border-top: 2px groove rgba(0, 0, 0, 0.4);
+    }
+  }
+
+  .extra {
+    grid-area: extra;
+
+    display: grid;
+    grid-template-areas: 'comments notes';
+    grid-template-columns: 2fr 1fr;
+    gap: 0.5rem;
+  }
+
+  .comments {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .notes-label {
+    display: block;
+    padding-bottom: 0.4em;
   }
 
   .save-button {
@@ -547,14 +610,13 @@
   }
 
   footer {
-    margin-top: 0.5rem;
+    text-align: center;
     position: sticky;
     bottom: 0;
-    right: 0;
-    left: 0;
+    margin: 0.5rem auto 0;
     border-radius: 1rem;
     padding: 0.5rem 1rem;
-    background: var(--bg-secondary);
+    background: color-mix(in srgb, var(--bg-secondary) 80%, transparent);
 
     display: grid;
     place-items: center;

@@ -1,6 +1,5 @@
 <script lang="ts">
   import StyledInput from '$lib/ui/StyledInput.svelte';
-  import { slide } from 'svelte/transition';
   import { onMount } from 'svelte';
   import { deepEqual } from '$lib/api/util';
 
@@ -22,7 +21,6 @@
   export let disabled = false;
   export let readonly = false;
   export let fillSpace = false;
-  export let noTransition = false;
   export let backgroundColor = undefined;
   export let color = undefined;
 
@@ -39,12 +37,7 @@
   });
 </script>
 
-<div
-  class:textarea={type === 'textarea'}
-  in:slide|local={{ duration: noTransition ? 0 : 500 }}
-  out:slide
-  class:fill={fillSpace}
->
+<div class:textarea={type === 'textarea'} class:fill={fillSpace}>
   <label for={id} class:centered={type === 'checkbox'}>
     <slot />
   </label>
@@ -77,10 +70,11 @@
   div {
     display: flex;
     flex-direction: column;
+    align-self: stretch;
   }
 
   .textarea {
-    height: 100%;
+    flex: 1;
   }
 
   label:empty {

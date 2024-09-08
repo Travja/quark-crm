@@ -73,7 +73,7 @@
   }
 </script>
 
-<h2>Create Artist</h2>
+<slot/>
 <form class="form" on:submit|preventDefault={handleSubmit}>
   <div class="flex">
     <LabeledInput bind:value={artist.firstName}>First Name</LabeledInput>
@@ -99,7 +99,17 @@
     </div>
   {/if}
 
-  <button type="submit">Create</button>
+  <div
+    class="button"
+    role="button"
+    tabindex="0"
+    on:click={handleSubmit}
+    on:keypress={(e) => {
+      if (e.key === 'Enter') handleSubmit();
+    }}
+  >
+    Create
+  </div>
 </form>
 
 <style>
@@ -120,7 +130,7 @@
     margin-top: 1rem;
   }
 
-  button {
-    margin-top: 1rem;
+  .button {
+    margin: 1rem 0;
   }
 </style>

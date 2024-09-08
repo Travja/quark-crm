@@ -104,6 +104,8 @@ main {
 }
 
 .button {
+  margin: 1rem;
+  display: inline-block;
   user-select: none;
   background-color: var(--ui-button-bg);
   padding: 0.75em;
