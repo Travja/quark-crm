@@ -81,7 +81,7 @@ export interface Order {
   customer: Customer;
   shipTo: string;
   shippingAddress: string;
-  artist: 'Karen' | 'MaKaela';
+  artist?: Artist;
   status: OrderStatus;
   treeStatus: TreeStatus;
 
@@ -156,6 +156,7 @@ export interface SearchFilter {
 }
 
 export interface Artist {
+  id: string;
   firstName: string;
   lastName: string;
   email: string;

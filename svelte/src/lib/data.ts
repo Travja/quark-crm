@@ -26,12 +26,15 @@ export const inactiveStatuses = [
   OrderStatus.CANCELLED
 ];
 
-export const artists: Readable<Artist[]> = readable([], (set) => {
+export const artists: Writable<Artist[]> = writable([]);
+
+export const refreshArtists = () => {
   afetch(`${apiUrl}/api/artists`)
     .then((res) => res.json())
-    .then((data) => set(data))
-    .catch(() => set([]));
-});
+    .then((data) => artists.set(data))
+    .catch(() => artists.set([]));
+};
+refreshArtists();
 
 export const loadData = (filter: SearchFilter): Promise<Order[]> => {
   return new Promise((resolve) => {

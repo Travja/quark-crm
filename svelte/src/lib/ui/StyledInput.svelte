@@ -15,7 +15,8 @@
     | 'select'
     | 'textarea'
     | 'checkbox'
-    | 'radio' = 'text';
+    | 'radio'
+    | 'email' = 'text';
   export let underlineColor = 'var(--accent-color)';
   export let backgroundColor = undefined;
   export let color = undefined;
@@ -88,9 +89,9 @@
 <div
   class="styled-input wrapper"
   class:check={type === 'checkbox'}
-  style:--input-bg={backgroundColor || 'var(--ui-button-bg)'}
-  style:--color={color || 'var(--fg-color)'}
   style="margin: {margin}; --font-size: {fontSize}; --background-color: {underlineColor}"
+  style:--color={color || 'var(--fg-color)'}
+  style:--input-bg={backgroundColor || 'var(--ui-button-bg)'}
 >
   {#if type === 'text'}
     <input
@@ -265,6 +266,23 @@
         on:change
       />
     </label>
+  {:else if type === 'email'}
+    <input
+      {disabled}
+      {readonly}
+      {id}
+      {name}
+      type="email"
+      {placeholder}
+      bind:value
+      bind:this={element}
+      on:focus={() => (focused = true)}
+      on:blur={() => (focused = false)}
+      on:keydown
+      on:keypress
+      on:keyup
+      on:change
+    />
   {:else}
     Unknown type
   {/if}

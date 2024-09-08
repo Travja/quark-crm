@@ -7,6 +7,7 @@
   import Pill from '$lib/ui/Pill.svelte';
   import { isActive, sortOrders } from '$lib/data';
   import { afetch, apiUrl } from '$lib/http';
+  import { sanitizeOrder } from "$lib/api/util";
 
   export let data: { customer: Customer };
   let customer: Customer;
@@ -17,10 +18,7 @@
     customer = data.customer;
 
     customer.orders.forEach((order) => {
-      order.created = new Date(order.created);
-      order.requestDate = order.requestDate
-        ? new Date(order.requestDate)
-        : null;
+      sanitizeOrder(order);
       order.customer = customer;
     });
 
@@ -58,10 +56,7 @@
         .then((res) => res.json())
         .then((data) => {
           data.orders.forEach((order) => {
-            order.created = new Date(order.created);
-            order.requestDate = order.requestDate
-              ? new Date(order.requestDate)
-              : null;
+            sanitizeOrder(order);
             order.customer = data;
           });
           customer = data;

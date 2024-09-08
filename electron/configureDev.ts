@@ -1,5 +1,6 @@
 import { exec } from 'child_process';
 import { loadURL } from './main.js';
+import { apiUrl } from './api.js';
 
 export interface DeveloperOptions {
   isInProduction: boolean;
@@ -40,8 +41,14 @@ class ConfigureDev {
         this.serveSvelteDev = false;
         this.buildSvelteDev = false;
         this.watchSvelteBuild = false;
+      } else {
+        console.log("We're in development mode");
       }
+    } else {
+      console.log("We're in development mode");
     }
+
+    console.log('API URL:', apiUrl);
   }
 
   _dev_Svelte() {

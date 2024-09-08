@@ -2,6 +2,7 @@
   import ReusableLayout from '$lib/ReusableLayout.svelte';
   import LeftMenu from '$lib/LeftMenu.svelte';
   import { goto } from '$app/navigation';
+  import { roles } from '$lib/http';
 </script>
 
 <ReusableLayout>
@@ -27,16 +28,17 @@
         >
           Analytics
         </li>
-        <!-- TODO: Only show this for admin users... To be completed shortly -->
-        <li
-          role="menuitem"
-          tabindex="0"
-          class="nav-button"
-          on:click={() => goto('/admin')}
-          on:keypress={() => goto('/admin')}
-        >
-          Admin
-        </li>
+        {#if $roles.includes('ADMIN')}
+          <li
+            role="menuitem"
+            tabindex="0"
+            class="nav-button"
+            on:click={() => goto('/admin')}
+            on:keypress={() => goto('/admin')}
+          >
+            Admin
+          </li>
+        {/if}
       </ul>
     </nav>
   </svelte:fragment>

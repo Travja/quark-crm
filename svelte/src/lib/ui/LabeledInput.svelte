@@ -2,6 +2,7 @@
   import StyledInput from '$lib/ui/StyledInput.svelte';
   import { slide } from 'svelte/transition';
   import { onMount } from 'svelte';
+  import { deepEqual } from '$lib/api/util';
 
   export let id: string = undefined;
   export let value: any = undefined;
@@ -26,6 +27,12 @@
   export let color = undefined;
 
   export let canCopy = false;
+
+  /**
+   * Function to render the value of the input (specifically for select)
+   * @param value The value to render
+   */
+  export let render: (value: any) => string = (value) => value;
 
   onMount(() => {
     if (options) type = 'select';
@@ -56,7 +63,9 @@
   >
     {#if options}
       {#each options as option}
-        <option value={option}>{option}</option>
+        <option value={option} selected={deepEqual(value, option)}>
+          {render && option ? render(option) : option || ''}
+        </option>
       {/each}
     {:else}
       <slot name="value" />

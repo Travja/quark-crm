@@ -18,8 +18,8 @@ const defaultSettings = {
 };
 
 const defaultSettingsDev: DeveloperOptions = {
-  isInProduction: true, // true if is in production
-  serveSvelteDev: false, // true when you want to watch svelte
+  isInProduction: false, // true if is in production
+  serveSvelteDev: true, // true when you want to watch svelte
   buildSvelteDev: false, // true when you want to build svelte
   watchSvelteBuild: false // true when you want to watch build svelte
 };

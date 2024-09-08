@@ -1,6 +1,7 @@
 import { error } from '@sveltejs/kit';
 import { afetch, apiUrl } from '$lib/http';
 import type { Order } from 'global';
+import { sanitizeOrder } from '$lib/api/util';
 
 /** @type {import('./$types').PageLoad} */
 export async function load({ params, fetch }) {
@@ -13,10 +14,7 @@ export async function load({ params, fetch }) {
 
   if (!order) throw error(404, 'Not found');
 
-  if (order.created) order.created = new Date(order.created);
-  if (order.requestDate) order.requestDate = new Date(order.requestDate);
+  sanitizeOrder(order);
 
-  const orders: Order[] = [];
-  orders.push(order);
-  return { orders };
+  return { order };
 }

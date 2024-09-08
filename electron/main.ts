@@ -5,6 +5,7 @@ import fetch from 'electron-fetch';
 import path from 'path';
 import { serve } from './serve';
 import { autoUpdater } from 'electron-updater';
+import { apiUrl } from './api.js';
 
 export let installingUpdate = false;
 export let loadURL = serve({ directory: './dist/www' });
@@ -63,7 +64,7 @@ app.on('ready', async () => {
       if (expiry < new Date()) {
         // Token expired
         // Check refresh token
-        fetch(`${process.env.VITE_API_URL}/auth/refresh`, {
+        fetch(`${apiUrl}/auth/refresh`, {
           method: 'post',
           headers: {
             Authorization: 'Bearer ' + refreshToken

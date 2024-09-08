@@ -17,7 +17,15 @@
     if (win.electron) {
       win.electron
         .login({ username, password })
-        .then((res) => (error = res.error));
+        .then((res) => {
+          if (res.authorized) {
+            _token.set(res.token);
+            _refreshToken.set(res.refreshToken);
+            win.location.href = '/';
+          } else {
+            error = res.error;
+          }
+        });
     } else {
       fetch(`${apiUrl}/auth/login`, {
         method: 'post',

@@ -1,8 +1,14 @@
-import { get, writable, type Writable } from 'svelte/store';
+import {
+  derived,
+  get,
+  type Readable,
+  writable,
+  type Writable
+} from 'svelte/store';
 import { browser } from '$app/environment';
 import type { ApiWindow } from 'global';
 
-export const apiUrl = import.meta.env.VITE_API_URL || '';
+export const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 const setupLocalStore = (
   key: string,
@@ -38,6 +44,12 @@ export const _refreshToken: Writable<string> = setupLocalStore(
   'refreshToken',
   ''
 );
+export const roles: Readable<string> = derived(_token, ($token) => {
+  const jwt = $token.split('.');
+  if (jwt.length !== 3) return [];
+  const payload = JSON.parse(atob(jwt[1]));
+  return payload.roles || [];
+});
 
 const validateAndRefreshToken = async (): Promise<void> => {
   // Extract the JWT data and check expiry. If expired, refresh the token

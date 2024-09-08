@@ -3,6 +3,8 @@ import BaseWindow from './window/base-window';
 import { nativeTheme } from 'electron';
 import { writeCredentials } from './ipc/file-system';
 
+export let apiUrl = process.env.VITE_API_URL || 'http://localhost:8080';
+
 export const navApi: ApiOptions = {
   close: (window: BaseWindow) => window.close(),
   maximize: (window: BaseWindow) => {

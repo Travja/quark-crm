@@ -297,18 +297,21 @@
     <div class="form">
       <h4>Add Operating Expense</h4>
       <InsetInput bind:value={newOperatingExpense.date} name="date" type="date"
+                  id="op-expense-date"
         >Date
       </InsetInput>
       <InsetInput
         bind:value={newOperatingExpense.paidTo}
         name="paidTo"
         type="text"
+        id="op-expense-paid-to"
         >Paid To
       </InsetInput>
       <InsetInput
         bind:value={newOperatingExpense.purpose}
         name="purpose"
         type="text"
+        id="op-expense-purpose"
         >Purpose
       </InsetInput>
       <InsetInput
@@ -316,6 +319,7 @@
         min="0"
         name="amount"
         type="number"
+        id="op-expense-amount"
         >Amount
       </InsetInput>
       <Pill

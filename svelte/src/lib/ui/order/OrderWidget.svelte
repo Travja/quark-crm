@@ -62,7 +62,7 @@
     >
     <span class="spacer" />
     <span class="artist" class:unassigned={!order.artist}
-      >{order.artist || 'Unassigned'}</span
+      >{order.artist?.firstName || 'Unassigned'}</span
     >
   </div>
 </a>

@@ -3,7 +3,6 @@
   import {
     AncestryType,
     BranchStyle,
-    CustomerType,
     FontColor,
     OrderStatus,
     PrintSize,
@@ -29,6 +28,8 @@
   import AdditionalPrintWidget from '$lib/ui/order/AdditionalPrintWidget.svelte';
   import Pill from '$lib/ui/Pill.svelte';
   import NewAdditionalPrint from '$lib/ui/order/NewAdditionalPrint.svelte';
+  import { sanitizeOrder } from "$lib/api/util";
+  import { get } from "svelte/store";
 
   export let order: Order;
   let customer: Customer;
@@ -61,6 +62,9 @@
       .then((ord: Order) => {
         order = ord;
         order.requestDate = order.requestDate + '.000';
+        if (order.artist) {
+          order.artist = get(artists).find((a) => a.id === order.artist.id);
+        }
         originalOrder = { ...order };
         dirty = false;
       })
@@ -131,7 +135,8 @@
       <LabeledInput
         bind:value={order.artist}
         id="artist"
-        options={['', ...$artists.map((a) => a.firstName)]}
+        options={[undefined, ...$artists]}
+        render={(a) => a.firstName}
         type="select"
       >
         Artist

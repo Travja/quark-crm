@@ -1,21 +1,21 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import type { Customer, Order } from '@types/global';
-  import OrderPanel               from '$lib/ui/order/OrderPanel.svelte';
+  import OrderPanel from '$lib/ui/order/OrderPanel.svelte';
 
-  export let data: { orders: Order[] };
-  let orders: Order[];
+  export let data: { order: Order };
+  let order: Order;
   let customer: Customer;
 
   const initData = (): void => {
-    if (!orders || orders.length == 0) return;
+    if (!order) return;
 
-    customer = orders[0].customer;
+    customer = order.customer;
   };
 
   onMount(() => {
     // Do something
-    orders = data.orders;
+    order = data.order;
     initData();
   });
 </script>
@@ -23,7 +23,5 @@
 {#if !customer}
   No orders
 {:else}
-  {#each orders as order}
-    <OrderPanel {order} />
-  {/each}
+  <OrderPanel {order} />
 {/if}

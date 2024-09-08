@@ -1,5 +1,5 @@
 import BaseWindow from './base-window';
-import { fileApi, navApi } from '../api';
+import { apiUrl, fileApi, navApi } from '../api';
 import fetch from 'electron-fetch';
 import { writeCredentials } from '../ipc/file-system';
 import { screen } from 'electron';
@@ -18,6 +18,57 @@ const developerOptions = {
   testing both side: isInProduction: true, serveSvelteDev: false, buildSvelteDev:true, watchSvelteBuild: true
 */
 
+const login = (myWindow: BaseWindow, event: IpcMainEvent, args: any) => {
+  fetch(`${apiUrl}/auth/login`, {
+    method: 'post',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization:
+        'Basic ' +
+        Buffer.from(args.username + ':' + args.password).toString(
+          'base64'
+        )
+    }
+  })
+    .then((res: any) => res.json())
+    .then((data: any) => {
+      if (data.authorized) {
+        writeCredentials({
+          token: data.token,
+          refreshToken: data.refreshToken
+        }).then(() => console.log('Wrote credentials'));
+
+        if(myWindow.window.title === 'Quark - Login') {
+          let main: BaseWindow = createMainWindow(
+            data.token,
+            data.refreshToken
+          );
+          main.onLoad((base: BaseWindow) => {
+            myWindow.hide();
+            myWindow.close();
+            base.show();
+          });
+        }
+      }
+
+      event.reply('login-state', {
+        authorized: data.authorized,
+        token: data.token,
+        refreshToken: data.refreshToken,
+        error:
+          data.error && data.error.message
+            ? data.error.message
+            : data.error
+      });
+    })
+    .catch((err: any) =>
+      event.reply('login-state', {
+        authorized: false,
+        error: err.message
+      })
+    );
+};
+
 export const createMainWindow = (
   token: string,
   refreshToken: string
@@ -33,14 +84,15 @@ export const createMainWindow = (
     developerOptions,
     {
       ...navApi,
-      ...fileApi
+      ...fileApi,
+      login
     }
   );
 };
 
 export const createLoginWindow = (): BaseWindow => {
   const loginWindow = new BaseWindow(
-    'login',
+    '/login',
     {
       width: 400,
       height: 600,
@@ -51,56 +103,7 @@ export const createLoginWindow = (): BaseWindow => {
     {
       ...navApi,
       ...fileApi,
-      login: (myWindow: BaseWindow, event: IpcMainEvent, args: any) => {
-        fetch(`${process.env.VITE_API_URL}/auth/login`, {
-          method: 'post',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization:
-              'Basic ' +
-              Buffer.from(args.username + ':' + args.password).toString(
-                'base64'
-              )
-          }
-        })
-          .then((res: any) => res.json())
-          .then((data: any) => {
-            if (data.authorized) {
-              writeCredentials({
-                token: data.token,
-                refreshToken: data.refreshToken
-              }).then(() => console.log('Wrote credentials'));
-
-              let main: BaseWindow = createMainWindow(
-                data.token,
-                data.refreshToken
-              );
-              main.onLoad((base: BaseWindow) => {
-                // fileSystem.initIpcMain(ipcMain, main.window);
-                loginWindow.hide();
-                loginWindow.close();
-                base.show();
-
-                // updaterInfo.initAutoUpdater(autoUpdater, main.window);
-              });
-            }
-
-            event.reply('login-state', {
-              authorized: data.authorized,
-              token: data.token,
-              error:
-                data.error && data.error.message
-                  ? data.error.message
-                  : data.error
-            });
-          })
-          .catch((err: any) =>
-            event.reply('login-state', {
-              authorized: false,
-              error: err.message
-            })
-          );
-      }
+      login
     }
   ).onLoad((window: BaseWindow) => {
     window.show();
