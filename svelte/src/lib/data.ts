@@ -102,7 +102,7 @@ export let isActive = (status: OrderStatus): boolean => {
 let timeout: number | undefined;
 searchFilter.subscribe((filter) => {
   if (timeout) clearTimeout(timeout);
-  timeout = window.setTimeout(() => loadData(filter), 500);
+  timeout = <number>(<any>setTimeout(() => loadData(filter), 500));
 });
 
 export let sortOrders = (a: Order, b: Order): number => {
