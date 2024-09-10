@@ -1,6 +1,6 @@
 <script lang="ts">
   import { afetch, apiUrl } from '$lib/http.js';
-  import type { Artist } from '@types/global.js';
+  import type { Artist, User } from 'global.js';
   import LabeledInput from '$lib/ui/LabeledInput.svelte';
   import { artists, refreshArtists } from '$lib/data';
 
@@ -8,12 +8,10 @@
     /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   const phoneRegex = /^\(?([0-9]{3})\)?[-.\s]?([0-9]{3})[-.\s]?([0-9]{4})$/;
 
-  let artist: Artist = {
+  let user: User = {
     id: '',
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: ''
+    username: '',
+    email: ''
   };
 
   let success = '';
@@ -24,67 +22,54 @@
     success = '';
 
     // Validate that first + last name are filled in, then use regex to validate email and phone
-    if (!artist.firstName || !artist.lastName) {
-      error = 'First and last name are required';
+    if (!user.username) {
+      error = 'Username is required';
       return;
     }
 
-    if (!emailRegex.test(artist.email)) {
+    if (!emailRegex.test(user.email)) {
       error = 'Invalid email';
       return;
     }
 
-    if (!phoneRegex.test(artist.phone)) {
-      error = 'Invalid phone number';
-      return;
-    }
-
-    afetch(`${apiUrl}/api/artist`, {
+    afetch(`${apiUrl}/api/user`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(artist)
+      body: JSON.stringify(user)
     })
       .then((res) => {
         if (res.ok) {
-          console.log('Artist created');
-          success = `Artist ${artist.firstName} ${artist.lastName} created`;
-          artist = {
+          console.log('User created');
+          success = `User ${user.username} created`;
+          user = {
             id: '',
-            firstName: '',
-            lastName: '',
-            email: '',
-            phone: ''
+            username: '',
+            email: ''
           };
 
           refreshArtists();
         } else {
           res.text().then((text) => {
-            console.error('Failed to create artist', text);
+            console.error('Failed to create user', text);
             error = text;
           });
         }
       })
       .catch((err) => {
-        console.error('Failed to create artist', err);
-        error = 'Failed to create artist';
+        console.error('Failed to create user', err);
+        error = 'Failed to create user';
       });
   }
 </script>
 
-<slot/>
+<slot />
 <form class="form" on:submit|preventDefault={handleSubmit}>
   <div class="flex">
-    <LabeledInput bind:value={artist.firstName}>First Name</LabeledInput>
+    <LabeledInput bind:value={user.username}>Username</LabeledInput>
 
-    <LabeledInput bind:value={artist.lastName}>Last Name</LabeledInput>
-  </div>
-
-  <div class="flex">
-    <LabeledInput bind:value={artist.email} type="email">Email</LabeledInput>
-
-    <LabeledInput bind:value={artist.phone}>Phone</LabeledInput>
+    <LabeledInput bind:value={user.email} type="email">Email</LabeledInput>
   </div>
 
   {#if success}

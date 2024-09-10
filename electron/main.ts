@@ -18,7 +18,7 @@ const showLoadingScreen = async () => {
     frame: false,
     width: 300,
     height: 300,
-    transparent: true
+    transparent: true,
   });
 
   const loc = path.join(app.getAppPath(), 'dist', 'www', 'loading.html');

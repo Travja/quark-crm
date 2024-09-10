@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { ApiWindow } from '@types/global';
+  import type { ApiWindow } from 'global.js';
   import { onMount } from 'svelte';
 
   let win: ApiWindow;
@@ -73,9 +73,6 @@
 
   span {
     margin: 0;
-  }
-
-  .close-button {
   }
 
   .close-button:hover {

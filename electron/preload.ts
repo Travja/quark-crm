@@ -25,6 +25,7 @@ contextBridge.exposeInMainWorld('electron', {
 
     return result;
   },
+  logout: () => ipcRenderer.send('window', 'logout'),
   isFocused: async () => {
     ipcRenderer.send('window', 'isFocused');
     let result = await new Promise((resolve) =>

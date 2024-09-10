@@ -14,7 +14,8 @@
     | 'select'
     | 'textarea'
     | 'checkbox'
-    | 'radio' = 'text';
+    | 'radio'
+    | 'email' = 'text';
   export let placeholder = '';
   export let group: any = undefined;
   export let options: any[] = undefined;

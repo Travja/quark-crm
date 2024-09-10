@@ -1,7 +1,8 @@
 <script lang='ts'>
-  import CreateArtist from '$lib/ui/CreateArtist.svelte';
+  import CreateArtist from '$lib/ui/admin/CreateArtist.svelte';
   import { artists }  from "$lib/data";
   import ArtistWidget from "$lib/ui/artist/ArtistWidget.svelte";
+    import CreateUser from '$lib/ui/admin/CreateUser.svelte';
 </script>
 
 <div>
@@ -16,6 +17,11 @@
   <CreateArtist>
     <h3>Create Artist</h3>
   </CreateArtist>
+
+  <h2>Users</h2>
+  <CreateUser>
+    <h3>Create User</h3>
+  </CreateUser>
 </div>
 
 <style>

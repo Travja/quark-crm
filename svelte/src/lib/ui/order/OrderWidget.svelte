@@ -119,7 +119,7 @@
   }
 
   .future {
-    color: white;
+    color: var(--fg-color);
     font-weight: bold;
   }
 

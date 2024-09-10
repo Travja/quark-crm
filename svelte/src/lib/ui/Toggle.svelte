@@ -3,7 +3,7 @@
   export let value: boolean;
   export let left = 'True';
   export let right = 'False';
-  export let color = '#222';
+  export let color = 'var(--fg-color-mid)';
   export let toggleColor = 'var(--accent-color)';
   export let inline = true;
 </script>

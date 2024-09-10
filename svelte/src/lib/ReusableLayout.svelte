@@ -2,7 +2,7 @@
   import '../app.css';
   import TitleBar from '$lib/TitleBar.svelte';
   import { onDestroy, onMount } from 'svelte';
-  import type { ApiWindow } from '@types/global';
+  import type { ApiWindow } from 'global.js';
 
   let win: ApiWindow;
   // let prev = { x: 50, y: 50 };

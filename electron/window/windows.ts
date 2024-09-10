@@ -25,9 +25,7 @@ const login = (myWindow: BaseWindow, event: IpcMainEvent, args: any) => {
       'Content-Type': 'application/json',
       Authorization:
         'Basic ' +
-        Buffer.from(args.username + ':' + args.password).toString(
-          'base64'
-        )
+        Buffer.from(args.username + ':' + args.password).toString('base64')
     }
   })
     .then((res: any) => res.json())
@@ -38,7 +36,7 @@ const login = (myWindow: BaseWindow, event: IpcMainEvent, args: any) => {
           refreshToken: data.refreshToken
         }).then(() => console.log('Wrote credentials'));
 
-        if(myWindow.window.title === 'Quark - Login') {
+        if (myWindow.window.title === 'Quark - Login') {
           let main: BaseWindow = createMainWindow(
             data.token,
             data.refreshToken
@@ -56,9 +54,7 @@ const login = (myWindow: BaseWindow, event: IpcMainEvent, args: any) => {
         token: data.token,
         refreshToken: data.refreshToken,
         error:
-          data.error && data.error.message
-            ? data.error.message
-            : data.error
+          data.error && data.error.message ? data.error.message : data.error
       });
     })
     .catch((err: any) =>
@@ -67,6 +63,13 @@ const login = (myWindow: BaseWindow, event: IpcMainEvent, args: any) => {
         error: err.message
       })
     );
+};
+
+const logout = () => {
+  writeCredentials({
+    token: '',
+    refreshToken: ''
+  }).then(() => console.log('Wrote credentials'));
 };
 
 export const createMainWindow = (
@@ -85,7 +88,8 @@ export const createMainWindow = (
     {
       ...navApi,
       ...fileApi,
-      login
+      login,
+      logout
     }
   );
 };
@@ -103,7 +107,8 @@ export const createLoginWindow = (): BaseWindow => {
     {
       ...navApi,
       ...fileApi,
-      login
+      login,
+      logout
     }
   ).onLoad((window: BaseWindow) => {
     window.show();

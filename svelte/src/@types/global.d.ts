@@ -32,6 +32,7 @@ interface IElectronWindowSystem {
   maximize: () => void;
   showDevTools: () => void;
   login: (data: any) => any;
+  logout: () => void;
   onFocus: (callback: (event: any, value: any) => void) => void;
   onBlur: (callback: (event: any, value: any) => void) => void;
   isFocused: () => Promise<boolean>;
@@ -161,6 +162,13 @@ export interface Artist {
   lastName: string;
   email: string;
   phone: string;
+}
+
+export interface User {
+  id: string;
+  username: string;
+  email: string;
+  password?: string;
 }
 
 export interface Statistics {
