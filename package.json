@@ -1,6 +1,6 @@
 {
   "name": "quark-crm",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "description": "Quark CRM",
   "main": "dist/main.js",
   "scripts": {
