@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   import {
     activeStatuses,
     filteredOrders,
@@ -21,9 +23,9 @@
   import Checkbox from '$lib/ui/Checkbox.svelte';
   import { fly } from 'svelte/transition';
 
-  let filterBoxShown = false;
-  let notesOpen = false;
-  let notesModal = undefined;
+  let filterBoxShown = $state(false);
+  let notesOpen = $state(false);
+  let notesModal = $state(undefined);
 
   onMount(() => loadData($searchFilter));
 
@@ -41,32 +43,44 @@
     }
   };
 
-  let activeStatusesSelected = false;
-  let someActiveStatusesSelected = false;
-  let inactiveStatusesSelected = false;
-  let someInactiveStatusesSelected = false;
+  let activeStatusesSelected = $state(false);
+  let someActiveStatusesSelected = $state(false);
+  let inactiveStatusesSelected = $state(false);
+  let someInactiveStatusesSelected = $state(false);
 
-  let allTreeStatusesSelected = false;
-  let someTreeStatusesSelected = false;
+  let allTreeStatusesSelected = $state(false);
+  let someTreeStatusesSelected = $state(false);
 
-  $: activeStatusesSelected = activeStatuses.every((status) =>
-    $orderStatusFilter.includes(status)
-  );
-  $: someActiveStatusesSelected =
-    !activeStatusesSelected &&
-    activeStatuses.some((status) => $orderStatusFilter.includes(status));
-  $: inactiveStatusesSelected = inactiveStatuses.every((status) =>
-    $orderStatusFilter.includes(status)
-  );
-  $: someInactiveStatusesSelected =
-    !inactiveStatusesSelected &&
-    inactiveStatuses.some((status) => $orderStatusFilter.includes(status));
+  run(() => {
+    activeStatusesSelected = activeStatuses.every((status) =>
+      $orderStatusFilter.includes(status)
+    );
+  });
+  run(() => {
+    someActiveStatusesSelected =
+      !activeStatusesSelected &&
+      activeStatuses.some((status) => $orderStatusFilter.includes(status));
+  });
+  run(() => {
+    inactiveStatusesSelected = inactiveStatuses.every((status) =>
+      $orderStatusFilter.includes(status)
+    );
+  });
+  run(() => {
+    someInactiveStatusesSelected =
+      !inactiveStatusesSelected &&
+      inactiveStatuses.some((status) => $orderStatusFilter.includes(status));
+  });
 
-  $: allTreeStatusesSelected =
-    $treeFilters.length === Object.values(TreeStatus).length;
-  $: someTreeStatusesSelected =
-    $treeFilters.length > 0 &&
-    $treeFilters.length !== Object.values(TreeStatus).length;
+  run(() => {
+    allTreeStatusesSelected =
+      $treeFilters.length === Object.values(TreeStatus).length;
+  });
+  run(() => {
+    someTreeStatusesSelected =
+      $treeFilters.length > 0 &&
+      $treeFilters.length !== Object.values(TreeStatus).length;
+  });
 
   const clickAllOrderStatus = () => {
     if ($orderStatusFilter.length === Object.values(OrderStatus).length) {
@@ -89,8 +103,8 @@
   <span id="filter-wrapper">
     <span
       class="material-symbols-outlined icon-button"
-      on:click={toggleFilter}
-      on:keypress={(e) => {
+      onclick={toggleFilter}
+      onkeypress={(e) => {
         if (e.key === 'Enter') toggleFilter();
       }}
       role="button"
@@ -103,7 +117,7 @@
         id="filter-box"
         transition:fly={{ y: 50, duration: 400 }}
         use:clickOutside
-        on:outclick={toggleFilter}
+        onoutclick={toggleFilter}
       >
         <h2>Filters</h2>
         <div class="filter">
@@ -151,7 +165,7 @@
                     type="checkbox"
                     id="order-status-{status.toLowerCase().replace(' ', '_')}"
                     checked={$orderStatusFilter.includes(status)}
-                    on:change={(e) => {
+                    onchange={(e) => {
                       if (
                         e.target.checked &&
                         !$orderStatusFilter.includes(status)
@@ -202,7 +216,7 @@
                     type="checkbox"
                     id="order-status-{status.toLowerCase().replace(' ', '_')}"
                     checked={$orderStatusFilter.includes(status)}
-                    on:change={(e) => {
+                    onchange={(e) => {
                       if (
                         e.target.checked &&
                         !$orderStatusFilter.includes(status)
@@ -241,7 +255,7 @@
                 type="checkbox"
                 id="tree-status-{status.toLowerCase().replace(' ', '_')}"
                 checked={$treeFilters.includes(status)}
-                on:change={(e) => {
+                onchange={(e) => {
                   if (e.target.checked && !$treeFilters.includes(status)) {
                     treeFilters.update((s) => [...s, status]);
                   } else {
@@ -260,14 +274,14 @@
   </span>
   <span
     class="material-symbols-outlined icon-button"
-    on:click={() => loadData($searchFilter)}
-    on:keypress={(e) => {
+    onclick={() => loadData($searchFilter)}
+    onkeypress={(e) => {
       if (e.key === 'Enter') loadData($searchFilter);
     }}
     role="button"
     tabindex="0">sync</span
   >
-  <span class="spacer" />
+  <span class="spacer"></span>
   <StyledInput
     bind:value={$searchTerms}
     fontSize="1.2em"

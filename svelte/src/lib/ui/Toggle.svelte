@@ -1,11 +1,22 @@
 <!--suppress CssUnresolvedCustomProperty -->
 <script lang="ts">
-  export let value: boolean;
-  export let left = 'True';
-  export let right = 'False';
-  export let color = 'var(--fg-color-mid)';
-  export let toggleColor = 'var(--accent-color)';
-  export let inline = true;
+  interface Props {
+    value: boolean;
+    left?: string;
+    right?: string;
+    color?: string;
+    toggleColor?: string;
+    inline?: boolean;
+  }
+
+  let {
+    value = $bindable(),
+    left = 'True',
+    right = 'False',
+    color = 'var(--fg-color-mid)',
+    toggleColor = 'var(--accent-color)',
+    inline = true
+  }: Props = $props();
 </script>
 
 <input type="checkbox" class="hidden" id="permission" bind:checked={value} />
@@ -20,8 +31,8 @@
     role="button"
     tabindex="0"
     class:active={value}
-    on:click={() => (value = true)}
-    on:keypress={(e) => {
+    onclick={() => (value = true)}
+    onkeypress={(e) => {
       if (e.key === 'Enter') value = true;
     }}
   >
@@ -31,8 +42,8 @@
     role="button"
     tabindex="0"
     class:active={!value}
-    on:click={() => (value = false)}
-    on:keypress={(e) => {
+    onclick={() => (value = false)}
+    onkeypress={(e) => {
       if (e.key === 'Enter') value = false;
     }}
   >

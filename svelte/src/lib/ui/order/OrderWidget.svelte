@@ -6,7 +6,11 @@
   import { formatCurrency, formatDate } from '$lib/api/util';
   import { PrintType } from '$lib/models/order';
 
-  export let order: Order;
+  interface Props {
+    order: Order;
+  }
+
+  let { order }: Props = $props();
 
   const isRequestSoon = (date: Date | string) => {
     if (moment(date).isBefore(moment().subtract(2, 'weeks'))) return false;
@@ -32,7 +36,7 @@
         {/if}
       </div>
     </Pill>
-    <span class="spacer" />
+    <span class="spacer"></span>
     <span class="financials">
       <span class="income">{formatCurrency(order.cost)}</span>
       <span class="expense">{formatCurrency(order.expenses)}</span>
@@ -60,7 +64,7 @@
     <span class="notes" class:no-notes={!order.notes}
       >{order.notes || 'No notes...'}</span
     >
-    <span class="spacer" />
+    <span class="spacer"></span>
     <span class="artist" class:unassigned={!order.artist}
       >{order.artist?.firstName || 'Unassigned'}</span
     >

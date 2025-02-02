@@ -5,14 +5,14 @@
   import type { AdditionalPrint } from '@types/global';
   import { createEventDispatcher } from 'svelte';
 
-  let print: AdditionalPrint = {
+  let print: AdditionalPrint = $state({
     quantity: 1,
     printType: PrintType.STANDARD,
     printSize: PrintSize.EIGHT_BY_TEN,
     frame: undefined,
     cost: 0,
     frameCost: 0
-  };
+  });
 
   const dispatch = createEventDispatcher();
 </script>
@@ -42,21 +42,25 @@
     }
   }}
 >
-  <svelte:fragment slot="dropdown">
-    {#each Object.values(PrintType) as type}
-      <option value={type}>{type}</option>
-    {/each}
-  </svelte:fragment>
-  <span slot="default">Print Type</span>
+  {#snippet dropdown()}
+  
+      {#each Object.values(PrintType) as type}
+        <option value={type}>{type}</option>
+      {/each}
+    
+  {/snippet}
+  <span >Print Type</span>
 </InsetInput>
 {#if print.printType !== PrintType.DIGITAL}
   <InsetInput bind:value={print.printSize} id="new-print-size" type="dropdown">
-    <svelte:fragment slot="dropdown">
-      {#each Object.values(PrintSize) as size}
-        <option value={size}>{size}</option>
-      {/each}
-    </svelte:fragment>
-    <span slot="default">Print Size</span>
+    {#snippet dropdown()}
+      
+        {#each Object.values(PrintSize) as size}
+          <option value={size}>{size}</option>
+        {/each}
+      
+      {/snippet}
+    <span >Print Size</span>
   </InsetInput>
   {#if print.printType !== PrintType.CANVAS}
     <InsetInput bind:value={print.frame} id="new-print-frame" type="text">

@@ -1,21 +1,25 @@
 <script>
+  import { run } from 'svelte/legacy';
+
   import { onMount } from 'svelte';
 
-  let theme = true;
-  let loaded = false;
+  let theme = $state(true);
+  let loaded = $state(false);
 
   onMount(() => {
     loaded = true;
     console.log('Theme is: ' + (theme ? 'dark' : 'light'));
   });
 
-  $: if (loaded) {
-    if (theme) {
-      document.documentElement.setAttribute('theme', 'dark');
-    } else {
-      document.documentElement.setAttribute('theme', 'light');
+  run(() => {
+    if (loaded) {
+      if (theme) {
+        document.documentElement.setAttribute('theme', 'dark');
+      } else {
+        document.documentElement.setAttribute('theme', 'light');
+      }
     }
-  }
+  });
 </script>
 
 <div id="left-menu">
@@ -23,8 +27,8 @@
     class="toggle"
     role="button"
     tabindex="0"
-    on:click={() => (theme = !theme)}
-    on:keypress={(e) => {
+    onclick={() => (theme = !theme)}
+    onkeypress={(e) => {
       if (e.key === 'Enter') theme = !theme;
     }}
   >

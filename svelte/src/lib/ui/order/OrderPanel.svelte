@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   import LabeledInput from '$lib/ui/LabeledInput.svelte';
   import {
     AncestryType,
@@ -32,21 +34,27 @@
   import Toggle from '$lib/ui/Toggle.svelte';
   import StyledInput from '$lib/ui/StyledInput.svelte';
 
-  export let order: Order;
-  let customer: Customer;
+  interface Props {
+    order: Order;
+  }
 
-  let dirty = false;
-  let originalOrder;
-  let newPrint = false;
-  let commentsActive = true;
+  let { order = $bindable() }: Props = $props();
+  let customer: Customer = $state();
+
+  let dirty = $state(false);
+  let originalOrder = $state();
+  let newPrint = $state(false);
+  let commentsActive = $state(true);
 
   onMount(() => {
     if (!originalOrder) originalOrder = { ...order };
     customer = order.customer;
   });
 
-  $: if (originalOrder && order)
-    dirty = JSON.stringify(order) != JSON.stringify(originalOrder);
+  run(() => {
+    if (originalOrder && order)
+      dirty = JSON.stringify(order) != JSON.stringify(originalOrder);
+  });
   // $: if (dirty) {
   //   console.log('og', JSON.stringify(originalOrder));
   //   console.log('dirty', JSON.stringify(order));
@@ -193,7 +201,8 @@
           type="radio"
           value={BranchStyle.STYLE_1}
         >
-          <svelte:fragment slot="value">1</svelte:fragment>
+          <!-- @migration-task: migrate this slot by hand, `value` would shadow a prop on the parent component -->
+  <svelte:fragment slot="value">1</svelte:fragment>
         </LabeledInput>
 
         <LabeledInput
@@ -203,7 +212,8 @@
           type="radio"
           value={BranchStyle.STYLE_2}
         >
-          <svelte:fragment slot="value">2</svelte:fragment>
+          <!-- @migration-task: migrate this slot by hand, `value` would shadow a prop on the parent component -->
+  <svelte:fragment slot="value">2</svelte:fragment>
         </LabeledInput>
       </div>
 
@@ -216,7 +226,8 @@
           type="radio"
           value={TreeStyle.CLASSIC}
         >
-          <svelte:fragment slot="value">Classic</svelte:fragment>
+          <!-- @migration-task: migrate this slot by hand, `value` would shadow a prop on the parent component -->
+  <svelte:fragment slot="value">Classic</svelte:fragment>
         </LabeledInput>
 
         <LabeledInput
@@ -226,7 +237,8 @@
           type="radio"
           value={TreeStyle.CHALK}
         >
-          <svelte:fragment slot="value">Chalk</svelte:fragment>
+          <!-- @migration-task: migrate this slot by hand, `value` would shadow a prop on the parent component -->
+  <svelte:fragment slot="value">Chalk</svelte:fragment>
         </LabeledInput>
       </div>
 
@@ -261,7 +273,8 @@
             fillSpace={true}
             value={TextLocation.LEFT}
           >
-            <svelte:fragment slot="value">Left</svelte:fragment>
+            <!-- @migration-task: migrate this slot by hand, `value` would shadow a prop on the parent component -->
+  <svelte:fragment slot="value">Left</svelte:fragment>
           </LabeledInput>
 
           {#if !order.groundText}
@@ -272,7 +285,8 @@
               fillSpace={true}
               value={TextLocation.CENTER}
             >
-              <svelte:fragment slot="value">Center</svelte:fragment>
+              <!-- @migration-task: migrate this slot by hand, `value` would shadow a prop on the parent component -->
+  <svelte:fragment slot="value">Center</svelte:fragment>
             </LabeledInput>
           {/if}
 
@@ -283,7 +297,8 @@
             fillSpace={true}
             value={TextLocation.RIGHT}
           >
-            <svelte:fragment slot="value">Right</svelte:fragment>
+            <!-- @migration-task: migrate this slot by hand, `value` would shadow a prop on the parent component -->
+  <svelte:fragment slot="value">Right</svelte:fragment>
           </LabeledInput>
         </div>
 
@@ -348,7 +363,8 @@
             fillSpace={true}
             value={TextLocation.LEFT}
           >
-            <svelte:fragment slot="value">Left</svelte:fragment>
+            <!-- @migration-task: migrate this slot by hand, `value` would shadow a prop on the parent component -->
+  <svelte:fragment slot="value">Left</svelte:fragment>
           </LabeledInput>
 
           <LabeledInput
@@ -358,7 +374,8 @@
             fillSpace={true}
             value={TextLocation.RIGHT}
           >
-            <svelte:fragment slot="value">Right</svelte:fragment>
+            <!-- @migration-task: migrate this slot by hand, `value` would shadow a prop on the parent component -->
+  <svelte:fragment slot="value">Right</svelte:fragment>
           </LabeledInput>
         </div>
 
@@ -477,7 +494,7 @@
       There are unsaved changes on this order. Please save now to avoid losing
       changes.
     </div>
-    <button class="save-button" on:click={() => saveOrder()}>
+    <button class="save-button" onclick={() => saveOrder()}>
       Save Order
     </button>
   </footer>

@@ -1,21 +1,28 @@
 <script lang="ts">
+  import { preventDefault } from 'svelte/legacy';
+
   import { afetch, apiUrl } from '$lib/http.js';
   import type { Artist, User } from 'global.js';
   import LabeledInput from '$lib/ui/LabeledInput.svelte';
   import { artists, refreshArtists } from '$lib/data';
+  interface Props {
+    children?: import('svelte').Snippet;
+  }
+
+  let { children }: Props = $props();
 
   const emailRegex =
     /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   const phoneRegex = /^\(?([0-9]{3})\)?[-.\s]?([0-9]{3})[-.\s]?([0-9]{4})$/;
 
-  let user: User = {
+  let user: User = $state({
     id: '',
     username: '',
     email: ''
-  };
+  });
 
-  let success = '';
-  let error = '';
+  let success = $state('');
+  let error = $state('');
 
   async function handleSubmit() {
     error = '';
@@ -64,8 +71,8 @@
   }
 </script>
 
-<slot />
-<form class="form" on:submit|preventDefault={handleSubmit}>
+{@render children?.()}
+<form class="form" onsubmit={preventDefault(handleSubmit)}>
   <div class="flex">
     <LabeledInput bind:value={user.username}>Username</LabeledInput>
 
@@ -88,8 +95,8 @@
     class="button"
     role="button"
     tabindex="0"
-    on:click={handleSubmit}
-    on:keypress={(e) => {
+    onclick={handleSubmit}
+    onkeypress={(e) => {
       if (e.key === 'Enter') handleSubmit();
     }}
   >

@@ -3,8 +3,14 @@
   import TitleBar from '$lib/TitleBar.svelte';
   import { onDestroy, onMount } from 'svelte';
   import type { ApiWindow } from 'global.js';
+  interface Props {
+    header?: import('svelte').Snippet;
+    children?: import('svelte').Snippet;
+  }
 
-  let win: ApiWindow;
+  let { header, children }: Props = $props();
+
+  let win: ApiWindow = $state();
   // let prev = { x: 50, y: 50 };
   // let coords = writable({});
   // let coords = tweened(undefined, {
@@ -51,10 +57,10 @@
   {#if win?.electron}
     <TitleBar />
   {/if}
-  <slot name="header" />
+  {@render header?.()}
 </header>
 <main>
-  <slot />
+  {@render children?.()}
 </main>
 
 <style>

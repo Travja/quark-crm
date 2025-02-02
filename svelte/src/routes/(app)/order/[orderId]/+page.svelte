@@ -3,9 +3,13 @@
   import type { Customer, Order } from '@types/global';
   import OrderPanel from '$lib/ui/order/OrderPanel.svelte';
 
-  export let data: { order: Order };
-  let order: Order;
-  let customer: Customer;
+  interface Props {
+    data: { order: Order };
+  }
+
+  let { data }: Props = $props();
+  let order: Order = $state();
+  let customer: Customer = $state();
 
   const initData = (): void => {
     if (!order) return;

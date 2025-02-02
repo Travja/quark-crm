@@ -1,15 +1,23 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   import Color from 'color';
   import { onMount } from 'svelte';
 
-  export let color = 'lime';
+  interface Props {
+    color?: string;
+    header?: import('svelte').Snippet;
+    children?: import('svelte').Snippet;
+  }
 
-  let backgroundColor: string;
-  let fontColor: string;
-  let bodyColor: string;
+  let { color = 'lime', header, children }: Props = $props();
+
+  let backgroundColor: string = $state();
+  let fontColor: string = $state();
+  let bodyColor: string = $state();
 
   // Detect if the browser prefers dark mode
-  let prefersDarkMode = false;
+  let prefersDarkMode = $state(false);
   onMount(
     () =>
       (prefersDarkMode = window.matchMedia(
@@ -17,15 +25,17 @@
       ).matches)
   );
 
-  $: if (prefersDarkMode) {
-    backgroundColor = Color(color).darken(0.4).rgb();
-    fontColor = Color(color).lighten(0.8).rgb();
-    bodyColor = Color(backgroundColor).isLight() ? 'black' : 'white';
-  } else {
-    backgroundColor = Color(color).lighten(0.4).rgb();
-    fontColor = Color(color).darken(0.5).rgb();
-    bodyColor = Color(backgroundColor).isLight() ? 'black' : 'white';
-  }
+  run(() => {
+    if (prefersDarkMode) {
+      backgroundColor = Color(color).darken(0.4).rgb();
+      fontColor = Color(color).lighten(0.8).rgb();
+      bodyColor = Color(backgroundColor).isLight() ? 'black' : 'white';
+    } else {
+      backgroundColor = Color(color).lighten(0.4).rgb();
+      fontColor = Color(color).darken(0.5).rgb();
+      bodyColor = Color(backgroundColor).isLight() ? 'black' : 'white';
+    }
+  });
 </script>
 
 <div
@@ -34,10 +44,10 @@
   style:color={fontColor}
 >
   <div class="header">
-    <slot name="header" />
+    {@render header?.()}
   </div>
   <div class="body" style:color={bodyColor}>
-    <slot />
+    {@render children?.()}
   </div>
 </div>
 

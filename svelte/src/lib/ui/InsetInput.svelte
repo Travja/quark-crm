@@ -1,15 +1,33 @@
 <script lang="ts">
+  import { run, createBubbler } from 'svelte/legacy';
+
+  const bubble = createBubbler();
   import moment from "moment/moment";
 
-  export let value: any;
-  export let id: string;
-  export let type: 'number' | 'text' | 'dropdown' = 'text';
-  export let min: number = undefined;
-  export let max: number = undefined;
-  export let step: number = undefined;
+  interface Props {
+    value: any;
+    id: string;
+    type?: 'number' | 'text' | 'dropdown';
+    min?: number;
+    max?: number;
+    step?: number;
+    dropdown?: import('svelte').Snippet;
+    children?: import('svelte').Snippet;
+  }
+
+  let {
+    value = $bindable(),
+    id,
+    type = 'text',
+    min = undefined,
+    max = undefined,
+    step = undefined,
+    dropdown,
+    children
+  }: Props = $props();
 
   let offset = 0;
-  let internalDate: string;
+  let internalDate: string = $state();
 
   const processVal = (val): void => {
     if (!val || (type != 'date' && type != 'datetime')) return;
@@ -44,8 +62,12 @@
     console.log('convert', convert);
   };
 
-  $: processVal(internalDate);
-  $: processVal(value);
+  run(() => {
+    processVal(internalDate);
+  });
+  run(() => {
+    processVal(value);
+  });
 </script>
 
 <div class="sp-in">
@@ -68,11 +90,11 @@
       bind:value
       class:selected={!!value}
       {id}
-      on:select
-      on:change
+      onselect={bubble('select')}
+      onchange={bubble('change')}
     >
       <option value={undefined}></option>
-      <slot name="dropdown" />
+      {@render dropdown?.()}
     </select>
   {:else if type === 'date'}
     <input
@@ -84,13 +106,13 @@
       {id}
       {min}
       {max}
-      on:change
-      on:input
+      onchange={bubble('change')}
+      oninput={bubble('input')}
     />
   {:else}
     <input class="sp-input" name="test" placeholder=" " bind:value {id} />
   {/if}
-  <label for="test"><slot /></label>
+  <label for="test">{@render children?.()}</label>
 </div>
 
 <style>
@@ -116,10 +138,10 @@
     align-items: center;
   }
 
-  .sp-in:has(input:not(:placeholder-shown)) label,
-  .sp-in:has(input:focus) label,
-  .sp-in:has(select.selected) label,
-  .sp-in:has(select:focus) label {
+  .sp-in:has(:global(input:not(:placeholder-shown))) label,
+  .sp-in:has(:global(input:focus)) label,
+  .sp-in:has(:global(select.selected)) label,
+  .sp-in:has(:global(select:focus)) label {
     color: var(--fg-color);
     background-color: var(--bg-color);
     height: 5px;

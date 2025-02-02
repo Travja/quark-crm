@@ -3,7 +3,11 @@
   import Pill from '$lib/ui/Pill.svelte';
   import { formatPhone } from "$lib/api/util.js";
 
-  export let artist: Artist;
+  interface Props {
+    artist: Artist;
+  }
+
+  let { artist }: Props = $props();
 </script>
 
 <Pill>

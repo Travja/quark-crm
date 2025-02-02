@@ -1,11 +1,18 @@
 <!--suppress CssUnresolvedCustomProperty -->
 <script lang="ts">
+  import { preventDefault, stopPropagation, stopImmediatePropagation } from 'svelte/legacy';
+
   import { fade, fly } from 'svelte/transition';
   import { clickOutside } from './api/clickoutside';
   import { createEventDispatcher } from 'svelte';
 
-  export let width = 'auto';
-  export let open = false;
+  interface Props {
+    width?: string;
+    open?: boolean;
+    children?: import('svelte').Snippet;
+  }
+
+  let { width = 'auto', open = $bindable(false), children }: Props = $props();
 
   const dispatch = createEventDispatcher();
 
@@ -24,27 +31,27 @@
   };
 </script>
 
-<svelte:window on:keyup={checkClose} />
+<svelte:window onkeyup={checkClose} />
 {#if open}
   <div
     role="navigation"
     class="backdrop"
     transition:fade
     draggable="true"
-    on:dragstart|stopImmediatePropagation|stopPropagation|preventDefault={() =>
-      true}
-    on:touchstart|stopPropagation={() => true}
+    ondragstart={stopImmediatePropagation(stopPropagation(preventDefault(() =>
+      true)))}
+    ontouchstart={stopPropagation(() => true)}
   >
     <div
       role="dialog"
       class="modal-content"
       use:clickOutside
-      on:outclick={closeModal}
+      onoutclick={closeModal}
       transition:fly={{ y: -200 }}
       style:--width={width}
     >
       <div class="wrapper">
-        <slot />
+        {@render children?.()}
       </div>
     </div>
   </div>

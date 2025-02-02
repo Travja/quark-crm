@@ -1,6 +1,8 @@
-<script lang="ts">
+<script lang='ts'>
+  import { run } from 'svelte/legacy';
+
   import StyledInput from '$lib/ui/StyledInput.svelte';
-  import moment, { type Moment } from 'moment';
+  import moment from 'moment';
   import Card from '$lib/ui/Card.svelte';
   import { formatCurrency } from '$lib/api/util';
   import { afetch, apiUrl } from '$lib/http';
@@ -10,43 +12,25 @@
   import InsetInput from '$lib/ui/InsetInput.svelte';
   import Pill from '$lib/ui/Pill.svelte';
 
-  let selectedPreset: string = 'this-month';
-  let startDate = moment().subtract(1, 'days');
-  let endDate = moment();
+  let selectedPreset: string = $state('this-month');
+  let startDate = $state(moment().subtract(1, 'days'));
+  let endDate = $state(moment());
 
-  let stats: Statistics;
+  let stats: Statistics = $state();
 
-  let income = 0;
-  let expenses = 0;
-  let operatingExpenses = 0;
-  let net = 0;
+  let income = $state(0);
+  let expenses = $state(0);
+  let operatingExpenses = $state(0);
+  let net = $state(0);
 
-  let newOperatingExpense: OperatingExpense = {
+  let newOperatingExpense: OperatingExpense = $state({
     date: '',
     paidTo: '',
     purpose: '',
     amount: 0
-  };
+  });
 
-  $: if (stats) {
-    income = stats.newCustomerIncome + stats.returningCustomerIncome;
-    expenses =
-      stats.printExpenses +
-      stats.frameExpenses +
-      stats.shippingExpenses +
-      stats.taxes +
-      stats.fees +
-      stats.other;
-    // + stats.artists
 
-    operatingExpenses = stats.operatingExpenses
-      .map((oe) => oe.amount)
-      .reduce((a, b) => a + b, 0);
-
-    net = income - expenses - operatingExpenses;
-  }
-
-  $: selectPreset(selectedPreset);
 
   const loadData = () => {
     afetch(
@@ -56,7 +40,6 @@
       .then((data) => (stats = data));
   };
 
-  $: if (startDate && endDate) loadData();
 
   const selectPreset = (preset) => {
     switch (preset) {
@@ -132,70 +115,102 @@
       method: 'DELETE'
     }).then((_) => loadData());
   };
+  run(() => {
+    if (stats) {
+      income = stats.newCustomerIncome + stats.returningCustomerIncome;
+      expenses =
+        stats.printExpenses +
+        stats.frameExpenses +
+        stats.shippingExpenses +
+        stats.taxes +
+        stats.fees +
+        stats.other;
+      // + stats.artists
+
+      operatingExpenses = stats.operatingExpenses
+        .map((oe) => oe.amount)
+        .reduce((a, b) => a + b, 0);
+
+      net = income - expenses - operatingExpenses;
+    }
+  });
+  run(() => {
+    selectPreset(selectedPreset);
+  });
+  run(() => {
+    if (startDate && endDate) loadData();
+  });
 </script>
 
 <div>
-  <div class="flex">
+  <div class='flex'>
     <h1>Analytics</h1>
-    <span class="spacer" />
-    <span class="group">
-      <StyledInput bind:value={selectedPreset} type="select">
-        <option value="today">Today</option>
-        <option value="yesterday">Yesterday</option>
-        <option value="last-7-days">Last 7 Days</option>
-        <option value="last-30-days">Last 30 Days</option>
-        <option value="this-month">This Month</option>
-        <option value="last-month">Last Month</option>
-        <option value="this-quarter">This Quarter</option>
-        <option value="last-quarter">Last Quarter</option>
-        <option value="ytd">Year to Date</option>
-        <option value="last-year">Last Year</option>
-        <option value="custom">Custom</option>
+    <span class='spacer'></span>
+    <span class='group'>
+      <StyledInput bind:value={selectedPreset} type='select'>
+        <option value='today'>Today</option>
+        <option value='yesterday'>Yesterday</option>
+        <option value='last-7-days'>Last 7 Days</option>
+        <option value='last-30-days'>Last 30 Days</option>
+        <option value='this-month'>This Month</option>
+        <option value='last-month'>Last Month</option>
+        <option value='this-quarter'>This Quarter</option>
+        <option value='last-quarter'>Last Quarter</option>
+        <option value='ytd'>Year to Date</option>
+        <option value='last-year'>Last Year</option>
+        <option value='custom'>Custom</option>
       </StyledInput>
-      <span class="caps">or</span>
-      <span class="date-range">
+      <span class='caps'>or</span>
+      <span class='date-range'>
         <StyledInput
           bind:value={startDate}
           max={moment(endDate).format('YYYY-MM-DD')}
           on:change={() => (selectedPreset = 'custom')}
-          type="date"
+          type='date'
         />
-        <span class="caps">to</span>
+        <span class='caps'>to</span>
         <StyledInput
           bind:value={endDate}
           min={moment(startDate).format('YYYY-MM-DD')}
           on:change={() => (selectedPreset = 'custom')}
-          type="date"
+          type='date'
         />
       </span>
     </span>
   </div>
-  <div class="cards">
+  <div class='cards'>
     <Card>
-      <svelte:fragment slot="header">{stats?.totalOrders || 0}</svelte:fragment>
+      {#snippet header()}
+            {stats?.totalOrders || 0}
+          {/snippet}
       <div>Orders</div>
     </Card>
-    <Card color="#3cf">
-      <svelte:fragment slot="header">{formatCurrency(income)}</svelte:fragment>
+    <Card color='#3cf'>
+      {#snippet header()}
+            {formatCurrency(income)}
+          {/snippet}
       <div>Income</div>
     </Card>
-    <Card color="orange">
-      <svelte:fragment slot="header">{formatCurrency(expenses)}</svelte:fragment
-      >
+    <Card color='orange'>
+      {#snippet header()}
+            {formatCurrency(expenses)}
+          {/snippet}
       {#if operatingExpenses > 0}
-        <div class="operating-summary">
+        <div class='operating-summary'>
           +{formatCurrency(operatingExpenses)} OpEx
         </div>
       {/if}
       <div>Expenses</div>
     </Card>
     <Card color={net >= 0 ? 'lime' : 'red'}>
-      <svelte:fragment slot="header">{formatCurrency(net)}</svelte:fragment>
+      {#snippet header()}
+            {formatCurrency(net)}
+          {/snippet}
       <div>Net Income</div>
     </Card>
   </div>
-  <div class="body">
-    <div class="in">
+  <div class='body'>
+    <div class='in'>
       <LabeledInput readonly value={formatCurrency(stats?.creation)}>
         Creation
       </LabeledInput>
@@ -225,7 +240,7 @@
       </LabeledInput>
     </div>
 
-    <div class="out">
+    <div class='out'>
       <LabeledInput readonly value={formatCurrency(stats?.printExpenses)}>
         Prints
       </LabeledInput>
@@ -250,15 +265,16 @@
     </div>
   </div>
   <hr />
-  <div class="operating-expenses">
-    <div class="ops">
+  <div class='operating-expenses'>
+    <div class='ops'>
       <h2>
-        Operating Expenses - <span class="operating"
-          >{formatCurrency(operatingExpenses)}</span
-        >
+        Operating Expenses - <span class='operating'
+      >{formatCurrency(operatingExpenses)}</span
+      >
       </h2>
       {#if stats}
         <table>
+          <thead>
           <tr>
             <th>Date</th>
             <th>Paid To</th>
@@ -266,141 +282,144 @@
             <th>Amount</th>
             <th></th>
           </tr>
-          {#each stats.operatingExpenses as oe}
-            <tr>
-              <td>{formatDate(moment(oe.date, 'YYYY-MM-DD').toDate())}</td>
-              <td>{oe.paidTo}</td>
-              <td>{oe.purpose}</td>
-              <td class="currency">{formatCurrency(oe.amount)}</td>
-              <td class="buttons">
-                <Pill
-                  hover
-                  color="#d33"
-                  on:click={() => deleteOperatingExpense(oe.id)}
-                  on:keypress={(e) =>
-                    e.key === 'Enter' && deleteOperatingExpense(oe.id)}
-                >
-                  <span class="material-symbols-outlined">delete</span>
-                </Pill>
-              </td>
-            </tr>
-          {/each}
+          </thead>
+          <tbody>
+            {#each stats.operatingExpenses as oe}
+              <tr>
+                <td>{formatDate(moment(oe.date, 'YYYY-MM-DD').toDate())}</td>
+                <td>{oe.paidTo}</td>
+                <td>{oe.purpose}</td>
+                <td class='currency'>{formatCurrency(oe.amount)}</td>
+                <td class='buttons'>
+                  <Pill
+                    hover
+                    color='#d33'
+                    on:click={() => deleteOperatingExpense(oe.id)}
+                    on:keypress={(e) =>
+                      e.key === 'Enter' && deleteOperatingExpense(oe.id)}
+                  >
+                    <span class='material-symbols-outlined'>delete</span>
+                  </Pill>
+                </td>
+              </tr>
+            {/each}
+          </tbody>
         </table>
       {/if}
     </div>
 
-    <div class="form">
+    <div class='form'>
       <h4>Add Operating Expense</h4>
       <InsetInput
         bind:value={newOperatingExpense.date}
-        name="date"
-        type="date"
-        id="op-expense-date"
-        >Date
+        id='op-expense-date'
+        name='date'
+        type='date'
+      >Date
       </InsetInput>
       <InsetInput
         bind:value={newOperatingExpense.paidTo}
-        name="paidTo"
-        type="text"
-        id="op-expense-paid-to"
-        >Paid To
+        id='op-expense-paid-to'
+        name='paidTo'
+        type='text'
+      >Paid To
       </InsetInput>
       <InsetInput
         bind:value={newOperatingExpense.purpose}
-        name="purpose"
-        type="text"
-        id="op-expense-purpose"
-        >Purpose
+        id='op-expense-purpose'
+        name='purpose'
+        type='text'
+      >Purpose
       </InsetInput>
       <InsetInput
         bind:value={newOperatingExpense.amount}
-        min="0"
-        name="amount"
-        type="number"
-        id="op-expense-amount"
-        >Amount
+        id='op-expense-amount'
+        min='0'
+        name='amount'
+        type='number'
+      >Amount
       </InsetInput>
       <Pill
+        color='#3c3'
         hover
-        color="#3c3"
         on:click={createOperatingExpense}
         on:keypress={(e) => e.key === 'Enter' && createOperatingExpense}
       >
-        <span class="material-symbols-outlined">add</span>
+        <span class='material-symbols-outlined'>add</span>
       </Pill>
     </div>
   </div>
 </div>
 
 <style>
-  .flex {
-    display: flex;
-    align-items: center;
-  }
+    .flex {
+        display: flex;
+        align-items: center;
+    }
 
-  h1 {
-    margin: 0.5rem 0;
-  }
+    h1 {
+        margin: 0.5rem 0;
+    }
 
-  .group {
-    font-size: 1rem;
-  }
+    .group {
+        font-size: 1rem;
+    }
 
-  .caps {
-    font-variant: small-caps;
-  }
+    .caps {
+        font-variant: small-caps;
+    }
 
-  .cards {
-    margin: 1rem 0;
-    display: flex;
-    justify-content: space-evenly;
-    align-items: center;
-    gap: 0.5rem;
-  }
+    .cards {
+        margin: 1rem 0;
+        display: flex;
+        justify-content: space-evenly;
+        align-items: center;
+        gap: 0.5rem;
+    }
 
-  .body {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    place-items: start;
-  }
+    .body {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        place-items: start;
+    }
 
-  .in,
-  .out {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.5rem;
-  }
+    .in,
+    .out {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem;
+    }
 
-  .currency {
-    text-align: right;
-  }
+    .currency {
+        text-align: right;
+    }
 
-  .operating-expenses {
-    display: grid;
-    grid-template-columns: 4fr 1fr;
-    align-items: start;
-    gap: 2rem;
-  }
+    .operating-expenses {
+        display: grid;
+        grid-template-columns: 4fr 1fr;
+        align-items: start;
+        gap: 2rem;
+    }
 
-  .operating {
-    color: #ea6c25;
-  }
+    .operating {
+        color: #ea6c25;
+    }
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-  }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
 
-  th,
-  td {
-    border: 1px solid var(--fg-color-mid);
-    padding: 8px;
-    text-align: left;
-  }
+    th,
+    td {
+        border: 1px solid var(--fg-color-mid);
+        padding: 8px;
+        text-align: left;
+    }
 
-  .operating-summary {
-    font-size: 0.8rem;
-  }
+    .operating-summary {
+        font-size: 0.8rem;
+    }
 </style>

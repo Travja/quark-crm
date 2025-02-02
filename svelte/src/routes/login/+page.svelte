@@ -10,8 +10,8 @@
     win = window as unknown as ApiWindow;
   });
 
-  let username: string, password: string;
-  let error = false;
+  let username: string = $state(), password: string = $state();
+  let error = $state(false);
 
   const login = async () => {
     if (win.electron) {
@@ -70,8 +70,8 @@
     role="button"
     tabindex="0"
     class="button"
-    on:click={login}
-    on:keypress={(e) => {
+    onclick={login}
+    onkeypress={(e) => {
       if (e.key === 'Enter') login();
     }}
   >

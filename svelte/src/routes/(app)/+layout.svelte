@@ -5,6 +5,11 @@
   import { roles } from '$lib/http';
   import { onMount } from 'svelte';
   import type { ApiWindow } from 'global';
+  interface Props {
+    children?: import('svelte').Snippet;
+  }
+
+  let { children }: Props = $props();
 
   let win: ApiWindow;
 
@@ -21,54 +26,56 @@
 </script>
 
 <ReusableLayout>
-  <svelte:fragment slot="header">
-    <LeftMenu />
-    <nav>
-      <ul>
-        <li
-          role="menuitem"
-          tabindex="0"
-          class="nav-button"
-          on:click={() => goto('/')}
-          on:keypress={() => goto('/')}
-        >
-          Dashboard
-        </li>
-        <li
-          role="menuitem"
-          tabindex="0"
-          class="nav-button"
-          on:click={() => goto('/analytics')}
-          on:keypress={() => goto('/analytics')}
-        >
-          Analytics
-        </li>
-        {#if $roles.includes('ADMIN')}
+  {#snippet header()}
+  
+      <LeftMenu />
+      <nav>
+        <ul>
           <li
             role="menuitem"
             tabindex="0"
             class="nav-button"
-            on:click={() => goto('/admin')}
-            on:keypress={() => goto('/admin')}
+            onclick={() => goto('/')}
+            onkeypress={() => goto('/')}
           >
-            Admin
+            Dashboard
           </li>
-        {/if}
-      </ul>
-      <div
-        class="logout"
-        role="button"
-        tabindex="0"
-        on:click={logout}
-        on:keypress={(e) => {
+          <li
+            role="menuitem"
+            tabindex="0"
+            class="nav-button"
+            onclick={() => goto('/analytics')}
+            onkeypress={() => goto('/analytics')}
+          >
+            Analytics
+          </li>
+          {#if $roles.includes('ADMIN')}
+            <li
+              role="menuitem"
+              tabindex="0"
+              class="nav-button"
+              onclick={() => goto('/admin')}
+              onkeypress={() => goto('/admin')}
+            >
+              Admin
+            </li>
+          {/if}
+        </ul>
+        <div
+          class="logout"
+          role="button"
+          tabindex="0"
+          onclick={logout}
+          onkeypress={(e) => {
           if (e.key === 'Enter') logout();
         }}
-      >
-        Logout
-      </div>
-    </nav>
-  </svelte:fragment>
-  <slot />
+        >
+          Logout
+        </div>
+      </nav>
+    
+  {/snippet}
+  {@render children?.()}
 </ReusableLayout>
 
 <style>

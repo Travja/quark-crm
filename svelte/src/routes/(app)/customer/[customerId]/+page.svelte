@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   import type { Customer } from '@types/global';
   import OrderWidget from '$lib/ui/order/OrderWidget.svelte';
   import { onMount } from 'svelte';
@@ -9,10 +11,17 @@
   import { afetch, apiUrl } from '$lib/http';
   import { sanitizeOrder } from "$lib/api/util";
 
-  export let data: { customer: Customer };
-  let customer: Customer;
-  let knownAddresses: string[];
-  let openOrders = 0;
+  interface Props {
+    data: { customer: Customer };
+  }
+
+  let { data }: Props = $props();
+  let customer: Customer = $state();
+  let knownAddresses: string[] = $derived(customer?.orders
+    .map((order) => order.shippingAddress)
+    .filter((address) => !!address)
+    .filter((value, index, self) => self.indexOf(value) === index));
+  let openOrders = $state(0);
 
   onMount(() => {
     customer = data.customer;
@@ -26,13 +35,12 @@
     customer.orders.sort(sortOrders);
   });
 
-  $: knownAddresses = customer?.orders
-    .map((order) => order.shippingAddress)
-    .filter((address) => !!address)
-    .filter((value, index, self) => self.indexOf(value) === index);
-  $: openOrders = customer?.orders.filter((order) =>
-    isActive(order.status)
-  ).length;
+  
+  run(() => {
+    openOrders = customer?.orders.filter((order) =>
+      isActive(order.status)
+    ).length;
+  });
 
   let timeout: number = -1;
   const updateCustomer = () => {
@@ -65,7 +73,9 @@
     }, 1000);
   };
 
-  $: if (customer) updateCustomer();
+  run(() => {
+    if (customer) updateCustomer();
+  });
 </script>
 
 {#if customer}

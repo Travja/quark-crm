@@ -4,7 +4,11 @@
   import { createEventDispatcher } from 'svelte';
   import { formatCurrency } from '$lib/api/util';
 
-  export let print: AdditionalPrint;
+  interface Props {
+    print: AdditionalPrint;
+  }
+
+  let { print }: Props = $props();
 
   const dispatch = createEventDispatcher();
 </script>
@@ -25,8 +29,8 @@
       role="button"
       tabindex="0"
       class="delete material-symbols-outlined"
-      on:click={() => dispatch('delete', this)}
-      on:keypress={(e) => {
+      onclick={() => dispatch('delete', this)}
+      onkeypress={(e) => {
         if (e.key === 'Enter') dispatch('delete', this);
       }}>delete</span
     >

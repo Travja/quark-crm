@@ -1,15 +1,24 @@
 <script lang="ts">
-  export let id = '';
+  import { run, createBubbler } from 'svelte/legacy';
 
-  export let checked = false;
-  export let indeterminate = false;
+  const bubble = createBubbler();
 
-  let box: HTMLInputElement;
+  interface Props {
+    id?: string;
+    checked?: boolean;
+    indeterminate?: boolean;
+  }
 
-  $: if (box) box.indeterminate = indeterminate;
+  let { id = '', checked = $bindable(false), indeterminate = false }: Props = $props();
+
+  let box: HTMLInputElement = $state();
+
+  run(() => {
+    if (box) box.indeterminate = indeterminate;
+  });
 </script>
 
-<input type="checkbox" bind:this={box} bind:checked {id} on:change/>
+<input type="checkbox" bind:this={box} bind:checked {id} onchange={bubble('change')}/>
 
 <style>
 </style>

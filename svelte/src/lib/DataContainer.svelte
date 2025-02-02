@@ -2,7 +2,7 @@
   import StyledInput from './ui/StyledInput.svelte';
   import { Range } from '$lib/models/Range';
 
-  let selectedRange = Range.THIRTY_DAYS;
+  let selectedRange = $state(Range.THIRTY_DAYS);
 
   const newRange = (event) => {
     let target = event.target;

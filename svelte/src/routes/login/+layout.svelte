@@ -1,10 +1,15 @@
 <script lang="ts">
   import ReusableLayout from '$lib/ReusableLayout.svelte';
+  interface Props {
+    children?: import('svelte').Snippet;
+  }
+
+  let { children }: Props = $props();
 </script>
 
 <ReusableLayout>
   <div id="main">
-    <slot />
+    {@render children?.()}
   </div>
 </ReusableLayout>
 

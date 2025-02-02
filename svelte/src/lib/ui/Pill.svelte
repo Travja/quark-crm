@@ -1,12 +1,26 @@
 <script lang="ts">
+  import { run, createBubbler } from 'svelte/legacy';
+
+  const bubble = createBubbler();
   import Color from 'color';
 
-  export let color: string = 'var(--ui-button-bg)';
-  export let fg: string = 'auto';
-  export let hover = false;
-  export let wrap = false;
-  let foregroundColor = 'var(--fg-color)';
-  let hoverColor = 'var(--ui-button-hover)';
+  interface Props {
+    color?: string;
+    fg?: string;
+    hover?: boolean;
+    wrap?: boolean;
+    children?: import('svelte').Snippet;
+  }
+
+  let {
+    color = 'var(--ui-button-bg)',
+    fg = 'auto',
+    hover = false,
+    wrap = false,
+    children
+  }: Props = $props();
+  let foregroundColor = $state('var(--fg-color)');
+  let hoverColor = $state('var(--ui-button-hover)');
 
   const decideForeground = () => {
     if (color.startsWith('var') || fg !== 'auto') {
@@ -25,22 +39,24 @@
     hoverColor = Color(color).darken(0.15).hex();
   };
 
-  $: if (color || fg) decideForeground();
+  run(() => {
+    if (color || fg) decideForeground();
+  });
 </script>
 
 <span
   class="pill"
   class:hover
   class:wrap
-  on:click
-  on:keypress
+  onclick={bubble('click')}
+  onkeypress={bubble('keypress')}
   role="button"
   style:--hover-color={hover ? hoverColor : 'unset'}
   style:--pill-bg-color={color}
   style:--pill-fg-color={foregroundColor}
   tabindex="0"
 >
-  <slot></slot>
+  {@render children?.()}
 </span>
 
 <style>

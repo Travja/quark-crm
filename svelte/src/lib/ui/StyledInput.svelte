@@ -1,12 +1,18 @@
 <script lang="ts">
+  import { run, createBubbler } from 'svelte/legacy';
+
+  const bubble = createBubbler();
   import moment from 'moment';
 
-  export let id: string = undefined;
-  export let name: string = undefined;
-  export let value: any = undefined;
-  export let margin = '0';
-  export let placeholder = '';
-  export let type:
+
+
+  interface Props {
+    id?: string;
+    name?: string;
+    value?: any;
+    margin?: string;
+    placeholder?: string;
+    type?: 
     | 'text'
     | 'number'
     | 'date'
@@ -16,25 +22,46 @@
     | 'textarea'
     | 'checkbox'
     | 'radio'
-    | 'email' = 'text';
-  export let underlineColor = 'var(--accent-color)';
-  export let backgroundColor = undefined;
-  export let color = undefined;
-  export let fontSize = '1rem';
-  export let disabled = false;
-  export let readonly = false;
-  export let group: any = undefined;
+    | 'email';
+    underlineColor?: string;
+    backgroundColor?: any;
+    color?: any;
+    fontSize?: string;
+    disabled?: boolean;
+    readonly?: boolean;
+    group?: any;
+    min?: number | string;
+    max?: number | string;
+    step?: number;
+    canCopy?: boolean;
+    children?: import('svelte').Snippet;
+  }
 
-  export let min: number | string = undefined;
-  export let max: number | string = undefined;
-  export let step: number = undefined;
+  let {
+    id = undefined,
+    name = undefined,
+    value = $bindable(undefined),
+    margin = '0',
+    placeholder = '',
+    type = 'text',
+    underlineColor = 'var(--accent-color)',
+    backgroundColor = undefined,
+    color = undefined,
+    fontSize = '1rem',
+    disabled = false,
+    readonly = false,
+    group = $bindable(undefined),
+    min = undefined,
+    max = undefined,
+    step = undefined,
+    canCopy = false,
+    children
+  }: Props = $props();
 
-  export let canCopy = false;
-
-  let focused = false;
+  let focused = $state(false);
   let offset = 0;
-  let element: HTMLInputElement;
-  let internalDate: string;
+  let element: HTMLInputElement = $state();
+  let internalDate: string = $state();
 
   const processVal = (val): void => {
     if (!val || (type != 'date' && type != 'datetime')) return;
@@ -67,11 +94,17 @@
     value = convert;
   };
 
-  $: processVal(internalDate);
-  $: processVal(value);
-  $: if (type == 'checkbox' && typeof value == 'boolean') {
-    focused = value;
-  }
+  run(() => {
+    processVal(internalDate);
+  });
+  run(() => {
+    processVal(value);
+  });
+  run(() => {
+    if (type == 'checkbox' && typeof value == 'boolean') {
+      focused = value;
+    }
+  });
 
   const stepUp = () => {
     if (disabled) return;
@@ -103,12 +136,12 @@
       {placeholder}
       bind:value
       bind:this={element}
-      on:focus={() => (focused = true)}
-      on:blur={() => (focused = false)}
-      on:keydown
-      on:keypress
-      on:keyup
-      on:change
+      onfocus={() => (focused = true)}
+      onblur={() => (focused = false)}
+      onkeydown={bubble('keydown')}
+      onkeypress={bubble('keypress')}
+      onkeyup={bubble('keyup')}
+      onchange={bubble('change')}
     />
   {:else if type === 'number'}
     <input
@@ -123,12 +156,12 @@
       {step}
       bind:value
       bind:this={element}
-      on:focus={() => (focused = true)}
-      on:blur={() => (focused = false)}
-      on:keydown
-      on:keypress
-      on:keyup
-      on:change
+      onfocus={() => (focused = true)}
+      onblur={() => (focused = false)}
+      onkeydown={bubble('keydown')}
+      onkeypress={bubble('keypress')}
+      onkeyup={bubble('keyup')}
+      onchange={bubble('change')}
     />
     {#if !readonly}
       <div class="input-wrap">
@@ -137,8 +170,8 @@
             role="button"
             tabindex="0"
             class="material-symbols-outlined"
-            on:click={stepUp}
-            on:keypress={(e) => {
+            onclick={stepUp}
+            onkeypress={(e) => {
               if (e.key === 'Enter') stepUp();
             }}>keyboard_arrow_up</span
           >
@@ -146,8 +179,8 @@
             role="button"
             tabindex="0"
             class="material-symbols-outlined"
-            on:click={stepDown}
-            on:keypress={(e) => {
+            onclick={stepDown}
+            onkeypress={(e) => {
               if (e.key === 'Enter') stepDown();
             }}>keyboard_arrow_down</span
           >
@@ -166,12 +199,12 @@
       {placeholder}
       bind:value={internalDate}
       bind:this={element}
-      on:focus={() => (focused = true)}
-      on:blur={() => (focused = false)}
-      on:keydown={() => console.log(element.value)}
-      on:keypress
-      on:keyup
-      on:change
+      onfocus={() => (focused = true)}
+      onblur={() => (focused = false)}
+      onkeydown={() => console.log(element.value)}
+      onkeypress={bubble('keypress')}
+      onkeyup={bubble('keyup')}
+      onchange={bubble('change')}
     />
   {:else if type === 'datetime'}
     <input
@@ -183,12 +216,12 @@
       {placeholder}
       bind:value
       bind:this={element}
-      on:focus={() => (focused = true)}
-      on:blur={() => (focused = false)}
-      on:keydown
-      on:keypress
-      on:keyup
-      on:change
+      onfocus={() => (focused = true)}
+      onblur={() => (focused = false)}
+      onkeydown={bubble('keydown')}
+      onkeypress={bubble('keypress')}
+      onkeyup={bubble('keyup')}
+      onchange={bubble('change')}
     />
   {:else if type === 'password'}
     <input
@@ -200,12 +233,12 @@
       {placeholder}
       bind:value
       bind:this={element}
-      on:focus={() => (focused = true)}
-      on:blur={() => (focused = false)}
-      on:keydown
-      on:keypress
-      on:keyup
-      on:change
+      onfocus={() => (focused = true)}
+      onblur={() => (focused = false)}
+      onkeydown={bubble('keydown')}
+      onkeypress={bubble('keypress')}
+      onkeyup={bubble('keyup')}
+      onchange={bubble('change')}
     />
   {:else if type === 'select'}
     <select
@@ -216,11 +249,11 @@
       {placeholder}
       bind:value
       bind:this={element}
-      on:change
-      on:focus={() => (focused = true)}
-      on:blur={() => (focused = false)}
+      onchange={bubble('change')}
+      onfocus={() => (focused = true)}
+      onblur={() => (focused = false)}
     >
-      <slot />
+      {@render children?.()}
     </select>
   {:else if type === 'textarea'}
     <textarea
@@ -231,10 +264,10 @@
       {placeholder}
       bind:value
       bind:this={element}
-      on:change
-      on:focus={() => (focused = true)}
-      on:blur={() => (focused = false)}
-    />
+      onchange={bubble('change')}
+      onfocus={() => (focused = true)}
+      onblur={() => (focused = false)}
+></textarea>
   {:else if type === 'checkbox'}
     <input
       type="checkbox"
@@ -244,7 +277,7 @@
       {name}
       bind:checked={value}
       bind:this={element}
-      on:change
+      onchange={bubble('change')}
     />
     <label
       for={id}
@@ -253,7 +286,7 @@
     >
   {:else if type === 'radio'}
     <label for={id} class="radio-wrap" class:checked={group === value}>
-      <slot />
+      {@render children?.()}
       <input
         type="radio"
         {disabled}
@@ -263,7 +296,7 @@
         {value}
         bind:group
         bind:this={element}
-        on:change
+        onchange={bubble('change')}
       />
     </label>
   {:else if type === 'email'}
@@ -276,12 +309,12 @@
       {placeholder}
       bind:value
       bind:this={element}
-      on:focus={() => (focused = true)}
-      on:blur={() => (focused = false)}
-      on:keydown
-      on:keypress
-      on:keyup
-      on:change
+      onfocus={() => (focused = true)}
+      onblur={() => (focused = false)}
+      onkeydown={bubble('keydown')}
+      onkeypress={bubble('keypress')}
+      onkeyup={bubble('keyup')}
+      onchange={bubble('change')}
     />
   {:else}
     Unknown type
@@ -293,8 +326,8 @@
         role="button"
         tabindex="0"
         class="buttons"
-        on:click={() => navigator.clipboard.writeText(value)}
-        on:keypress={(e) => {
+        onclick={() => navigator.clipboard.writeText(value)}
+        onkeypress={(e) => {
           if (e.key === 'Enter') navigator.clipboard.writeText(value);
         }}
       >
@@ -309,7 +342,7 @@
       class="border"
       class:shown={focused}
       class:check={type === 'checkbox'}
-    />
+></label>
   {/if}
 </div>
 

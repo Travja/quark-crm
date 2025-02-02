@@ -8,7 +8,11 @@
   import type { Order } from '@types/global';
   import InsetInput from '$lib/ui/InsetInput.svelte';
 
-  export let order: Order;
+  interface Props {
+    order: Order;
+  }
+
+  let { order = $bindable() }: Props = $props();
 </script>
 
 <h2>Financials</h2>

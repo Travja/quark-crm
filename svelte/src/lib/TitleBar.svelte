@@ -2,8 +2,8 @@
   import type { ApiWindow } from 'global.js';
   import { onMount } from 'svelte';
 
-  let win: ApiWindow;
-  let focused = false;
+  let win: ApiWindow = $state();
+  let focused = $state(false);
 
   onMount(async () => {
     win = window as unknown as ApiWindow;
@@ -20,32 +20,32 @@
       role="menuitem"
       tabindex="0"
       class="ui-button material-symbols-outlined"
-      on:click={win.electron.showDevTools}
-      on:keypress={(e) => e.key === 'Enter' && win.electron.showDevTools()}
+      onclick={win.electron.showDevTools}
+      onkeypress={(e) => e.key === 'Enter' && win.electron.showDevTools()}
       >info</span
     >
     <span
       role="menuitem"
       tabindex="0"
       class="ui-button material-symbols-outlined"
-      on:click={win.electron.minimize}
-      on:keypress={(e) => e.key === 'Enter' && win.electron.minimize()}
+      onclick={win.electron.minimize}
+      onkeypress={(e) => e.key === 'Enter' && win.electron.minimize()}
       >minimize</span
     >
     <span
       role="menuitem"
       tabindex="0"
       class="ui-button material-symbols-outlined"
-      on:click={win.electron.maximize}
-      on:keypress={(e) => e.key === 'Enter' && win.electron.maximize()}
+      onclick={win.electron.maximize}
+      onkeypress={(e) => e.key === 'Enter' && win.electron.maximize()}
       >crop_square</span
     >
     <span
       role="menuitem"
       tabindex="0"
       class="ui-button close-button material-symbols-outlined"
-      on:click={win.electron.close}
-      on:keypress={(e) => e.key === 'Enter' && win.electron.close()}>close</span
+      onclick={win.electron.close}
+      onkeypress={(e) => e.key === 'Enter' && win.electron.close()}>close</span
     >
   </div>
 </div>
