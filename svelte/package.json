@@ -10,9 +10,8 @@
     "lint": "eslint ."
   },
   "devDependencies": {
-    "@sveltejs/adapter-static": "^3.0.2",
-    "@sveltejs/kit": "^2.5.27",
-    "@types/cookie": "^0.6.0",
+    "@sveltejs/adapter-static": "^3.0.8",
+    "@sveltejs/kit": "^2.16.1",
     "@typescript-eslint/eslint-plugin": "^8.22.0",
     "@typescript-eslint/parser": "^8.22.0",
     "eslint": "^9.19.0",
@@ -20,13 +19,13 @@
     "prettier": "^3.4.2",
     "prettier-plugin-svelte": "^3.3.3",
     "pretty-quick": "^4.0.0",
-    "svelte": "^5.0.0",
-    "svelte-check": "^4.0.0",
-    "svelte-eslint-parser": "^0.42.0",
+    "svelte": "^5.19.6",
+    "svelte-check": "^4.1.4",
+    "svelte-eslint-parser": "^0.43.0",
     "svelte-preprocess": "^6.0.3",
     "tslib": "^2.8.1",
     "typescript": "^5.7.3",
-    "vite": "^6.0.2"
+    "vite": "^6.0.11"
   },
   "type": "module",
   "dependencies": {
