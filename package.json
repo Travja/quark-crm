@@ -24,14 +24,14 @@
   "author": "Travja",
   "license": "ISC",
   "devDependencies": {
-    "concurrently": "^9.0.1",
+    "concurrently": "^9.1.2",
     "copyfiles": "^2.4.1",
-    "dotenv": "^16.4.5",
-    "electron": "^32.1.2",
-    "electron-builder": "^25.0.5",
-    "nodemon": "^3.1.7",
-    "prettier": "^3.3.3",
-    "typescript": "^5.6.2"
+    "dotenv": "^16.4.7",
+    "electron": "^34.0.2",
+    "electron-builder": "^25.1.8",
+    "nodemon": "^3.1.9",
+    "prettier": "^3.4.2",
+    "typescript": "^5.7.3"
   },
   "build": {
     "appId": "dev.travja.quark",
@@ -69,6 +69,9 @@
   "dependencies": {
     "electron-fetch": "^1.9.1",
     "electron-serve": "^2.1.1",
-    "electron-updater": "^6.3.4"
+    "electron-updater": "^6.3.9"
+  },
+  "overrides": {
+    "cookie": "1.0.2"
   }
 }
