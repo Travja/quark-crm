@@ -1,4 +1,4 @@
-<script lang="ts">
+<script lang='ts'>
   import { run } from 'svelte/legacy';
 
   import {
@@ -15,8 +15,6 @@
   import { OrderStatus, TreeStatus } from '$lib/models/order';
   import Modal from '$lib/Modal.svelte';
   import LabeledInput from '$lib/ui/LabeledInput.svelte';
-  import { afetch, apiUrl } from '$lib/http';
-  import type { Order } from '@types/global';
   import OrderWidget from '$lib/ui/order/OrderWidget.svelte';
   import { onMount } from 'svelte';
   import { clickOutside } from '$lib/api/clickoutside';
@@ -99,45 +97,45 @@
   };
 </script>
 
-<div class="heading-bar">
-  <span id="filter-wrapper">
+<div class='heading-bar'>
+  <span id='filter-wrapper'>
     <span
-      class="material-symbols-outlined icon-button"
+      class='material-symbols-outlined icon-button'
       onclick={toggleFilter}
       onkeypress={(e) => {
         if (e.key === 'Enter') toggleFilter();
       }}
-      role="button"
-      tabindex="0"
+      role='button'
+      tabindex='0'
     >
       filter_alt
     </span>
     {#if filterBoxShown}
       <div
-        id="filter-box"
+        id='filter-box'
         transition:fly={{ y: 50, duration: 400 }}
         use:clickOutside
         onoutclick={toggleFilter}
       >
         <h2>Filters</h2>
-        <div class="filter">
+        <div class='filter'>
           <h3>
             <Checkbox
-              id="all"
+              id='all'
               checked={$orderStatusFilter.length ===
                 Object.values(OrderStatus).length}
               indeterminate={$orderStatusFilter.length > 0 &&
                 $orderStatusFilter.length !== Object.values(OrderStatus).length}
               on:change={clickAllOrderStatus}
             />
-            <label for="all">Order Status</label>
+            <label for='all'>Order Status</label>
           </h3>
-          <div class="filter-group">
-            <div class="filter-section">
-              <div class="order-status">
+          <div class='filter-group'>
+            <div class='filter-section'>
+              <div class='order-status'>
                 <!-- Active statuses are Order Placed, Unpaid, Invoiced, Paid, PrintOrdered, Question Asked, Question Answered -->
                 <Checkbox
-                  id="active"
+                  id='active'
                   checked={activeStatusesSelected}
                   indeterminate={someActiveStatusesSelected}
                   on:change={() => {
@@ -157,12 +155,12 @@
                     }
                   }}
                 />
-                <label for="active">Active</label>
+                <label for='active'>Active</label>
               </div>
               {#each activeStatuses as status}
-                <div class="filter-order-status">
+                <div class='filter-order-status'>
                   <input
-                    type="checkbox"
+                    type='checkbox'
                     id="order-status-{status.toLowerCase().replace(' ', '_')}"
                     checked={$orderStatusFilter.includes(status)}
                     onchange={(e) => {
@@ -180,15 +178,15 @@
                   />
                   <label
                     for="order-status-{status.toLowerCase().replace(' ', '_')}"
-                    >{status}</label
+                  >{status}</label
                   >
                 </div>
               {/each}
             </div>
-            <div class="filter-section">
-              <div class="order-status">
+            <div class='filter-section'>
+              <div class='order-status'>
                 <Checkbox
-                  id="inactive"
+                  id='inactive'
                   checked={inactiveStatusesSelected}
                   indeterminate={someInactiveStatusesSelected}
                   on:change={() => {
@@ -208,12 +206,12 @@
                     }
                   }}
                 />
-                <label for="inactive">Inactive</label>
+                <label for='inactive'>Inactive</label>
               </div>
               {#each inactiveStatuses as status}
-                <div class="filter-order-status">
+                <div class='filter-order-status'>
                   <input
-                    type="checkbox"
+                    type='checkbox'
                     id="order-status-{status.toLowerCase().replace(' ', '_')}"
                     checked={$orderStatusFilter.includes(status)}
                     onchange={(e) => {
@@ -231,28 +229,28 @@
                   />
                   <label
                     for="order-status-{status.toLowerCase().replace(' ', '_')}"
-                    >{status}</label
+                  >{status}</label
                   >
                 </div>
               {/each}
             </div>
           </div>
         </div>
-        <div class="filter">
+        <div class='filter'>
           <h3>
             <Checkbox
-              id="tree-all"
+              id='tree-all'
               checked={$treeFilters.length === Object.values(TreeStatus).length}
               indeterminate={$treeFilters.length > 0 &&
                 $treeFilters.length !== Object.values(TreeStatus).length}
               on:change={clickAllTreeStatus}
             />
-            <label for="tree-all">Tree Status</label>
+            <label for='tree-all'>Tree Status</label>
           </h3>
           {#each Object.values(TreeStatus) as status}
-            <div class="filter-tree-status">
+            <div class='filter-tree-status'>
               <input
-                type="checkbox"
+                type='checkbox'
                 id="tree-status-{status.toLowerCase().replace(' ', '_')}"
                 checked={$treeFilters.includes(status)}
                 onchange={(e) => {
@@ -264,7 +262,7 @@
                 }}
               />
               <label for="tree-status-{status.toLowerCase().replace(' ', '_')}"
-                >{status}</label
+              >{status}</label
               >
             </div>
           {/each}
@@ -273,80 +271,80 @@
     {/if}
   </span>
   <span
-    class="material-symbols-outlined icon-button"
+    class='material-symbols-outlined icon-button'
     onclick={() => loadData($searchFilter)}
     onkeypress={(e) => {
       if (e.key === 'Enter') loadData($searchFilter);
     }}
-    role="button"
-    tabindex="0">sync</span
+    role='button'
+    tabindex='0'>sync</span
   >
-  <span class="spacer"></span>
+  <span class='spacer'></span>
   <StyledInput
     bind:value={$searchTerms}
-    fontSize="1.2em"
-    margin="0"
+    fontSize='1.2em'
+    margin='0'
     on:keypress={checkEnter}
-    placeholder="Search..."
+    placeholder='Search...'
   />
 </div>
 
 {#if $filteredOrders.length === 0}
-  <p class="no-orders">No orders found</p>
+  <p class='no-orders'>No orders found</p>
 {:else}
   {#each $filteredOrders as order}
     <OrderWidget {order} />
   {/each}
 {/if}
 
-<Modal bind:open={notesOpen} width="50vw">
+<Modal bind:open={notesOpen} width='50vw'>
   <h2>Notes</h2>
   <LabeledInput
     bind:value={notesModal.notes}
-    fillSpace="true"
+    fillSpace='true'
     readonly
-    type="textarea"
+    type='textarea'
   />
 </Modal>
 
 <style>
-  .heading-bar {
-    display: flex;
-    align-items: center;
-    margin-bottom: 0.5em;
-    /*position: sticky;*/
-    top: 0;
-  }
+    .heading-bar {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5em;
+        /*position: sticky;*/
+        top: 0;
+    }
 
-  #filter-box {
-    position: absolute;
-    z-index: 10;
-    background-color: var(--bg-secondary);
-    padding: 0.5rem;
-    border-radius: 0.5rem;
-  }
+    #filter-box {
+        position: absolute;
+        z-index: 10;
+        background-color: var(--bg-secondary);
+        padding: 0.5rem;
+        border-radius: 0.5rem;
+    }
 
-  #filter-box h2 {
-    margin: 0;
-  }
+    #filter-box h2 {
+        margin: 0;
+    }
 
-  .filter-group {
-    display: flex;
-    flex-direction: row;
-    gap: 1rem;
-  }
+    .filter-group {
+        display: flex;
+        flex-direction: row;
+        gap: 1rem;
+    }
 
-  .filter-order-status,
-  .filter-tree-status {
-    margin-left: 0.5rem;
-  }
+    .filter-order-status,
+    .filter-tree-status {
+        margin-left: 0.5rem;
+    }
 
-  label {
-    user-select: none;
-  }
+    label {
+        user-select: none;
+    }
 
-  .no-orders {
-    color: var(--fg-color-light);
-    font-style: italic;
-  }
+    .no-orders {
+        color: var(--fg-color-light);
+        font-style: italic;
+    }
 </style>

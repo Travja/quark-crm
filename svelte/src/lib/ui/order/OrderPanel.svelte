@@ -413,9 +413,9 @@
       {#if order.printType !== PrintType.DIGITAL}
         <div transition:slide>
           <h3>Additional Prints</h3>
-          {#each order.additionalPrints as print}
+          {#each order.additionalPrints as print, i}
             <AdditionalPrintWidget
-              bind:print
+              bind:print={order.additionalPrints[i]}
               on:delete={() => {
                 order.additionalPrints = order.additionalPrints.filter(
                   (p) => p !== print

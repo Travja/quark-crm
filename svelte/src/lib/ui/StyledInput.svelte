@@ -1,10 +1,5 @@
 <script lang="ts">
-  import { run, createBubbler } from 'svelte/legacy';
-
-  const bubble = createBubbler();
   import moment from 'moment';
-
-
 
   interface Props {
     id?: string;
@@ -12,17 +7,17 @@
     value?: any;
     margin?: string;
     placeholder?: string;
-    type?: 
-    | 'text'
-    | 'number'
-    | 'date'
-    | 'datetime'
-    | 'password'
-    | 'select'
-    | 'textarea'
-    | 'checkbox'
-    | 'radio'
-    | 'email';
+    type?:
+      | 'text'
+      | 'number'
+      | 'date'
+      | 'datetime'
+      | 'password'
+      | 'select'
+      | 'textarea'
+      | 'checkbox'
+      | 'radio'
+      | 'email';
     underlineColor?: string;
     backgroundColor?: any;
     color?: any;
@@ -35,33 +30,41 @@
     step?: number;
     canCopy?: boolean;
     children?: import('svelte').Snippet;
+    onchange?: (value: any) => void;
+    onkeypress?: (e: KeyboardEvent) => void;
+    onkeydown?: (e: KeyboardEvent) => void;
+    onkeyup?: (e: KeyboardEvent) => void;
   }
 
   let {
-    id = undefined,
-    name = undefined,
-    value = $bindable(undefined),
-    margin = '0',
-    placeholder = '',
-    type = 'text',
-    underlineColor = 'var(--accent-color)',
-    backgroundColor = undefined,
-    color = undefined,
-    fontSize = '1rem',
-    disabled = false,
-    readonly = false,
-    group = $bindable(undefined),
-    min = undefined,
-    max = undefined,
-    step = undefined,
-    canCopy = false,
-    children
-  }: Props = $props();
+        id              = undefined,
+        name            = undefined,
+        value           = $bindable(undefined),
+        margin          = '0',
+        placeholder     = '',
+        type            = 'text',
+        underlineColor  = 'var(--accent-color)',
+        backgroundColor = undefined,
+        color           = undefined,
+        fontSize        = '1rem',
+        disabled        = false,
+        readonly        = false,
+        group           = $bindable(undefined),
+        min             = undefined,
+        max             = undefined,
+        step            = undefined,
+        canCopy         = false,
+        children,
+        onchange,
+        onkeypress,
+        onkeydown,
+        onkeyup,
+      }: Props = $props();
 
-  let focused = $state(false);
-  let offset = 0;
+  let focused                   = $state(false);
+  let offset                    = 0;
   let element: HTMLInputElement = $state();
-  let internalDate: string = $state();
+  let internalDate: string      = $state();
 
   const processVal = (val): void => {
     if (!val || (type != 'date' && type != 'datetime')) return;
@@ -71,8 +74,8 @@
           value = undefined;
           return;
         }
-        let mom = moment(val, moment.HTML5_FMT.DATETIME_LOCAL).startOf('day');
-        value = mom.toISOString().split('Z')[0]; //.replace(/\.0{3}/, '');
+        let mom      = moment(val, moment.HTML5_FMT.DATETIME_LOCAL).startOf('day');
+        value        = mom.toISOString().split('Z')[0]; //.replace(/\.0{3}/, '');
         internalDate = value.split('T')[0];
       }
       return;
@@ -85,24 +88,38 @@
 
     let convert;
     if (type == 'date') {
-      convert = mom.toISOString().split('T')[0];
+      convert      = mom.toISOString().split('T')[0];
       internalDate = convert;
     }
-    mom = mom.add({ hour: offset });
+    mom     = mom.add({ hour: offset });
     convert = mom.toISOString().split('Z')[0];
 
     value = convert;
   };
 
-  run(() => {
-    processVal(internalDate);
-  });
-  run(() => {
-    processVal(value);
-  });
-  run(() => {
+  const processInternalDate = (val): string => {
+    if (!val) return;
+    let mom = moment(val, moment.HTML5_FMT.DATETIME_LOCAL).startOf('day');
+    return mom.toISOString().split('Z')[0];
+  };
+
+  $effect.pre(() => {
     if (type == 'checkbox' && typeof value == 'boolean') {
       focused = value;
+    }
+  });
+
+  let previousInternal = null;
+  let previousValue    = null;
+  $effect(() => {
+    if (internalDate != previousInternal) {
+      processVal(internalDate);
+      previousInternal = internalDate;
+    }
+
+    if (value != previousValue) {
+      processVal(value);
+      previousValue = value;
     }
   });
 
@@ -119,68 +136,63 @@
   };
 </script>
 
-<div
-  class="styled-input wrapper"
-  class:check={type === 'checkbox'}
-  style="margin: {margin}; --font-size: {fontSize}; --background-color: {underlineColor}"
-  style:--color={color || 'var(--fg-color)'}
-  style:--input-bg={backgroundColor || 'var(--ui-button-bg)'}
+<div class="styled-input wrapper"
+     class:check={type === 'checkbox'}
+     style="margin: {margin}; --font-size: {fontSize}; --background-color: {underlineColor}"
+     style:--color={color || 'var(--fg-color)'}
+     style:--input-bg={backgroundColor || 'var(--ui-button-bg)'}
 >
   {#if type === 'text'}
-    <input
-      {disabled}
-      {readonly}
-      {id}
-      {name}
-      type="text"
-      {placeholder}
-      bind:value
-      bind:this={element}
-      onfocus={() => (focused = true)}
-      onblur={() => (focused = false)}
-      onkeydown={bubble('keydown')}
-      onkeypress={bubble('keypress')}
-      onkeyup={bubble('keyup')}
-      onchange={bubble('change')}
+    <input type="text"
+           {disabled}
+           {readonly}
+           {id}
+           {name}
+           {placeholder}
+           bind:value
+           bind:this={element}
+           onfocus={() => (focused = true)}
+           onblur={() => (focused = false)}
+           {onkeydown}
+           {onkeypress}
+           {onkeyup}
+           {onchange}
     />
   {:else if type === 'number'}
-    <input
-      {disabled}
-      {readonly}
-      {id}
-      {name}
-      type="number"
-      {placeholder}
-      {min}
-      {max}
-      {step}
-      bind:value
-      bind:this={element}
-      onfocus={() => (focused = true)}
-      onblur={() => (focused = false)}
-      onkeydown={bubble('keydown')}
-      onkeypress={bubble('keypress')}
-      onkeyup={bubble('keyup')}
-      onchange={bubble('change')}
+    <input type="number"
+           {disabled}
+           {readonly}
+           {id}
+           {name}
+           {placeholder}
+           {min}
+           {max}
+           {step}
+           bind:value
+           bind:this={element}
+           onfocus={() => (focused = true)}
+           onblur={() => (focused = false)}
+           {onkeydown}
+           {onkeypress}
+           {onkeyup}
+           {onchange}
     />
     {#if !readonly}
       <div class="input-wrap">
         <div class="buttons" class:disabled>
-          <span
-            role="button"
-            tabindex="0"
-            class="material-symbols-outlined"
-            onclick={stepUp}
-            onkeypress={(e) => {
+          <span role="button"
+                tabindex="0"
+                class="material-symbols-outlined"
+                onclick={stepUp}
+                onkeypress={(e) => {
               if (e.key === 'Enter') stepUp();
             }}>keyboard_arrow_up</span
           >
-          <span
-            role="button"
-            tabindex="0"
-            class="material-symbols-outlined"
-            onclick={stepDown}
-            onkeypress={(e) => {
+          <span role="button"
+                tabindex="0"
+                class="material-symbols-outlined"
+                onclick={stepDown}
+                onkeypress={(e) => {
               if (e.key === 'Enter') stepDown();
             }}>keyboard_arrow_down</span
           >
@@ -188,133 +200,126 @@
       </div>
     {/if}
   {:else if type === 'date'}
-    <input
-      {disabled}
-      {readonly}
-      {id}
-      {name}
-      {min}
-      {max}
-      type="date"
-      {placeholder}
-      bind:value={internalDate}
-      bind:this={element}
-      onfocus={() => (focused = true)}
-      onblur={() => (focused = false)}
-      onkeydown={() => console.log(element.value)}
-      onkeypress={bubble('keypress')}
-      onkeyup={bubble('keyup')}
-      onchange={bubble('change')}
+    <input type="date"
+           {disabled}
+           {readonly}
+           {id}
+           {name}
+           {min}
+           {max}
+           {placeholder}
+           bind:value={internalDate}
+           bind:this={element}
+           onfocus={() => (focused = true)}
+           onblur={() => (focused = false)}
+           onkeydown={() => console.log(element.value)}
+           {onkeypress}
+           {onkeyup}
+           {onchange}
     />
   {:else if type === 'datetime'}
-    <input
-      {disabled}
-      {readonly}
-      {id}
-      {name}
-      type="datetime-local"
-      {placeholder}
-      bind:value
-      bind:this={element}
-      onfocus={() => (focused = true)}
-      onblur={() => (focused = false)}
-      onkeydown={bubble('keydown')}
-      onkeypress={bubble('keypress')}
-      onkeyup={bubble('keyup')}
-      onchange={bubble('change')}
+    <input type="datetime-local"
+           {disabled}
+           {readonly}
+           {id}
+           {name}
+           {placeholder}
+           bind:value
+           bind:this={element}
+           onfocus={() => (focused = true)}
+           onblur={() => (focused = false)}
+           {onkeydown}
+           {onkeypress}
+           {onkeyup}
+           {onchange}
     />
   {:else if type === 'password'}
-    <input
-      {disabled}
-      {readonly}
-      {id}
-      {name}
-      type="password"
-      {placeholder}
-      bind:value
-      bind:this={element}
-      onfocus={() => (focused = true)}
-      onblur={() => (focused = false)}
-      onkeydown={bubble('keydown')}
-      onkeypress={bubble('keypress')}
-      onkeyup={bubble('keyup')}
-      onchange={bubble('change')}
+    <input type="password"
+           {disabled}
+           {readonly}
+           {id}
+           {name}
+           {placeholder}
+           bind:value
+           bind:this={element}
+           onfocus={() => (focused = true)}
+           onblur={() => (focused = false)}
+           {onkeydown}
+           {onkeypress}
+           {onkeyup}
+           {onchange}
     />
   {:else if type === 'select'}
     <select
-      {disabled}
-      {readonly}
-      {id}
-      {name}
-      {placeholder}
-      bind:value
-      bind:this={element}
-      onchange={bubble('change')}
-      onfocus={() => (focused = true)}
-      onblur={() => (focused = false)}
+            {disabled}
+            {readonly}
+            {id}
+            {name}
+            {placeholder}
+            bind:value
+            bind:this={element}
+            {onchange}
+            onfocus={() => (focused = true)}
+            onblur={() => (focused = false)}
     >
       {@render children?.()}
     </select>
   {:else if type === 'textarea'}
     <textarea
-      {disabled}
-      {readonly}
-      {id}
-      {name}
-      {placeholder}
-      bind:value
-      bind:this={element}
-      onchange={bubble('change')}
-      onfocus={() => (focused = true)}
-      onblur={() => (focused = false)}
-></textarea>
+            {disabled}
+            {readonly}
+            {id}
+            {name}
+            {placeholder}
+            bind:value
+            bind:this={element}
+            {onchange}
+            onfocus={() => (focused = true)}
+            onblur={() => (focused = false)}
+    ></textarea>
   {:else if type === 'checkbox'}
-    <input
-      type="checkbox"
-      {disabled}
-      {readonly}
-      {id}
-      {name}
-      bind:checked={value}
-      bind:this={element}
-      onchange={bubble('change')}
+    <input type="checkbox"
+           {disabled}
+           {readonly}
+           {id}
+           {name}
+           bind:checked={value}
+           bind:this={element}
+           {onchange}
     />
-    <label
-      for={id}
-      class="checkbox material-symbols-outlined"
-      class:checked={value}>check</label
+    <label for={id}
+           class="checkbox material-symbols-outlined"
+           class:checked={value}>check</label
     >
   {:else if type === 'radio'}
     <label for={id} class="radio-wrap" class:checked={group === value}>
       {@render children?.()}
-      <input
-        type="radio"
-        {disabled}
-        {readonly}
-        {id}
-        {name}
-        {value}
-        bind:group
-        bind:this={element}
-        onchange={bubble('change')}
+      <input type="radio"
+             {disabled}
+             {readonly}
+             {id}
+             {name}
+             {value}
+             bind:group
+             bind:this={element}
+             {onchange}
       />
     </label>
   {:else if type === 'email'}
-    <input
-      {disabled}
-      {readonly}
-      {id}
-      {name}
-      type="email"
-      {placeholder}
-      bind:value
-      bind:this={element}
-      onfocus={() => (focused = true)}
-      onblur={() => (focused = false)}
-      onkeydown={bubble('keydown')}
-      onkeypress={bubble('keypress')}
-      onkeyup={bubble('keyup')}
-      onchange={bubble('change')}
+    <input type="email"
+           {disabled}
+           {readonly}
+           {id}
+           {name}
+           {placeholder}
+           bind:value
+           bind:this={element}
+           onfocus={() => (focused = true)}
+           onblur={() => (focused = false)}
+           {onkeydown}
+           {onkeypress}
+           {onkeyup}
+           {onchange}
     />
   {:else}
     Unknown type
@@ -322,14 +327,13 @@
 
   {#if canCopy}
     <div class="input-wrap">
-      <div
-        role="button"
-        tabindex="0"
-        class="buttons"
-        onclick={() => navigator.clipboard.writeText(value)}
-        onkeypress={(e) => {
-          if (e.key === 'Enter') navigator.clipboard.writeText(value);
-        }}
+      <div role="button"
+           tabindex="0"
+           class="buttons"
+           onclick={() => navigator.clipboard.writeText(value)}
+           onkeypress={(e) => {
+                if (e.key === 'Enter') navigator.clipboard.writeText(value);
+              }}
       >
         <span class="material-symbols-outlined">content_copy</span>
       </div>
@@ -337,196 +341,193 @@
   {/if}
 
   {#if type !== 'checkbox' && type !== 'radio'}
-    <label
-      for={id}
-      class="border"
-      class:shown={focused}
-      class:check={type === 'checkbox'}
-></label>
+    <label for={id}
+           class="border"
+           class:shown={focused}
+           class:check={type === 'checkbox'}
+    ></label>
   {/if}
 </div>
 
 <style>
-  input:not([type='checkbox']),
-  select,
-  textarea {
-    display: block;
-    flex: 1;
-    padding: 0.5rem 0.5rem calc(0.5rem - 2px);
-    font-size: var(--font-size);
-    background-color: var(--input-bg);
-    color: var(--color);
-    border: none;
-    width: 100%;
-    box-sizing: border-box;
-    font-family:
-      Arial,
-      -apple-system,
-      BlinkMacSystemFont,
-      Segoe UI,
-      Roboto,
-      Oxygen,
-      Ubuntu,
-      Cantarell,
-      Open Sans,
-      Helvetica Neue,
-      sans-serif;
-  }
-
-  input:not([type='checkbox']):not([type='number']),
-  select,
-  textarea {
-    min-width: 150px;
-  }
-
-  input {
-    text-align: center;
-  }
-
-  input[type='checkbox'],
-  input[type='radio'] {
-    position: absolute;
-    display: none;
-  }
-
-  .checkbox {
-    width: 2rem;
-    height: 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--input-bg);
-    background-color: var(--input-bg);
-    border: 2px solid var(--input-bg);
-    border-radius: 0.5rem;
-    box-sizing: border-box;
-    transition:
-      border-color 0.5s ease,
-      color 0.5s ease;
-    user-select: none;
-  }
-
-  .checkbox.checked {
-    color: var(--color);
-    border-color: var(--background-color);
-  }
-
-  input:focus,
-  select:focus {
-    outline: none;
-  }
-
-  .wrapper {
-    position: relative;
-    display: inline-flex;
-    flex-direction: column;
-    align-items: center;
-    flex: 1;
-  }
-
-  .wrapper:not(.check) {
-    background-color: var(--input-bg);
-  }
-
-  .border {
-    height: 2px;
-    width: 0;
-    background-color: var(--background-color);
-    transition: width 0.5s ease;
-    z-index: 1;
-  }
-
-  label.border.check {
-    background-color: red;
-  }
-
-  .border.shown:not(.check) {
-    width: 100%;
-    background-color: var(--accent-color);
-  }
-
-  @media (prefers-color-scheme: light) {
-    input[type='date']::-webkit-calendar-picker-indicator,
-    input[type='datetime-local']::-webkit-calendar-picker-indicator {
-      background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNSIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBmaWxsPSIjZmZmZmZmIiBkPSJNMjAgM2gtMVYxaC0ydjJIN1YxSDV2Mkg0Yy0xLjEgMC0yIC45LTIgMnYxNmMwIDEuMS45IDIgMiAyaDE2YzEuMSAwIDItLjkgMi0yVjVjMC0xLjEtLjktMi0yLTJ6bTAgMThINFY4aDE2djEzeiIvPjxwYXRoIGZpbGw9Im5vbmUiIGQ9Ik0wIDBoMjR2MjRIMHoiLz48L3N2Zz4=');
+    input:not([type='checkbox']),
+    select,
+    textarea {
+        display: block;
+        flex: 1;
+        padding: 0.5rem 0.5rem calc(0.5rem - 2px);
+        font-size: var(--font-size);
+        background-color: var(--input-bg);
+        color: var(--color);
+        border: none;
+        width: 100%;
+        box-sizing: border-box;
+        font-family: Arial,
+        -apple-system,
+        BlinkMacSystemFont,
+        Segoe UI,
+        Roboto,
+        Oxygen,
+        Ubuntu,
+        Cantarell,
+        Open Sans,
+        Helvetica Neue,
+        sans-serif;
     }
-  }
 
-  textarea {
-    resize: none;
-  }
+    input:not([type='checkbox']):not([type='number']),
+    select,
+    textarea {
+        min-width: 150px;
+    }
 
-  textarea:focus {
-    outline: none;
-  }
+    input {
+        text-align: center;
+    }
 
-  input[type='number']::-webkit-inner-spin-button,
-  input[type='number']::-webkit-outer-spin-button {
-    display: none;
-  }
+    input[type='checkbox'],
+    input[type='radio'] {
+        position: absolute;
+        display: none;
+    }
 
-  .input-wrap {
-    display: flex;
-    position: absolute;
-    right: 0;
-    top: 0;
-    bottom: 0;
-  }
+    .checkbox {
+        width: 2rem;
+        height: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--input-bg);
+        background-color: var(--input-bg);
+        border: 2px solid var(--input-bg);
+        border-radius: 0.5rem;
+        box-sizing: border-box;
+        transition: border-color 0.5s ease,
+        color 0.5s ease;
+        user-select: none;
+    }
 
-  .buttons {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    height: 100%;
-    background-color: var(--input-bg);
-    color: var(--input-bg);
-    transition: color 0.5s ease;
-  }
+    .checkbox.checked {
+        color: var(--color);
+        border-color: var(--background-color);
+    }
 
-  .buttons .material-symbols-outlined {
-    flex: 1;
-    text-align: center;
-    font-size: 1rem;
-    padding: 0 0.5rem;
+    input:focus,
+    select:focus {
+        outline: none;
+    }
 
-    display: grid;
-    place-items: center;
-  }
+    .wrapper {
+        position: relative;
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        flex: 1;
+    }
 
-  .wrapper:hover .buttons .material-symbols-outlined {
-    color: var(--color);
-  }
+    .wrapper:not(.check) {
+        background-color: var(--input-bg);
+    }
 
-  .buttons:hover {
-    cursor: pointer;
-  }
+    .border {
+        height: 2px;
+        width: 0;
+        background-color: var(--background-color);
+        transition: width 0.5s ease;
+        z-index: 1;
+    }
 
-  .buttons .material-symbols-outlined:hover {
-    background-color: var(--ui-button-hover);
-  }
+    label.border.check {
+        background-color: red;
+    }
 
-  input[disabled] {
-    color: rgba(125, 125, 125, 0.5);
-    background-color: rgba(0, 0, 0, 0.5);
-  }
+    .border.shown:not(.check) {
+        width: 100%;
+        background-color: var(--accent-color);
+    }
 
-  .buttons.disabled {
-    background-color: rgba(0, 0, 0, 0.5);
-  }
+    @media (prefers-color-scheme: light) {
+        input[type='date']::-webkit-calendar-picker-indicator,
+        input[type='datetime-local']::-webkit-calendar-picker-indicator {
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNSIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBmaWxsPSIjZmZmZmZmIiBkPSJNMjAgM2gtMVYxaC0ydjJIN1YxSDV2Mkg0Yy0xLjEgMC0yIC45LTIgMnYxNmMwIDEuMS45IDIgMiAyaDE2YzEuMSAwIDItLjkgMi0yVjVjMC0xLjEtLjktMi0yLTJ6bTAgMThINFY4aDE2djEzeiIvPjxwYXRoIGZpbGw9Im5vbmUiIGQ9Ik0wIDBoMjR2MjRIMHoiLz48L3N2Zz4=');
+        }
+    }
 
-  .radio-wrap {
-    display: flex;
-    width: 100%;
-    border: 2px solid var(--input-bg);
-    background-color: var(--input-bg);
-    box-sizing: border-box;
-    justify-content: center;
-    align-items: center;
-    transition: border 0.5s ease;
-    padding: 0.5rem;
-  }
+    textarea {
+        resize: none;
+    }
 
-  .radio-wrap.checked {
-    border: 2px solid var(--accent-color);
-  }
+    textarea:focus {
+        outline: none;
+    }
+
+    input[type='number']::-webkit-inner-spin-button,
+    input[type='number']::-webkit-outer-spin-button {
+        display: none;
+    }
+
+    .input-wrap {
+        display: flex;
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+    }
+
+    .buttons {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        height: 100%;
+        background-color: var(--input-bg);
+        color: var(--input-bg);
+        transition: color 0.5s ease;
+    }
+
+    .buttons .material-symbols-outlined {
+        flex: 1;
+        text-align: center;
+        font-size: 1rem;
+        padding: 0 0.5rem;
+
+        display: grid;
+        place-items: center;
+    }
+
+    .wrapper:hover .buttons .material-symbols-outlined {
+        color: var(--color);
+    }
+
+    .buttons:hover {
+        cursor: pointer;
+    }
+
+    .buttons .material-symbols-outlined:hover {
+        background-color: var(--ui-button-hover);
+    }
+
+    input[disabled] {
+        color: rgba(125, 125, 125, 0.5);
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .buttons.disabled {
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .radio-wrap {
+        display: flex;
+        width: 100%;
+        border: 2px solid var(--input-bg);
+        background-color: var(--input-bg);
+        box-sizing: border-box;
+        justify-content: center;
+        align-items: center;
+        transition: border 0.5s ease;
+        padding: 0.5rem;
+    }
+
+    .radio-wrap.checked {
+        border: 2px solid var(--accent-color);
+    }
 </style>

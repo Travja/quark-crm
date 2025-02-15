@@ -1,35 +1,32 @@
 <script lang='ts'>
-  import { run } from 'svelte/legacy';
-
-  import StyledInput from '$lib/ui/StyledInput.svelte';
-  import moment from 'moment';
-  import Card from '$lib/ui/Card.svelte';
-  import { formatCurrency } from '$lib/api/util';
-  import { afetch, apiUrl } from '$lib/http';
+  import StyledInput                           from '$lib/ui/StyledInput.svelte';
+  import type { Moment }                       from 'moment';
+  import moment                                from 'moment';
+  import Card                                  from '$lib/ui/Card.svelte';
+  import { formatCurrency }                    from '$lib/api/util';
+  import { afetch, apiUrl }                    from '$lib/http';
   import type { OperatingExpense, Statistics } from '@types/global';
-  import LabeledInput from '$lib/ui/LabeledInput.svelte';
-  import { formatDate } from '$lib/api/util.js';
-  import InsetInput from '$lib/ui/InsetInput.svelte';
-  import Pill from '$lib/ui/Pill.svelte';
+  import LabeledInput                          from '$lib/ui/LabeledInput.svelte';
+  import { formatDate }                        from '$lib/api/util.js';
+  import InsetInput                            from '$lib/ui/InsetInput.svelte';
+  import Pill                                  from '$lib/ui/Pill.svelte';
 
-  let selectedPreset: string = $state('this-month');
-  let startDate = $state(moment().subtract(1, 'days'));
-  let endDate = $state(moment());
+  let startDate: Moment | string = $state(moment().subtract(1, 'days'));
+  let endDate: Moment | string   = $state(moment());
 
   let stats: Statistics = $state();
 
-  let income = $state(0);
-  let expenses = $state(0);
+  let income            = $state(0);
+  let expenses          = $state(0);
   let operatingExpenses = $state(0);
-  let net = $state(0);
+  let net               = $state(0);
 
   let newOperatingExpense: OperatingExpense = $state({
-    date: '',
-    paidTo: '',
+    date:    '',
+    paidTo:  '',
     purpose: '',
-    amount: 0
+    amount:  0
   });
-
 
 
   const loadData = () => {
@@ -37,74 +34,82 @@
       `${apiUrl}/api/stats/${moment(startDate).utc().format('YYYY-MM-DD')}/${moment(endDate).utc().format('YYYY-MM-DD')}`
     )
       .then((response) => response.json())
-      .then((data) => (stats = data));
+      .then((data) => {
+        stats = data;
+
+        updateStats();
+      });
   };
 
 
-  const selectPreset = (preset) => {
+  const selectPreset = (e) => {
+    const preset = e.target.value;
+
+    let tmpStart: Moment;
+    let tmpEnd: Moment;
     switch (preset) {
       case 'today':
-        startDate = moment();
-        endDate = moment();
+        tmpStart = moment();
+        tmpEnd   = moment();
         break;
       case 'yesterday':
-        startDate = moment().subtract(1, 'days');
-        endDate = moment().subtract(1, 'days');
+        tmpStart = moment().subtract(1, 'days');
+        tmpEnd   = moment().subtract(1, 'days');
         break;
       case 'last-7-days':
-        startDate = moment().subtract(7, 'days');
-        endDate = moment();
+        tmpStart = moment().subtract(7, 'days');
+        tmpEnd   = moment();
         break;
       case 'last-30-days':
-        startDate = moment().subtract(30, 'days');
-        endDate = moment();
+        tmpStart = moment().subtract(30, 'days');
+        tmpEnd   = moment();
         break;
       case 'this-month':
-        startDate = moment().startOf('month');
-        endDate = moment().endOf('month');
+        tmpStart = moment().startOf('month');
+        tmpEnd   = moment().endOf('month');
         break;
       case 'last-month':
-        startDate = moment().subtract(1, 'month').startOf('month');
-        endDate = moment().subtract(1, 'month').endOf('month');
+        tmpStart = moment().subtract(1, 'month').startOf('month');
+        tmpEnd   = moment().subtract(1, 'month').endOf('month');
         break;
       case 'this-quarter':
-        startDate = moment().startOf('quarter');
-        endDate = moment().endOf('quarter');
+        tmpStart = moment().startOf('quarter');
+        tmpEnd   = moment().endOf('quarter');
         break;
       case 'last-quarter':
-        startDate = moment().subtract(1, 'quarter').startOf('quarter');
-        endDate = moment().subtract(1, 'quarter').endOf('quarter');
+        tmpStart = moment().subtract(1, 'quarter').startOf('quarter');
+        tmpEnd   = moment().subtract(1, 'quarter').endOf('quarter');
         break;
       case 'ytd':
-        startDate = moment().startOf('year');
-        endDate = moment();
+        tmpStart = moment().startOf('year');
+        tmpEnd   = moment();
         break;
       case 'last-year':
-        startDate = moment().subtract(1, 'year').startOf('year');
-        endDate = moment().subtract(1, 'year').endOf('year');
+        tmpStart = moment().subtract(1, 'year').startOf('year');
+        tmpEnd   = moment().subtract(1, 'year').endOf('year');
         break;
       case 'custom':
         // Do nothing
         return;
     }
 
-    startDate = <Moment>startDate.format('YYYY-MM-DD');
-    endDate = <Moment>endDate.format('YYYY-MM-DD');
+    startDate = tmpStart.format('YYYY-MM-DD');
+    endDate   = tmpEnd.format('YYYY-MM-DD');
   };
 
   const createOperatingExpense = () => {
     afetch(`${apiUrl}/api/operating-expense`, {
-      method: 'POST',
+      method:  'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(newOperatingExpense)
+      body:    JSON.stringify(newOperatingExpense)
     }).then((_) => {
       newOperatingExpense = {
-        date: '',
-        paidTo: '',
+        date:    '',
+        paidTo:  '',
         purpose: '',
-        amount: 0
+        amount:  0
       };
       loadData();
     });
@@ -115,29 +120,26 @@
       method: 'DELETE'
     }).then((_) => loadData());
   };
-  run(() => {
-    if (stats) {
-      income = stats.newCustomerIncome + stats.returningCustomerIncome;
-      expenses =
-        stats.printExpenses +
-        stats.frameExpenses +
-        stats.shippingExpenses +
-        stats.taxes +
-        stats.fees +
-        stats.other;
-      // + stats.artists
 
-      operatingExpenses = stats.operatingExpenses
-        .map((oe) => oe.amount)
-        .reduce((a, b) => a + b, 0);
+  const updateStats = () => {
+    income   = stats.newCustomerIncome + stats.returningCustomerIncome;
+    expenses =
+      stats.printExpenses +
+      stats.frameExpenses +
+      stats.shippingExpenses +
+      stats.taxes +
+      stats.fees +
+      stats.other;
+    // + stats.artists
 
-      net = income - expenses - operatingExpenses;
-    }
-  });
-  run(() => {
-    selectPreset(selectedPreset);
-  });
-  run(() => {
+    operatingExpenses = stats.operatingExpenses
+      .map((oe) => oe.amount)
+      .reduce((a, b) => a + b, 0);
+
+    net = income - expenses - operatingExpenses;
+  }
+
+  $effect(() => {
     if (startDate && endDate) loadData();
   });
 </script>
@@ -147,7 +149,7 @@
     <h1>Analytics</h1>
     <span class='spacer'></span>
     <span class='group'>
-      <StyledInput bind:value={selectedPreset} type='select'>
+      <StyledInput onchange={selectPreset} type='select'>
         <option value='today'>Today</option>
         <option value='yesterday'>Yesterday</option>
         <option value='last-7-days'>Last 7 Days</option>
@@ -163,17 +165,15 @@
       <span class='caps'>or</span>
       <span class='date-range'>
         <StyledInput
-          bind:value={startDate}
-          max={moment(endDate).format('YYYY-MM-DD')}
-          on:change={() => (selectedPreset = 'custom')}
-          type='date'
+                bind:value={startDate}
+                max={moment(endDate).format('YYYY-MM-DD')}
+                type='date'
         />
         <span class='caps'>to</span>
         <StyledInput
-          bind:value={endDate}
-          min={moment(startDate).format('YYYY-MM-DD')}
-          on:change={() => (selectedPreset = 'custom')}
-          type='date'
+                bind:value={endDate}
+                min={moment(startDate).format('YYYY-MM-DD')}
+                type='date'
         />
       </span>
     </span>
@@ -181,20 +181,20 @@
   <div class='cards'>
     <Card>
       {#snippet header()}
-            {stats?.totalOrders || 0}
-          {/snippet}
+        {stats?.totalOrders || 0}
+      {/snippet}
       <div>Orders</div>
     </Card>
     <Card color='#3cf'>
       {#snippet header()}
-            {formatCurrency(income)}
-          {/snippet}
+        {formatCurrency(income)}
+      {/snippet}
       <div>Income</div>
     </Card>
     <Card color='orange'>
       {#snippet header()}
-            {formatCurrency(expenses)}
-          {/snippet}
+        {formatCurrency(expenses)}
+      {/snippet}
       {#if operatingExpenses > 0}
         <div class='operating-summary'>
           +{formatCurrency(operatingExpenses)} OpEx
@@ -204,8 +204,8 @@
     </Card>
     <Card color={net >= 0 ? 'lime' : 'red'}>
       {#snippet header()}
-            {formatCurrency(net)}
-          {/snippet}
+        {formatCurrency(net)}
+      {/snippet}
       <div>Net Income</div>
     </Card>
   </div>
@@ -264,7 +264,7 @@
       </LabeledInput>
     </div>
   </div>
-  <hr />
+  <hr/>
   <div class='operating-expenses'>
     <div class='ops'>
       <h2>
@@ -284,25 +284,25 @@
           </tr>
           </thead>
           <tbody>
-            {#each stats.operatingExpenses as oe}
-              <tr>
-                <td>{formatDate(moment(oe.date, 'YYYY-MM-DD').toDate())}</td>
-                <td>{oe.paidTo}</td>
-                <td>{oe.purpose}</td>
-                <td class='currency'>{formatCurrency(oe.amount)}</td>
-                <td class='buttons'>
-                  <Pill
-                    hover
-                    color='#d33'
-                    on:click={() => deleteOperatingExpense(oe.id)}
-                    on:keypress={(e) =>
+          {#each stats.operatingExpenses as oe}
+            <tr>
+              <td>{formatDate(moment(oe.date, 'YYYY-MM-DD').toDate())}</td>
+              <td>{oe.paidTo}</td>
+              <td>{oe.purpose}</td>
+              <td class='currency'>{formatCurrency(oe.amount)}</td>
+              <td class='buttons'>
+                <Pill
+                        hover
+                        color='#d33'
+                        on:click={() => deleteOperatingExpense(oe.id)}
+                        on:keypress={(e) =>
                       e.key === 'Enter' && deleteOperatingExpense(oe.id)}
-                  >
-                    <span class='material-symbols-outlined'>delete</span>
-                  </Pill>
-                </td>
-              </tr>
-            {/each}
+                >
+                  <span class='material-symbols-outlined'>delete</span>
+                </Pill>
+              </td>
+            </tr>
+          {/each}
           </tbody>
         </table>
       {/if}
@@ -311,39 +311,39 @@
     <div class='form'>
       <h4>Add Operating Expense</h4>
       <InsetInput
-        bind:value={newOperatingExpense.date}
-        id='op-expense-date'
-        name='date'
-        type='date'
+              bind:value={newOperatingExpense.date}
+              id='op-expense-date'
+              name='date'
+              type='date'
       >Date
       </InsetInput>
       <InsetInput
-        bind:value={newOperatingExpense.paidTo}
-        id='op-expense-paid-to'
-        name='paidTo'
-        type='text'
+              bind:value={newOperatingExpense.paidTo}
+              id='op-expense-paid-to'
+              name='paidTo'
+              type='text'
       >Paid To
       </InsetInput>
       <InsetInput
-        bind:value={newOperatingExpense.purpose}
-        id='op-expense-purpose'
-        name='purpose'
-        type='text'
+              bind:value={newOperatingExpense.purpose}
+              id='op-expense-purpose'
+              name='purpose'
+              type='text'
       >Purpose
       </InsetInput>
       <InsetInput
-        bind:value={newOperatingExpense.amount}
-        id='op-expense-amount'
-        min='0'
-        name='amount'
-        type='number'
+              bind:value={newOperatingExpense.amount}
+              id='op-expense-amount'
+              min='0'
+              name='amount'
+              type='number'
       >Amount
       </InsetInput>
       <Pill
-        color='#3c3'
-        hover
-        on:click={createOperatingExpense}
-        on:keypress={(e) => e.key === 'Enter' && createOperatingExpense}
+              color='#3c3'
+              hover
+              on:click={createOperatingExpense}
+              on:keypress={(e) => e.key === 'Enter' && createOperatingExpense}
       >
         <span class='material-symbols-outlined'>add</span>
       </Pill>
